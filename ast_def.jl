@@ -8,7 +8,7 @@
 # --- Types ---
 @enum DeclType t_int t_proc t_void
 @enum SymKind k_sym_local k_sym_arg k_sym_global
-@enum StmtKind k_stmt_exp k_stmt_decl k_stmt_return k_stmt_ifelse
+@enum StmtKind k_stmt_block k_stmt_exp k_stmt_decl k_stmt_return k_stmt_ifelse
 @enum ExpKind k_exp_add k_exp_mul k_exp_id k_exp_int k_exp_set
 
 # Declaration
@@ -19,13 +19,13 @@ mutable struct Decl
     value
     # For functions
     body
-    # For semantic analysis
-    # TODO : locals
 end
 
 # Statement
 mutable struct Stmt
     kind
+    # stmt_block
+    stmts
     # stmt_exp stmt_return
     exp
     # stmt_decl
@@ -70,23 +70,23 @@ mutable struct SymTable
 end
 
 # --- Constructors ---
-function decl_new(type::DeclType, id::String, value = nothing,
-        body::Stmt = nothing, locals::Array{Decl} = [])
-    return Decl(type, id, value, body, locals)
+function decl_new(type::DeclType, id::String; value = nothing,
+        body = nothing)
+    return Decl(type, id, value, body)
 end
 
-function stmt_new(kind::StmtKind, exp::Exp = nothing, decl::Decl = nothing,
-        ifbody::Stmt = nothing, elsebody::Stmt = nothing)
-    return Stmt(kind, exp, decl, ifbody, elsebody)
+function stmt_new(kind::StmtKind; stmts = nothing, exp = nothing,
+        decl = nothing, ifbody = nothing, elsebody = nothing)
+    return Stmt(kind, stmts, exp, decl, ifbody, elsebody)
 end
 
-function exp_new(kind::ExpKind, type::DeclType, left = nothing,
-        right = nothing, value = nothing, id::String = nothing,
-        sym::Sym = nothing, register = nothing)
+function exp_new(kind::ExpKind, type::DeclType; left = nothing,
+        right = nothing, value = nothing, id = nothing,
+        sym = nothing, register = nothing)
     return Exp(kind, type, left, right, value, id, sym, register)
 end
 
-function sym_new(kind::SymKind, type::DeclType, id::String, position::Int = 0)
+function sym_new(kind::SymKind, type::DeclType, id::String, position = 0)
     return Sym(kind, type, id, position)
 end
 

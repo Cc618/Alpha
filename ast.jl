@@ -1,20 +1,41 @@
-# --- Sym ---
-sym_local(type::DeclType, id::String, position::Int) = sym_new(k_sym_local, type, id, position)
-sym_arg(type::DeclType, id::String, position::Int) = sym_new(k_sym_arg, type, id, position)
-sym_global(type::DeclType, id::String, position::Int) = sym_new(k_sym_arg, type, id, position)
+# --- Decl ---
+decl_newint(id::String, value::Exp) = decl_new(t_int, id, value=value)
+
+# --- Stmt ---
+stmt_newblock() = stmt_new(k_stmt_block, stmts=[])
+stmt_newdecl(decl::Decl) = stmt_new(k_stmt_decl, decl=decl)
+
+# --- Exp ---
+exp_newint(value::Int) = exp_new(k_exp_int, t_int, value=value)
 
 # --- SymTable ---
-
 # TODO : mv to ctx
 function ctx_newsymlocal!(ctx::Ctx, type::DeclType, id::String, position::Int)
     sym = sym_new(k_sym_local, type, id, position)
-    # TODO : Verify no name conflict
-    push!(last(ctx.scopes), [id, sym])
+    scope = last(ctx.scopes)
+
+    # TODO : Error
+    @assert !haskey(scope.syms, id) "Declaration named '$id' already declared"
+
+    scope.syms[id] = sym
+end
+
+function ctx_newsymarg!(ctx::Ctx, type::DeclType, id::String, position::Int)
+    sym = sym_new(k_sym_arg, type, id, position)
+    scope = last(ctx.scopes)
+
+    # TODO : Error
+    @assert !haskey(scope.syms, id) "Declaration named '$id' already declared"
+
+    scope.syms[id] = sym
 end
 
 function ctx_newsymglobal!(ctx::Ctx, type::DeclType, id::String)
     sym = sym_new(k_sym_global, type, id)
-    # TODO : Verify no name conflict
-    ctx.scopes[1].syms[id] = sym
-    # push!(ctx.scopes[1], [id, sym])
+    scope = first(ctx.scopes)
+
+    # TODO : Error
+    @assert !haskey(scope.syms, id) "Declaration named '$id' already declared"
+
+    scope.syms[id] = sym
 end

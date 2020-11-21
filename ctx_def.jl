@@ -14,4 +14,4 @@ mutable struct Ctx
 end
 
 # Push global scope
-ctx_new() = Ctx([], [symtable_new()], [], [])
+ctx_new() = Ctx([symtable_new()], [], [])
