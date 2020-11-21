@@ -3,8 +3,7 @@
 mutable struct Ctx
     # --- AST ---
     # Global scope functions
-    # TODO : Not in scopes ?
-    # decls
+    decls
     # --- Semantic Analysis ---
     scopes
     #  --- Code Generation ---
@@ -14,4 +13,4 @@ mutable struct Ctx
 end
 
 # Push global scope
-ctx_new() = Ctx([symtable_new()], [], [])
+ctx_new() = Ctx([], [symtable_new()], [], [])

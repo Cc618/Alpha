@@ -26,7 +26,7 @@ mutable struct Stmt
     kind
     # stmt_block
     stmts
-    # stmt_exp stmt_return
+    # stmt_exp stmt_return stmt_ifelse.condition
     exp
     # stmt_decl
     decl
@@ -67,6 +67,8 @@ end
 # Can be thought as a scope
 mutable struct SymTable
     syms::Dict{String, Sym}
+    nlocals
+    nargs
 end
 
 # --- Constructors ---
@@ -80,7 +82,7 @@ function stmt_new(kind::StmtKind; stmts = nothing, exp = nothing,
     return Stmt(kind, stmts, exp, decl, ifbody, elsebody)
 end
 
-function exp_new(kind::ExpKind, type::DeclType; left = nothing,
+function exp_new(kind::ExpKind; type = nothing, left = nothing,
         right = nothing, value = nothing, id = nothing,
         sym = nothing, register = nothing)
     return Exp(kind, type, left, right, value, id, sym, register)
@@ -90,4 +92,4 @@ function sym_new(kind::SymKind, type::DeclType, id::String, position = 0)
     return Sym(kind, type, id, position)
 end
 
-symtable_new() = SymTable(Dict{String, Sym}())
+symtable_new() = SymTable(Dict{String, Sym}(), 0, 0)
