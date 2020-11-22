@@ -16,7 +16,7 @@ mutable struct Ctx
     code
     # Free scratch registers
     scratch_regs
-    # Preserved regs used in the function (useless now)
+    # TODO preserved : Preserved regs used in the function (useless now)
     torestore_regs
     n_labels
 end

@@ -1,7 +1,24 @@
 function codegen!(ctx::Ctx)
+    # Generate instructions
     for decl in ctx.decls
         decl_codegen!(ctx, decl)
     end
+
+    # Combine instructions
+    asm = "; Auto generated file\n"
+
+    # TODO : Declare sections
+    asm *= "\n; --- Data section ---\n"
+    for inst in ctx.data
+        asm *= inst * "\n"
+    end
+
+    asm *= "\n; --- Text section ---\n"
+    for inst in ctx.text
+        asm *= inst * "\n"
+    end
+
+    return asm
 end
 
 function decl_codegen!(ctx::Ctx, decl::Decl)
@@ -14,7 +31,7 @@ function decl_codegen!(ctx::Ctx, decl::Decl)
 
         fun_name = decl.id
         # TODO : Number of locals
-        frame_size = 42 * 8
+        frame_size = decl.nlocals * 8
 
         # Prologue generation
         prologue = []
@@ -23,17 +40,16 @@ function decl_codegen!(ctx::Ctx, decl::Decl)
         pushinstr!(prologue, "push rbp")
         pushinstr!(prologue, "mov rbp, rsp")
         pushinstr!(prologue, "sub rsp, $(frame_size)")
+        # TODO preserved : Push preserved
 
         # Epilogue generation
         epilogue = []
         pushinstr!(epilogue, ".$fun_name.epilogue:", indent=false)
-        # TODO : Pop scratch
+        # TODO preserved : Pop preserved
         pushinstr!(epilogue, "leave")
         pushinstr!(epilogue, "ret")
 
-        merge!(ctx.text, prologue)
-        merge!(ctx.text, ctx.code)
-        merge!(ctx.text, epilogue)
+        ctx.text = vcat(ctx.text, prologue, ctx.code, epilogue)
     else
         # TODO : Implement int...
         error("Not implemented decl type $(decl.type)")

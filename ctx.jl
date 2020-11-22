@@ -85,7 +85,7 @@ function ctx_freescratch!(ctx::Ctx, reg)
     push!(ctx.scratch_regs, reg)
 end
 
-function pushinstr!(section::Array{String}, data::String; indent = true)
+function pushinstr!(section, data::String; indent = true)
     if indent
         data = "    " * data
     end

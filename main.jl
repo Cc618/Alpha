@@ -41,7 +41,9 @@ push!(ctx.decls, main_fn)
 
 semanticanalysis!(ctx)
 
-println(let_c.type)
-println(let_c.value.right)
-println(main_fn.nlocals)
-println(main_fn.type.args)
+# println(let_c.type)
+# println(let_c.value.right)
+# println(main_fn.nlocals)
+# println(main_fn.type.args)
+
+println(codegen!(ctx))
