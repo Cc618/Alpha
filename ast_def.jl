@@ -6,7 +6,7 @@
 # - Expression : A value
 
 # --- Types ---
-@enum DeclType t_int t_proc t_void
+@enum TypeKind k_int_t k_void_t k_proc_t k_fn_t
 @enum SymKind k_sym_local k_sym_arg k_sym_global
 @enum StmtKind k_stmt_block k_stmt_exp k_stmt_decl k_stmt_return k_stmt_ifelse
 @enum ExpKind k_exp_add k_exp_mul k_exp_id k_exp_int k_exp_set
@@ -71,6 +71,16 @@ mutable struct SymTable
     nargs
 end
 
+mutable struct DeclType
+    kind
+    # For functions
+    args
+end
+
+mutable struct Arg
+    id
+end
+
 # --- Constructors ---
 function decl_new(type::DeclType, id::String; value = nothing,
         body = nothing)
@@ -93,3 +103,5 @@ function sym_new(kind::SymKind, type::DeclType, id::String, position = 0)
 end
 
 symtable_new() = SymTable(Dict{String, Sym}(), 0, 0)
+
+decltype_new(kind::TypeKind; args = nothing) = DeclType(kind, args)

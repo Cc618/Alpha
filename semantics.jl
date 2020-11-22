@@ -4,7 +4,8 @@ function semanticanalysis!(ctx)
     # 1st pass : Register global scope functions
     for decl in ctx.decls
         # TODO : Error
-        @assert decl.type == t_proc "Unsupported global declaration type $(decl.type)"
+        @assert decl.type.kind == k_proc_t || decl.type.kind == k_fn_t
+                "Unsupported global declaration type $(decl.type)"
 
         ctx_newsymglobal!(ctx, decl.type, decl.id)
     end
@@ -19,23 +20,22 @@ end
 function decl_resolve!(ctx, decl, pushsym=true)
     # Declare this symbol to the inner scope
     if pushsym
-        println("New variable $(decl.id), scope #$(length(ctx.scopes)) = $(last(ctx.scopes))")
         ctx_newsymlocal!(ctx, decl.type, decl.id)
     end
 
-    # TODO : Or function
-    if decl.type == t_proc
+    if decl.type.kind == k_proc_t || decl.type.kind == k_fn_t
         # TODO : Error
         @assert length(ctx.scopes) == 1 "Can't declare functions in a local scope"
 
         ctx_pushscope!(ctx)
 
-        # TODO : Resolve args
+        args_resolve!(ctx, decl.type.args)
         stmt_resolve!(ctx, decl.body)
 
-        # TODO : Type check return
+        # TODO : Type check return if decl.type.kind is k_fn_t
+        # TODO : Check no return if decl.type.kind is k_proc_t
         ctx_popscope!(ctx)
-    elseif decl.type == t_int
+    elseif decl.type.kind == k_int_t
         exp_resolve!(ctx, decl.value)
 
         # TODO : Error
@@ -46,23 +46,36 @@ function decl_resolve!(ctx, decl, pushsym=true)
     end
 end
 
+function args_resolve!(ctx, args)
+    for (i, arg) in enumerate(args)
+        ctx_newsymarg!(ctx, t_int, arg.id, i)
+    end
+end
+
 function stmt_resolve!(ctx, stmt)
     if stmt == nothing
         return
     end
 
-    # TODO : Return
     if stmt.kind == k_stmt_decl
         decl_resolve!(ctx, stmt.decl)
     elseif stmt.kind == k_stmt_exp
         exp_resolve!(ctx, stmt.exp)
+    elseif stmt.kind == k_stmt_return
+        exp_resolve!(ctx, stmt.exp)
+
+        # TODO : Empty return
+
+        # TODO : Check function not proc
+        # TODO : Error
+        @assert stmt.exp.type.kind == k_int_t "Functions must return ints"
     elseif stmt.kind == k_stmt_ifelse
         exp_resolve!(ctx, stmt.exp)
         stmt_resolve!(ctx, stmt.ifbody)
         stmt_resolve!(ctx, stmt.elsebody)
 
         # TODO : Error
-        @assert stmt.exp.type == t_int "Invalid condition expression"
+        @assert stmt.exp.type.kind == k_int_t "Invalid condition expression"
     elseif stmt.kind == k_stmt_block
         ctx_pushscope!(ctx)
 
@@ -94,7 +107,6 @@ function exp_resolve!(ctx, exp)
         exp.type = exp.left.type
     end
 
-    # TODO : k_exp_set k_exp_int...
     if exp.kind == k_exp_id
         exp.sym = ctx_fetchscope(ctx, exp.id)
 

@@ -7,10 +7,12 @@ include("semantics.jl")
 
 # --- Main ---
 """
-main() {
+main(a, x) {
     let a = 42
     let b = 2
     let c = a + b
+
+    return c
 }
 """
 main_body = stmt_newblock()
@@ -24,7 +26,11 @@ push!(main_body.stmts, stmt_newdecl(let_b))
 let_c = decl_newint("c", exp_newadd(exp_newid("a"), exp_newid("b")))
 push!(main_body.stmts, stmt_newdecl(let_c))
 
-main_fn = decl_new(t_proc, "main", body=main_body)
+ret_c = stmt_newreturn(exp_newid("c"))
+push!(main_body.stmts, ret_c)
+
+main_args = [arg_new("a"), arg_new("x")]
+main_fn = decl_new(type_newfn(main_args), "main", body=main_body)
 
 # --- Entry ---
 ctx = ctx_new()
@@ -32,11 +38,6 @@ ctx = ctx_new()
 # Parsing
 push!(ctx.decls, main_fn)
 
-# ctx_newsymglobal!(ctx, t_proc, "main")
-
 semanticanalysis!(ctx)
 
 println(let_c.type)
-
-# println(ctx.scopes)
-# println(main_fn)
