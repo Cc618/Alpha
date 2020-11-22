@@ -20,14 +20,14 @@ end
 function decl_resolve!(ctx, decl, pushsym=true)
     # Declare this symbol to the inner scope
     if pushsym
-        ctx_newsymlocal!(ctx, decl.type, decl.id)
+        ctx_newsymlocal!(ctx, decl)
     end
 
     if decl.type.kind == k_proc_t || decl.type.kind == k_fn_t
         # TODO : Error
         @assert length(ctx.scopes) == 1 "Can't declare functions in a local scope"
 
-        ctx_pushscope!(ctx)
+        ctx_pushscope!(ctx, decl)
 
         args_resolve!(ctx, decl.type.args)
         stmt_resolve!(ctx, decl.body)

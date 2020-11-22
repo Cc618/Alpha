@@ -16,13 +16,13 @@ mutable struct Ctx
     code
     # Free scratch registers
     scratch_regs
-    # Used in the function
-    used_scratch_regs
+    # Preserved regs used in the function (useless now)
+    torestore_regs
     n_labels
 end
 
 # Push global scope
-ctx_new() = Ctx([], [symtable_new()], [], [], [], [], Set(), 0)
+ctx_new() = Ctx([], [symtable_new(nothing)], [], [], [], [], Set(), 0)
 
 reg2str = Dict{Reg, String}(
         ax => "rax",

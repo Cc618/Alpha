@@ -7,7 +7,7 @@ end
 function decl_codegen!(ctx::Ctx, decl::Decl)
     if decl.type.kind ∈ (k_proc_t, k_fn_t)
         ctx.scratch_regs = scratchregs_new()
-        ctx.used_scratch_regs = Set()
+        ctx.torestore_regs = Set()
         ctx.code = []
 
         # TODO : Gen body code

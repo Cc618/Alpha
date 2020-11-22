@@ -1,6 +1,6 @@
 # --- Scopes ---
-function ctx_pushscope!(ctx)
-    push!(ctx.scopes, symtable_new())
+function ctx_pushscope!(ctx, decl = nothing)
+    push!(ctx.scopes, symtable_new(decl))
 end
 
 function ctx_popscope!(ctx)
@@ -20,16 +20,22 @@ function ctx_fetchscope(ctx, id)
 end
 
 # --- Symbols ---
-function ctx_newsymlocal!(ctx::Ctx, type::DeclType, id::String)
-    # TODO tmp : Position is the offset from the function's scope
+function ctx_newsymlocal!(ctx::Ctx, decl::Decl)
+    type = decl.type
+    id = decl.id
+
     # TODO : Record number of locals in decl
+    @assert length(ctx.scopes) >= 2 "Cannot declare local symbols outside of a function"
+
+    func_scope = ctx.scopes[2]
+    func_scope.decl.nlocals += 1
+    position = func_scope.decl.nlocals
+
     scope = last(ctx.scopes)
-    scope.nlocals += 1
-    position = scope.nlocals
     sym = sym_new(k_sym_local, type, id, position)
 
     # TODO : Error
-    @assert !haskey(scope.syms, id) "Declaration named '$id' already declared"
+    @assert !haskey(scope.syms, id) "Variable named '$id' already declared"
 
     scope.syms[id] = sym
 end

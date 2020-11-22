@@ -10,7 +10,7 @@ include("codegen.jl")
 main(a, x) {
     let a = 42
     let b = 2
-    let c = a + b
+    let c = a + b + x
 
     return c
 }
@@ -23,7 +23,8 @@ push!(main_body.stmts, stmt_newdecl(let_a))
 let_b = decl_newint("b", exp_newint(2))
 push!(main_body.stmts, stmt_newdecl(let_b))
 
-let_c = decl_newint("c", exp_newadd(exp_newid("a"), exp_newid("b")))
+sum_ab = exp_newadd(exp_newid("a"), exp_newid("b"))
+let_c = decl_newint("c", exp_newadd(sum_ab, exp_newid("x")))
 push!(main_body.stmts, stmt_newdecl(let_c))
 
 ret_c = stmt_newreturn(exp_newid("c"))
@@ -41,3 +42,6 @@ push!(ctx.decls, main_fn)
 semanticanalysis!(ctx)
 
 println(let_c.type)
+println(let_c.value.right)
+println(main_fn.nlocals)
+println(main_fn.type.args)

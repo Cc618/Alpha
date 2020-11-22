@@ -19,6 +19,7 @@ mutable struct Decl
     value
     # For functions
     body
+    nlocals
 end
 
 # Statement
@@ -67,8 +68,9 @@ end
 # Can be thought as a scope
 mutable struct SymTable
     syms::Dict{String, Sym}
-    nlocals
+    # TODO : nargs withing SymTable or Decl ?
     nargs
+    decl
 end
 
 mutable struct DeclType
@@ -84,7 +86,7 @@ end
 # --- Constructors ---
 function decl_new(type::DeclType, id::String; value = nothing,
         body = nothing)
-    return Decl(type, id, value, body)
+    return Decl(type, id, value, body, 0)
 end
 
 function stmt_new(kind::StmtKind; stmts = nothing, exp = nothing,
@@ -102,6 +104,6 @@ function sym_new(kind::SymKind, type::DeclType, id::String, position = 0)
     return Sym(kind, type, id, position)
 end
 
-symtable_new() = SymTable(Dict{String, Sym}(), 0, 0)
+symtable_new(decl) = SymTable(Dict{String, Sym}(), 0, decl)
 
 decltype_new(kind::TypeKind; args = nothing) = DeclType(kind, args)
