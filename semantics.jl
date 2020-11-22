@@ -20,7 +20,7 @@ end
 function decl_resolve!(ctx, decl, pushsym=true)
     # Declare this symbol to the inner scope
     if pushsym
-        ctx_newsymlocal!(ctx, decl)
+        decl.sym = ctx_newsymlocal!(ctx, decl)
     end
 
     if decl.type.kind == k_proc_t || decl.type.kind == k_fn_t

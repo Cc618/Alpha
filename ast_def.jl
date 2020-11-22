@@ -19,7 +19,9 @@ mutable struct Decl
     value
     # For functions
     body
+    # Semantic analysis
     nlocals
+    sym
 end
 
 # Statement
@@ -50,7 +52,7 @@ mutable struct Exp
     # For semantic analysis
     sym
     # For code gen
-    register
+    reg
 end
 
 # Symbol
@@ -86,7 +88,7 @@ end
 # --- Constructors ---
 function decl_new(type::DeclType, id::String; value = nothing,
         body = nothing)
-    return Decl(type, id, value, body, 0)
+    return Decl(type, id, value, body, 0, nothing)
 end
 
 function stmt_new(kind::StmtKind; stmts = nothing, exp = nothing,

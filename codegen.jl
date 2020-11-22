@@ -1,6 +1,7 @@
 function codegen!(ctx::Ctx)
-    # Generate instructions
+    # Generate instructions for each function
     for decl in ctx.decls
+        ctx.current_func = decl
         decl_codegen!(ctx, decl)
     end
 
@@ -27,7 +28,7 @@ function decl_codegen!(ctx::Ctx, decl::Decl)
         ctx.torestore_regs = Set()
         ctx.code = []
 
-        # TODO : Gen body code
+        stmt_codegen!(ctx, decl.body)
 
         fun_name = decl.id
         # TODO : Number of locals
@@ -50,9 +51,134 @@ function decl_codegen!(ctx::Ctx, decl::Decl)
         pushinstr!(epilogue, "ret")
 
         ctx.text = vcat(ctx.text, prologue, ctx.code, epilogue)
+    elseif decl.type.kind == k_int_t
+        # Local variable
+        exp_codegen!(ctx, decl.value)
+
+        @assert decl.sym != nothing "The variable $(decl.id) has no symbol resolved"
+
+        sym = sym_codegen(decl.sym)
+        ctx_push!(ctx, "mov $(sym), $(regstr(decl.value.reg))")
+
+        ctx_freescratch!(ctx, decl.value.reg)
     else
-        # TODO : Implement int...
         error("Not implemented decl type $(decl.type)")
+    end
+end
+
+# TODO tmp : func name
+function stmt_codegen!(ctx, stmt)
+    if stmt == nothing
+        return
+    end
+
+    # TODO : Loop
+    if stmt.kind == k_stmt_exp
+        exp_codegen!(ctx, stmt.exp)
+
+        # TODO : Can be nothing ?
+        ctx_freescratch!(ctx, stmt.exp.reg)
+    elseif stmt.kind == k_stmt_decl
+        decl_codegen!(ctx, stmt.decl)
+    elseif stmt.kind == k_stmt_return
+        exp = stmt.exp
+        exp_codegen!(ctx, exp)
+
+        # Move the result into rax
+        ctx_push!(ctx, "mov rax, $(regstr(exp.reg))")
+        ctx_push!(ctx, "jmp .$(ctx.current_func.id).epilogue")
+
+        ctx_freescratch!(ctx, exp.reg)
+    elseif stmt.kind == k_stmt_block
+        for st in stmt.stmts
+            stmt_codegen!(ctx, st)
+        end
+    # TODO
+    # elseif stmt.kind == control
+    #     exprcondition, stmttrue, stmtfalse = stmt.data
+
+    #     labelfalse = labelcreate!(ctx)
+    #     labelend = labelcreate!(ctx)
+
+    #     # condition.reg is 0 if false
+    #     exp_codegen!(ctx, exprcondition)
+    #     ctx_push!(ctx, "test $(regstr(exprcondition.reg))")
+    #     scratchfree(exprcondition.reg)
+    #     ctx_push!(ctx, "je $(labelstr(labelfalse))")
+
+    #     # True TODO : Useless label
+    #     stmtcodegen!(ctx, stmttrue)
+    #     ctx_push!(ctx, "jmp $(labelstr(labelend))")
+
+    #     # False
+    #     label_codegen!(ctx, labelfalse)
+    #     stmt_codegen!(ctx, stmtfalse)
+
+    #     # Done
+    #     label_codegen!(ctx, labelend)
+    else
+        error("Invalid statement kind $(stmt.kind)")
+    end
+end
+
+function exp_codegen!(ctx, exp)
+    if exp == nothing
+        return
+    end
+
+    if exp.kind == k_exp_id
+        exp.reg = ctx_newscratch!(ctx)
+
+        sym = exp.sym
+
+        @assert sym != nothing "No symbol resolved after semantic analysis"
+
+        ctx_push!(ctx, "mov $(regstr(exp.reg)), $(sym_codegen(sym))")
+    elseif exp.kind == k_exp_int
+        exp.reg = ctx_newscratch!(ctx)
+
+        ctx_push!(ctx, "mov $(regstr(exp.reg)), $(exp.value)")
+    elseif exp.kind == k_exp_add
+        l, r = exp.left, exp.right
+
+        exp_codegen!(ctx, l)
+        exp_codegen!(ctx, r)
+
+        # l += r
+        ctx_push!(ctx, "add $(regstr(l.reg)), $(regstr(r.reg))")
+
+        ctx_freescratch!(ctx, r.reg)
+        exp.reg = l.reg
+    elseif exp.kind == k_exp_mul
+        l, r = exp.left, exp.right
+
+        exp_codegen!(ctx, l)
+        exp_codegen!(ctx, r)
+
+        # l *= r
+        ctx_push!(ctx, "mov rax, $(regstr(l.reg))")
+        ctx_push!(ctx, "imul $(regstr(r.reg))")
+        ctx_push!(ctx, "mov $(regstr(l.reg)), rax")
+
+        ctx_freescratch!(ctx, r.reg)
+        exp.reg = l.reg
+    elseif exp.kind == k_exp_set
+        l, r = exp.data
+
+        @assert l.sym != nothing "Can't assign an rvalue"
+
+        exp_codegen!(ctx, l)
+        exp_codegen!(ctx, r)
+
+        lsym = sym_codegen(l.sym)
+
+        # l = r
+        ctx_push!(ctx, "mov $lsym, $(regstr(r.reg))")
+
+        ctx_freescratch!(ctx, r.reg)
+        exp.reg = l.reg
+    else
+        error("Invalid expession kind $(exp.kind)")
     end
 end
 
@@ -62,4 +188,19 @@ end
 
 function label_codegen!(ctx, label::Int)
     ctx_push!(ctx, "$(labelstr(label)):", indent = false)
+end
+
+function sym_codegen(sym::Sym)
+    if sym.kind == k_sym_global
+        return sym.name
+    elseif sym.kind == k_sym_arg
+        @assert sym.position <= 5 "5 or more args are not yet supported"
+
+        return regstr(arg_regs[sym.position])
+    else
+        # Local symbol
+        negoffset = sym.position * 8
+
+        return "[rbp - $negoffset]"
+    end
 end

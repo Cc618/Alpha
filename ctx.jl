@@ -38,6 +38,8 @@ function ctx_newsymlocal!(ctx::Ctx, decl::Decl)
     @assert !haskey(scope.syms, id) "Variable named '$id' already declared"
 
     scope.syms[id] = sym
+
+    return sym
 end
 
 function ctx_newsymarg!(ctx::Ctx, type::DeclType, id::String, position::Int)
@@ -70,13 +72,19 @@ scratchregs_new() = [
         r11
     ]
 
+arg_regs = [
+        di,
+        si,
+        dx,
+        cx,
+    ]
+
 # Allocates a new scratch register
 function ctx_newscratch!(ctx::Ctx)
     # TODO : Throw error / return nothing
     @assert length(ctx.scratch_regs) != 0 "Not enough scratch registers"
 
     reg = pop!(ctx.scratch_regs)
-    push!(ctx.used_scratch_regs, reg)
 
     return reg
 end

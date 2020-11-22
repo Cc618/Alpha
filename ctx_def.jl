@@ -19,10 +19,12 @@ mutable struct Ctx
     # TODO preserved : Preserved regs used in the function (useless now)
     torestore_regs
     n_labels
+    # Current function we parse
+    current_func
 end
 
 # Push global scope
-ctx_new() = Ctx([], [symtable_new(nothing)], [], [], [], [], Set(), 0)
+ctx_new() = Ctx([], [symtable_new(nothing)], [], [], [], [], Set(), 0, nothing)
 
 reg2str = Dict{Reg, String}(
         ax => "rax",
