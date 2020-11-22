@@ -3,7 +3,7 @@ include("ctx_def.jl")
 include("ast.jl")
 include("ctx.jl")
 include("semantics.jl")
-# include("codegen.jl")
+include("codegen.jl")
 
 # --- Main ---
 """

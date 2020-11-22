@@ -10,8 +10,10 @@ mutable struct Ctx
     scopes
     #  --- Code Generation ---
     # Sections
-    code
+    text
     data
+    # Current function text
+    code
     # Free scratch registers
     scratch_regs
     # Used in the function
@@ -20,7 +22,7 @@ mutable struct Ctx
 end
 
 # Push global scope
-ctx_new() = Ctx([], [symtable_new()], [], [], [], Set(), 0)
+ctx_new() = Ctx([], [symtable_new()], [], [], [], [], Set(), 0)
 
 reg2str = Dict{Reg, String}(
         ax => "rax",

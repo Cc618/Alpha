@@ -21,6 +21,8 @@ end
 
 # --- Symbols ---
 function ctx_newsymlocal!(ctx::Ctx, type::DeclType, id::String)
+    # TODO tmp : Position is the offset from the function's scope
+    # TODO : Record number of locals in decl
     scope = last(ctx.scopes)
     scope.nlocals += 1
     position = scope.nlocals
@@ -77,14 +79,19 @@ function ctx_freescratch!(ctx::Ctx, reg)
     push!(ctx.scratch_regs, reg)
 end
 
-function ctx_push!(ctx::Ctx, data::String; code = true, indent = true)
-    section = if code ctx.code else ctx.data end
-
+function pushinstr!(section::Array{String}, data::String; indent = true)
     if indent
         data = "    " * data
     end
 
     push!(section, data)
+end
+
+# Pushes code either in data section or current function's text section
+function ctx_push!(ctx::Ctx, data::String; code = true, indent = true)
+    section = if code ctx.code else ctx.data end
+
+    pushinstr!(section, data, indent = indent)
 end
 
 function regstr(reg::Reg)
@@ -103,12 +110,3 @@ function ctx_newlabel!(ctx)
 
     return ctx.label
 end
-
-# TODO : Mv to codegen and update
-# function labelcodegen!(ctx, label::String)
-#     push!(prog.text, "$(label):")
-# end
-
-# function labelcodegen!(ctx, label::Int)
-#     push!(prog.text, "$(labelstr(label)):")
-# end
