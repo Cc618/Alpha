@@ -118,6 +118,6 @@ function exp_resolve!(ctx, exp)
         exp.type = t_int
     elseif exp.kind == k_exp_set
         # TODO : Error
-        @assert exp.sym != nothing "Can't assign an rvalue"
+        @assert exp.left.sym != nothing "Can't assign an rvalue"
     end
 end

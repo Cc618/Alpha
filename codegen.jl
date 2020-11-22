@@ -93,29 +93,26 @@ function stmt_codegen!(ctx, stmt)
         for st in stmt.stmts
             stmt_codegen!(ctx, st)
         end
-    # TODO
-    # elseif stmt.kind == control
-    #     exprcondition, stmttrue, stmtfalse = stmt.data
+    elseif stmt.kind == k_stmt_ifelse
+        labelfalse = ctx_newlabel!(ctx)
+        labelend = ctx_newlabel!(ctx)
 
-    #     labelfalse = labelcreate!(ctx)
-    #     labelend = labelcreate!(ctx)
+        # stmt.exp.reg is 0 if false
+        exp_codegen!(ctx, stmt.exp)
+        ctx_push!(ctx, "test $(regstr(stmt.exp.reg))")
+        ctx_freescratch!(ctx, stmt.exp.reg)
+        ctx_push!(ctx, "je $(labelstr(labelfalse))")
 
-    #     # condition.reg is 0 if false
-    #     exp_codegen!(ctx, exprcondition)
-    #     ctx_push!(ctx, "test $(regstr(exprcondition.reg))")
-    #     scratchfree(exprcondition.reg)
-    #     ctx_push!(ctx, "je $(labelstr(labelfalse))")
+        # True
+        stmt_codegen!(ctx, stmt.ifbody)
+        ctx_push!(ctx, "jmp $(labelstr(labelend))")
 
-    #     # True TODO : Useless label
-    #     stmtcodegen!(ctx, stmttrue)
-    #     ctx_push!(ctx, "jmp $(labelstr(labelend))")
+        # False
+        label_codegen!(ctx, labelfalse)
+        stmt_codegen!(ctx, stmt.elsebody)
 
-    #     # False
-    #     label_codegen!(ctx, labelfalse)
-    #     stmt_codegen!(ctx, stmtfalse)
-
-    #     # Done
-    #     label_codegen!(ctx, labelend)
+        # Done
+        label_codegen!(ctx, labelend)
     else
         error("Invalid statement kind $(stmt.kind)")
     end
@@ -163,7 +160,7 @@ function exp_codegen!(ctx, exp)
         ctx_freescratch!(ctx, r.reg)
         exp.reg = l.reg
     elseif exp.kind == k_exp_set
-        l, r = exp.data
+        l, r = exp.left, exp.right
 
         @assert l.sym != nothing "Can't assign an rvalue"
 

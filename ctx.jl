@@ -115,12 +115,12 @@ function regstr(reg::Reg)
 end
 
 # --- Labels ---
-function labelstr(ctx, label::Int)
+function labelstr(label::Int)
     return ".L$label"
 end
 
 function ctx_newlabel!(ctx)
-    ctx.n_label += 1
+    ctx.n_labels += 1
 
-    return ctx.label
+    return ctx.n_labels
 end
