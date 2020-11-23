@@ -68,13 +68,12 @@ TODO : Booleans (either create new expression / modify AST within exp_resolve!)
 # Test #3 : Loop
 """
 main()
-    -> for (let i = 1; i <= 42; i = i + 2)
+    -> for (let i = 1; i <= 42; i = i * 2)
         let a = 2;
 """
-# TODO : mul
 init = stmt_newdecl(decl_newint("i", exp_newint(1)))
 condition = exp_newtest(exp_newid("i"), "<=", exp_newint(42))
-iter = stmt_newexp(exp_newset(exp_newid("i"), exp_newadd(exp_newid("i"), exp_newint(2))))
+iter = stmt_newexp(exp_newset(exp_newid("i"), exp_newmul(exp_newid("i"), exp_newint(2))))
 let_a = stmt_newdecl(decl_newint("a", exp_newint(2)))
 
 main_body = stmt_newloop(init, condition, iter, let_a)
