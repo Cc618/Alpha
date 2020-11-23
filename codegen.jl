@@ -66,7 +66,6 @@ function decl_codegen!(ctx::Ctx, decl::Decl)
     end
 end
 
-# TODO tmp : func name
 function stmt_codegen!(ctx, stmt)
     if stmt == nothing
         return
@@ -113,6 +112,30 @@ function stmt_codegen!(ctx, stmt)
 
         # Done
         label_codegen!(ctx, labelend)
+    elseif stmt.kind == k_stmt_loop
+        label_start = ctx_newlabel!(ctx)
+        label_end = ctx_newlabel!(ctx)
+
+        init, condition, iter, body = stmt.initbody, stmt.exp, stmt.iterbody, stmt.loopbody
+
+        # Init
+        stmt_codegen!(ctx, init)
+        label_codegen!(ctx, label_start)
+
+        # Test condition
+        exp_codegen!(ctx, condition)
+        ctx_push!(ctx, "test $(regstr(condition.reg))")
+        ctx_freescratch!(ctx, condition.reg)
+        ctx_push!(ctx, "jne $(labelstr(label_end))")
+
+        # Body
+        stmt_codegen!(ctx, body)
+
+        # Iter
+        stmt_codegen!(ctx, iter)
+        ctx_push!(ctx, "jmp $(labelstr(label_start))")
+
+        label_codegen!(ctx, label_end)
     else
         error("Invalid statement kind $(stmt.kind)")
     end
@@ -171,6 +194,33 @@ function exp_codegen!(ctx, exp)
 
         # l = r
         ctx_push!(ctx, "mov $lsym, $(regstr(r.reg))")
+
+        ctx_freescratch!(ctx, r.reg)
+        exp.reg = l.reg
+    elseif exp.kind == k_exp_test
+        l, r = exp.left, exp.right
+
+        exp_codegen!(ctx, l)
+        exp_codegen!(ctx, r)
+
+        jmp_condition = test_operators[exp.operator]
+        label_true = ctx_newlabel!(ctx)
+        label_done = ctx_newlabel!(ctx)
+
+        # If true, jmp to label_true
+        ctx_push!(ctx, "cmp $(regstr(l.reg)), $(regstr(r.reg))")
+        ctx_push!(ctx, "$(jmp_condition) $(labelstr(label_true))")
+
+        # False
+        ctx_push!(ctx, "mov $(l.reg), 0")
+        ctx_push!(ctx, "jmp $(labelstr(label_done))")
+
+        # True
+        label_codegen!(ctx, label_true)
+        ctx_push!(ctx, "mov $(l.reg), 1")
+
+        # End
+        label_codegen!(ctx, label_done)
 
         ctx_freescratch!(ctx, r.reg)
         exp.reg = l.reg

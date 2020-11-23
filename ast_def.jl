@@ -8,8 +8,8 @@
 # --- Types ---
 @enum TypeKind k_int_t k_void_t k_proc_t k_fn_t
 @enum SymKind k_sym_local k_sym_arg k_sym_global
-@enum StmtKind k_stmt_block k_stmt_exp k_stmt_decl k_stmt_return k_stmt_ifelse
-@enum ExpKind k_exp_add k_exp_mul k_exp_id k_exp_int k_exp_set
+@enum StmtKind k_stmt_block k_stmt_exp k_stmt_decl k_stmt_return k_stmt_ifelse k_stmt_loop
+@enum ExpKind k_exp_add k_exp_mul k_exp_id k_exp_int k_exp_set k_exp_test
 
 # Declaration
 mutable struct Decl
@@ -29,13 +29,17 @@ mutable struct Stmt
     kind
     # stmt_block
     stmts
-    # stmt_exp stmt_return stmt_ifelse.condition
+    # stmt_exp stmt_return stmt_ifelse.condition stmt_loop.condition
     exp
     # stmt_decl
     decl
     # stmt_ifelse
     ifbody
     elsebody
+    # stmt_loop
+    initbody
+    iterbody
+    loopbody
 end
 
 # Expression
@@ -49,6 +53,8 @@ mutable struct Exp
     value
     # exp_id
     id
+    # exp_test
+    operator
     # For semantic analysis
     sym
     # For code gen
@@ -85,6 +91,15 @@ mutable struct Arg
     id
 end
 
+test_operators = Dict(
+        ">" => "jg",
+        ">=" => "jge",
+        "<" => "jl",
+        "<=" => "jle",
+        "==" => "je",
+        "!=" => "jne",
+    )
+
 # --- Constructors ---
 function decl_new(type::DeclType, id::String; value = nothing,
         body = nothing)
@@ -92,14 +107,16 @@ function decl_new(type::DeclType, id::String; value = nothing,
 end
 
 function stmt_new(kind::StmtKind; stmts = nothing, exp = nothing,
-        decl = nothing, ifbody = nothing, elsebody = nothing)
-    return Stmt(kind, stmts, exp, decl, ifbody, elsebody)
+        decl = nothing, ifbody = nothing, elsebody = nothing,
+        initbody = nothing, iterbody = nothing, loopbody = nothing)
+    return Stmt(kind, stmts, exp, decl, ifbody, elsebody,
+            initbody, iterbody, loopbody)
 end
 
 function exp_new(kind::ExpKind; type = nothing, left = nothing,
-        right = nothing, value = nothing, id = nothing,
+        right = nothing, value = nothing, id = nothing, operator=nothing,
         sym = nothing, register = nothing)
-    return Exp(kind, type, left, right, value, id, sym, register)
+    return Exp(kind, type, left, right, value, id, operator, sym, register)
 end
 
 function sym_new(kind::SymKind, type::DeclType, id::String, position = 0)

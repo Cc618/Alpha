@@ -18,11 +18,6 @@ end
 
 # Semantic analysis for a declaration
 function decl_resolve!(ctx, decl, pushsym=true)
-    # Declare this symbol to the inner scope
-    if pushsym
-        decl.sym = ctx_newsymlocal!(ctx, decl)
-    end
-
     if decl.type.kind == k_proc_t || decl.type.kind == k_fn_t
         # TODO : Error
         @assert length(ctx.scopes) == 1 "Can't declare functions in a local scope"
@@ -43,6 +38,11 @@ function decl_resolve!(ctx, decl, pushsym=true)
     else
         # TODO : Custom error
         error("Unsupported type '$(decl.type)' for declaration")
+    end
+
+    # Declare this symbol to the inner scope
+    if pushsym
+        decl.sym = ctx_newsymlocal!(ctx, decl)
     end
 end
 
@@ -73,6 +73,18 @@ function stmt_resolve!(ctx, stmt)
         exp_resolve!(ctx, stmt.exp)
         stmt_resolve!(ctx, stmt.ifbody)
         stmt_resolve!(ctx, stmt.elsebody)
+
+        # TODO : Error
+        @assert stmt.exp.type.kind == k_int_t "Invalid condition expression"
+    elseif stmt.kind == k_stmt_loop
+        ctx_pushscope!(ctx)
+
+        stmt_resolve!(ctx, stmt.initbody)
+        exp_resolve!(ctx, stmt.exp)
+        stmt_resolve!(ctx, stmt.iterbody)
+        stmt_resolve!(ctx, stmt.loopbody)
+
+        ctx_popscope!(ctx)
 
         # TODO : Error
         @assert stmt.exp.type.kind == k_int_t "Invalid condition expression"
@@ -119,5 +131,7 @@ function exp_resolve!(ctx, exp)
     elseif exp.kind == k_exp_set
         # TODO : Error
         @assert exp.left.sym != nothing "Can't assign an rvalue"
+    elseif exp.kind == k_exp_test
+        @assert haskey(test_operators, exp.operator) "Invalid conditional operator $(exp.operator)"
     end
 end
