@@ -224,6 +224,29 @@ function exp_codegen!(ctx, exp)
 
         ctx_freescratch!(ctx, r.reg)
         exp.reg = l.reg
+    elseif exp.kind == k_exp_call
+        for (i, arg) in enumerate(exp.args)
+            exp_codegen!(ctx, arg)
+
+            # Push the arg reg and mov the result in it
+            argreg = arg_regs[i]
+            ctx_push!(ctx, "push $(regstr(argreg))")
+            ctx_push!(ctx, "mov $(regstr(argreg)), $(regstr(arg.reg))")
+
+            ctx_freescratch!(ctx, arg.reg)
+        end
+
+        # Call
+        ctx_push!(ctx, "call $(exp.id)")
+
+        # Save return
+        exp.reg = ctx_newscratch!(ctx)
+        ctx_push!(ctx, "mov $(exp.reg), rax")
+
+        # Pop arg regs
+        for i in length(exp.args):-1:1
+            ctx_push!(ctx, "pop $(regstr(arg_regs[i]))")
+        end
     else
         error("Invalid expession kind $(exp.kind)")
     end

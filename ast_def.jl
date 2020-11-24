@@ -9,7 +9,7 @@
 @enum TypeKind k_int_t k_void_t k_proc_t k_fn_t
 @enum SymKind k_sym_local k_sym_arg k_sym_global
 @enum StmtKind k_stmt_block k_stmt_exp k_stmt_decl k_stmt_return k_stmt_ifelse k_stmt_loop
-@enum ExpKind k_exp_add k_exp_mul k_exp_id k_exp_int k_exp_set k_exp_test
+@enum ExpKind k_exp_add k_exp_mul k_exp_id k_exp_int k_exp_set k_exp_test k_exp_call
 
 # Declaration
 mutable struct Decl
@@ -51,8 +51,10 @@ mutable struct Exp
     right
     # Literals
     value
-    # exp_id
+    # exp_id exp_call
     id
+    # exp_call
+    args
     # exp_test
     operator
     # For semantic analysis
@@ -114,9 +116,9 @@ function stmt_new(kind::StmtKind; stmts = nothing, exp = nothing,
 end
 
 function exp_new(kind::ExpKind; type = nothing, left = nothing,
-        right = nothing, value = nothing, id = nothing, operator=nothing,
-        sym = nothing, register = nothing)
-    return Exp(kind, type, left, right, value, id, operator, sym, register)
+        right = nothing, value = nothing, id = nothing, args = nothing,
+        operator=nothing, sym = nothing, register = nothing)
+    return Exp(kind, type, left, right, value, id, args, operator, sym, register)
 end
 
 function sym_new(kind::SymKind, type::DeclType, id::String, position = 0)

@@ -18,6 +18,7 @@ exp_newadd(left, right) = exp_new(k_exp_add, left=left, right=right)
 exp_newmul(left, right) = exp_new(k_exp_mul, left=left, right=right)
 exp_newset(left, right) = exp_new(k_exp_set, left=left, right=right)
 exp_newtest(left, operator, right) = exp_new(k_exp_test, left=left, right=right, operator=operator)
+exp_newcall(fun_id, args::Array{Exp}) = exp_new(k_exp_call, id=fun_id, args=args)
 
 # --- DeclType ---
 # proc doesn't return

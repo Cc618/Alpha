@@ -19,6 +19,16 @@ function ctx_fetchscope(ctx, id)
     return nothing
 end
 
+# Fetches a global symbol
+# Might return nothing
+function ctx_fetchglobal(ctx, id)
+    if haskey(ctx.scopes[1].syms, id)
+        return ctx.scopes[1].syms[id]
+    end
+
+    return nothing
+end
+
 # --- Symbols ---
 function ctx_newsymlocal!(ctx::Ctx, decl::Decl)
     type = decl.type
@@ -49,7 +59,7 @@ function ctx_newsymarg!(ctx::Ctx, type::DeclType, id::String, position::Int)
     sym = sym_new(k_sym_arg, type, id, position)
 
     # TODO : Error
-    @assert !haskey(scope.syms, id) "Declaration named '$id' already declared"
+    @assert !haskey(scope.syms, id) "Argument named '$id' already declared"
 
     scope.syms[id] = sym
 end
@@ -77,6 +87,8 @@ arg_regs = [
         si,
         dx,
         cx,
+        r8,
+        r9
     ]
 
 # Allocates a new scratch register

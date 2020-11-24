@@ -131,6 +131,22 @@ function exp_resolve!(ctx, exp)
     elseif exp.kind == k_exp_set
         # TODO : Error
         @assert exp.left.sym != nothing "Can't assign an rvalue"
+    elseif exp.kind == k_exp_call
+        # Check args
+        for (i, arg) in enumerate(exp.args)
+            exp_resolve!(ctx, arg)
+
+            # TODO : Error
+            @assert arg.type.kind == k_int_t "Invalid arg #$(i + 1) type, must be int"
+        end
+
+        exp.type = t_int
+        fun = ctx_fetchglobal(ctx, exp.id)
+
+        # TODO : Error
+        @assert fun.type.kind == k_fn_t "Invalid type for symbol $(exp.id), must be int function"
+        @assert length(fun.type.args) == length(exp.args)
+                "Invalid number of arguments to call $(fun.id), $(length(fun.type.args)) args required"
     elseif exp.kind == k_exp_test
         @assert haskey(test_operators, exp.operator) "Invalid conditional operator $(exp.operator)"
     end
