@@ -345,6 +345,50 @@ function first_sets(tokens, prods)
     return first
 end
 
+function follow_sets(tokens, prods, first)
+    follow = Dict()
+    end_tok = tok_new("\$", terminal=true)
+    follow[prods[begin].left] = Set([end_tok])
+
+    changes = true
+    while changes
+        changes = false
+
+        for p in prods
+            for i in 1:length(p.right)
+                tok = p.right[i]
+                if !haskey(follow, tok)
+                    follow[tok] = Set()
+                end
+
+                set = follow[tok]
+                old_len = length(set)
+
+                if i == length(p.right)
+                    # Merge follow of the left token
+                    if haskey(follow, p.left)
+                        union!(set, follow[p.left])
+                    end
+                elseif p.right[i + 1].terminal
+                    # Add this terminal to follow
+                    push!(set, p.right[i + 1])
+                else
+                    # Merge first of the next token
+                    if haskey(first, p.right[i + 1])
+                        union!(set, first[p.right[i + 1]])
+                    end
+                end
+
+                if old_len != length(set)
+                    changes = true
+                end
+            end
+        end
+    end
+
+    return follow
+end
+
 # --- Main ---
 t_a = tok_new("A")
 t_e = tok_new("E")
@@ -374,7 +418,7 @@ tokens = [
     t_end,
    ]
 
-# TODO : Set ?
+# TODO : Verify no set used
 prods = [
         # prod_new(t_a, [t_e]),
         # prod_new(t_e, [t_n]),
@@ -399,19 +443,6 @@ prods = [
 prods[1].init = true
 
 
-# col = Dict()
-# col[t_a] = 1
-# col[deepcopy(t_a)] = 2
-# println(haskey(col, deepcopy(t_a)), col)
-# exit()
-
-first = first_sets(tokens, prods)
-for (k, v) in first
-    println("$k => $v")
-end
-exit()
-
-
 
 states = slr_graph(prods)
 
@@ -424,6 +455,21 @@ println(states[1])
 #     println("* State #$(s.id)")
 #     println(s)
 # end
+
+# First / follow
+first = first_sets(tokens, prods)
+follow = follow_sets(tokens, prods, first)
+
+println("> First :")
+for (k, v) in first
+    println("$k => $v")
+end
+
+println("> Follow :")
+for (k, v) in follow
+    println("$k => $v")
+end
+
 
 # Print table
 printtable(table, tokens)
