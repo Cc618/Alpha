@@ -178,7 +178,9 @@ function slr_graph(prods)
 end
 
 # Action is one of Sn, Rn, acc, nothing
-function slr_table(states, tokens, prods)
+function slr_table(states, tokens, prods, follow)
+    # TODO : Only one root production
+
     # table[state][tok] = action
     table = Matrix{Any}(nothing, length(states), length(tokens))
 
@@ -231,6 +233,7 @@ function slr_table(states, tokens, prods)
 end
 
 # --- Parser Runtime ---
+# Parses tokens
 function parse(table, tokens, prods, tok2index)
     stack = Array{Any}([1])
     while true
@@ -245,9 +248,17 @@ function parse(table, tokens, prods, tok2index)
             # TODO : Location
             error("Syntax error")
         elseif action == "acc"
-            # TODO : Last rule not executed
+            @assert length(tokens) == 1 "Unexpected end of file"
+
+            # Reduce using the first rule
+            right = stack[2:2:end]
+            rule = prods[begin]
+
+            new_tok = deepcopy(rule.left)
+            new_tok.data = rule.produce(right...)
+
             # Return the root of the ast
-            return stack[2]
+            return new_tok
         elseif action[1] == 'R'
             # Reduce
             i = Base.parse(Int, action[2:end])
@@ -269,8 +280,8 @@ function parse(table, tokens, prods, tok2index)
             new_state = Base.parse(Int, goto[2:end])
 
             # TODO : Location
+            # TODO : Update
             new_tok = deepcopy(rule.left)
-            # println("$(rule.left) -> $(right) : $(right[begin].data) => $(rule.produce(right...))")
             new_tok.data = rule.produce(right...)
 
             push!(stack, new_tok)
@@ -321,7 +332,7 @@ function _first!(token, prods, first)
             if p.left == token
                 # TODO : Epsilon
                 # TODO : Verify
-                tok = p.right[begin]
+                tok = p.right[1]
                 if tok != token
                     union!(set, _first!(tok, prods, first))
                 end
@@ -345,6 +356,7 @@ function first_sets(tokens, prods)
     return first
 end
 
+# TODO : Epsilon
 function follow_sets(tokens, prods, first)
     follow = Dict()
     end_tok = tok_new("\$", terminal=true)
@@ -442,11 +454,23 @@ prods = [
 
 prods[1].init = true
 
+# First / follow
+first = first_sets(tokens, prods)
+follow = follow_sets(tokens, prods, first)
 
+# println("> First :")
+# for (k, v) in first
+#     println("$k => $v")
+# end
+
+# println("> Follow :")
+# for (k, v) in follow
+#     println("$k => $v")
+# end
 
 states = slr_graph(prods)
 
-table = slr_table(states, tokens, prods)
+table = slr_table(states, tokens, prods, follow)
 
 # Print states
 println("# $(length(states)) states")
@@ -455,21 +479,6 @@ println(states[1])
 #     println("* State #$(s.id)")
 #     println(s)
 # end
-
-# First / follow
-first = first_sets(tokens, prods)
-follow = follow_sets(tokens, prods, first)
-
-println("> First :")
-for (k, v) in first
-    println("$k => $v")
-end
-
-println("> Follow :")
-for (k, v) in follow
-    println("$k => $v")
-end
-
 
 # Print table
 printtable(table, tokens)
@@ -486,9 +495,9 @@ function nb(val)
     return t
 end
 
-source = [nb(6), t_plus, nb(3)]
+source = [nb(6), t_plus, nb(3), t_times, nb(2)]
 push!(source, t_end)
 root = parse(table, source, prods, tok2index)
 
 println()
-println("Result : $(root.data)")
+println("Result : $(root.data) (token $root)")
