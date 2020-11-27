@@ -205,7 +205,9 @@ function slr_table(states, tokens, prods, follow)
         # Reduce
         for p in s.prods
             if p.pos == length(p.right) + 1
-                for toki in 1:length(tokens)
+                # Set reduce action for all tokens in follow(left of production)
+                for reduce_tok in follow[p.left]
+                    toki = tok2index[reduce_tok]
                     if table[s.id, toki] != nothing && length(table[s.id, toki]) > 0 && table[s.id, toki][1] == 'R'
                         println("--- Error Info ---")
                         println(s)
