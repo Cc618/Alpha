@@ -55,6 +55,14 @@ Base.isequal(a::Prod, b::Prod) =
     all([isequal(u, v) for (u, v) in zip(a.right, b.right)]) &&
     isequal(a.pos, b.pos)
 
+function Base.show(io::IO, p::Prod)
+    r = [t.id for t in p.right]
+    insert!(r, p.pos, ".")
+    str = "$(p.left.id) ->" * reduce((a, b) -> "$a $b", r, init="")
+
+    Base.print(io, str)
+end
+
 function state_new(prods)
     global state_id
 
@@ -66,10 +74,7 @@ state_eq_shallow(a, b) = issetequal(a.prods, b.prods)
 
 function Base.show(io::IO, s::State)
     for p in s.prods
-        r = [t.id for t in p.right]
-        insert!(r, p.pos, ".")
-        str = "$(p.left.id) ->" * reduce((a, b) -> "$a $b", r, init="")
-        Base.println(io, str)
+        Base.println(io, p)
     end
 
     for (k, v) in s.transitions
@@ -179,8 +184,6 @@ end
 
 # Action is one of Sn, Rn, acc, nothing
 function slr_table(states, tokens, prods, follow)
-    # TODO : Only one root production
-
     # table[state][tok] = action
     table = Matrix{Any}(nothing, length(states), length(tokens))
 
@@ -403,19 +406,44 @@ function follow_sets(tokens, prods, first)
     return follow
 end
 
+function setup!(prods, tokens)
+    # Tokens
+    @assert length(tokens) >= 1 "No tokens"
+
+    end_tok = tok_new("\$", terminal=true)
+    push!(tokens, end_tok)
+
+    @assert length(unique(tokens)) == length(tokens) "Duplicate tokens or \$ (end) token declared manually"
+
+    # Productions
+    @assert length(prods) >= 1 "No productions"
+
+    root_tok = prods[begin].left
+
+    @assert all(p -> p.left != root_tok, prods[2:end]) "There must be only one rule to produce the root token ($root_tok)"
+    prods[begin].init = true
+
+    for (i, p) in enumerate(prods)
+        @assert p.left in tokens "Left token ($(p.left)) not declared for production #$i ($p)"
+
+        for (ti, tok) in enumerate(p.right)
+            @assert tok in tokens "Right token #$ti ($tok) not declared for production #$i ($p)"
+        end
+    end
+end
+
 # --- Main ---
 t_a = tok_new("A")
 t_e = tok_new("E")
 t_f = tok_new("F")
-t_p = tok_new("P")
+# t_p = tok_new("P")
 t_t = tok_new("T")
 t_n = tok_new("n", terminal=true)
 t_lp = tok_new("(", terminal=true)
 t_rp = tok_new(")", terminal=true)
-t_i = tok_new("i", terminal=true)
+# t_i = tok_new("i", terminal=true)
 t_plus = tok_new("+", terminal=true)
 t_times = tok_new("*", terminal=true)
-t_end = tok_new("\$", terminal=true)
 
 tokens = [
     t_a,
@@ -429,7 +457,6 @@ tokens = [
     # t_i,
     t_plus,
     t_times,
-    t_end,
    ]
 
 # TODO : Verify no set used
@@ -454,7 +481,8 @@ prods = [
         prod_new(t_f, [t_n], (val) -> val.data),
     ]
 
-prods[1].init = true
+# Setup and verify everything
+setup!(prods, tokens)
 
 # First / follow
 first = first_sets(tokens, prods)
@@ -498,7 +526,7 @@ function nb(val)
 end
 
 source = [nb(6), t_plus, nb(3), t_times, nb(2)]
-push!(source, t_end)
+push!(source, tok_new("\$", terminal=true))
 root = parse(table, source, prods, tok2index)
 
 println()
