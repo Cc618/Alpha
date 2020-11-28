@@ -430,13 +430,13 @@ prods = [
     ]
 
 produce_rules = [
-        "(val) -> val.data",
-        "(a, _, b) -> a.data + b.data",
-        "(val) -> val.data",
-        "(a, _, b) -> a.data * b.data",
-        "(val) -> val.data",
-        "(_, val, _) -> val.data",
-        "(val) -> val.data",
+        "(val) -> val",
+        "(a, _, b) -> a + b",
+        "(val) -> val",
+        "(a, _, b) -> a * b",
+        "(val) -> val",
+        "(_, val, _) -> val",
+        "(val) -> val",
     ]
 
 generate_parser(tokens, prods, produce_rules, "parser.yy.jl")

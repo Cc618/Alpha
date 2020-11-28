@@ -29,8 +29,8 @@ prod_new(left::Tok, right::Array{Tok}; pos = 1, init = false) = Prod(left, right
 function Base.hash(a::Prod)
     h = hash(a.left)
     h ⊻= hash(a.pos)
-    for r in a.right
-        h ⊻= hash(r)
+    for (i, r) in enumerate(a.right)
+        h ⊻= hash(r) + i
     end
 
     return h

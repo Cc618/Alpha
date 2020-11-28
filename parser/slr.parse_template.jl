@@ -25,6 +25,7 @@ function _parse(table, tokens, prods, tok2index, produce_rules)
             rule = prods[begin]
 
             new_tok = deepcopy(rule.left)
+            right = [r.data for r in right]
             new_tok.data = produce_rules[begin](right...)
 
             # Return the root of the ast
@@ -50,10 +51,8 @@ function _parse(table, tokens, prods, tok2index, produce_rules)
             new_state = Base.parse(Int, goto[2:end])
 
             # TODO : Location
-            # TODO : Update
             new_tok = deepcopy(rule.left)
-            # new_tok.data = rule.produce(right...)
-            # TODO : Right is only Tok.data
+            right = [r.data for r in right]
             new_tok.data = produce_rules[i](right...)
 
             push!(stack, new_tok)
