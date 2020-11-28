@@ -187,72 +187,6 @@ function slr_table(states, tokens, prods, follow)
     return table
 end
 
-# --- Parser Runtime ---
-# Parses tokens
-function _parse(table, tokens, prods, tok2index)
-    stack = Array{Any}([1])
-    while true
-        @assert length(stack) > 0 && length(tokens) > 0 "Unexpected end of file"
-
-        state = stack[end]
-        token = tokens[1]
-        # println(tokens[1].data)
-        action = table[state, tok2index[token]]
-
-        if action == nothing
-            # TODO : Location
-            error("Syntax error")
-        elseif action == "acc"
-            @assert length(tokens) == 1 "Unexpected end of file"
-
-            # Reduce using the first rule
-            right = stack[2:2:end]
-            rule = prods[begin]
-
-            new_tok = deepcopy(rule.left)
-            new_tok.data = rule.produce(right...)
-
-            # Return the root of the ast
-            return new_tok
-        elseif action[1] == 'R'
-            # Reduce
-            i = Base.parse(Int, action[2:end])
-            rule = prods[i]
-
-            # Pop right
-            right = stack[length(stack) - length(rule.right) * 2 + 1:2:length(stack)]
-            splice!(stack, length(stack) - length(rule.right) * 2 + 1:length(stack))
-
-            # State when we start to produce this token
-            old_state = stack[end]
-
-            # Push left
-            idx = tok2index[rule.left]
-
-            goto = table[old_state, idx]
-            @assert goto != nothing && goto[1] == 'S' "Can't go to new state after using rule #$i (producing $(rule.left) with $(rule.right))"
-
-            new_state = Base.parse(Int, goto[2:end])
-
-            # TODO : Location
-            # TODO : Update
-            new_tok = deepcopy(rule.left)
-            new_tok.data = rule.produce(right...)
-
-            push!(stack, new_tok)
-            push!(stack, new_state)
-        elseif action[1] == 'S'
-            # Shift
-            next_state = Base.parse(Int, action[2:end])
-
-            # Accept the token, push it on the stack and the new state
-            popfirst!(tokens)
-            push!(stack, token)
-            push!(stack, next_state)
-        end
-    end
-end
-
 function printtable(table, tokens)
     for row in 0:size(table, 1)
         for col in 0:size(table, 2)
@@ -383,7 +317,7 @@ function setup!(tokens, prods)
 end
 
 # Main function
-function generate_parser(tokens, prods, file)
+function generate_parser(tokens, prods, produce_rules, file)
     # Setup and verify everything
     setup!(tokens, prods)
 
@@ -404,11 +338,8 @@ function generate_parser(tokens, prods, file)
     # Def table
     src_table = "table = $table"
     src_tokens = "tokens = $tokens"
-
-    # TODO : Change produce rules
-    # TODO : Create a separate array with all produce rules ?
-    for p in prods p.produce = nothing end
     src_prods = "prods = $prods"
+    src_produce_rules = "produce_rules = [$(join(produce_rules, ", "))]"
 
     # Parse functions
     src_parse = read("slr.parse_template.jl", String)
@@ -419,7 +350,10 @@ function generate_parser(tokens, prods, file)
             src_table,
             src_tokens,
             src_prods,
+            src_produce_rules,
             src_parse,
+            # TODO
+            """print(parse([Tok("n", true, 6), Tok("+", true, nothing), Tok("n", true, 4), Tok("\\\$", true, nothing)]))"""
         ]
 
     open(file, "w") do io
@@ -429,8 +363,6 @@ function generate_parser(tokens, prods, file)
     return
 
     # TODO : rm
-
-    # TODO : print(parse([Tok("n", true, 6), Tok("+", true, nothing), Tok("n", true, 4), Tok("\$", true, nothing)]))
 
     # Print states
     println("# $(length(states)) states")
@@ -488,13 +420,23 @@ tokens = [
 
 # TODO : Verify no set used
 prods = [
-        prod_new(t_a, [t_e], (val) -> val.data),
-        prod_new(t_e, [t_e, t_plus, t_t], (a, _, b) -> a.data + b.data),
-        prod_new(t_e, [t_t], (val) -> val.data),
-        prod_new(t_t, [t_t, t_times, t_f], (a, _, b) -> a.data * b.data),
-        prod_new(t_t, [t_f], (val) -> val.data),
-        prod_new(t_f, [t_lp, t_e, t_rp], (_, val, _) -> val.data),
-        prod_new(t_f, [t_n], (val) -> val.data),
+        prod_new(t_a, [t_e]),
+        prod_new(t_e, [t_e, t_plus, t_t]),
+        prod_new(t_e, [t_t]),
+        prod_new(t_t, [t_t, t_times, t_f]),
+        prod_new(t_t, [t_f]),
+        prod_new(t_f, [t_lp, t_e, t_rp]),
+        prod_new(t_f, [t_n]),
     ]
 
-generate_parser(tokens, prods, "parser.yy.jl")
+produce_rules = [
+        "(val) -> val.data",
+        "(a, _, b) -> a.data + b.data",
+        "(val) -> val.data",
+        "(a, _, b) -> a.data * b.data",
+        "(val) -> val.data",
+        "(_, val, _) -> val.data",
+        "(val) -> val.data",
+    ]
+
+generate_parser(tokens, prods, produce_rules, "parser.yy.jl")

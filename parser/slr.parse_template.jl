@@ -4,7 +4,7 @@ for (i, t) in enumerate(tokens)
     tok2index[t] = i
 end
 
-function _parse(table, tokens, prods, tok2index)
+function _parse(table, tokens, prods, tok2index, produce_rules)
     stack = Array{Any}([1])
     while true
         @assert length(stack) > 0 && length(tokens) > 0 "Unexpected end of file"
@@ -25,10 +25,10 @@ function _parse(table, tokens, prods, tok2index)
             rule = prods[begin]
 
             new_tok = deepcopy(rule.left)
-            new_tok.data = rule.produce(right...)
+            new_tok.data = produce_rules[begin](right...)
 
             # Return the root of the ast
-            return new_tok
+            return new_tok.data
         elseif action[1] == 'R'
             # Reduce
             i = Base.parse(Int, action[2:end])
@@ -52,7 +52,9 @@ function _parse(table, tokens, prods, tok2index)
             # TODO : Location
             # TODO : Update
             new_tok = deepcopy(rule.left)
-            new_tok.data = rule.produce(right...)
+            # new_tok.data = rule.produce(right...)
+            # TODO : Right is only Tok.data
+            new_tok.data = produce_rules[i](right...)
 
             push!(stack, new_tok)
             push!(stack, new_state)
@@ -72,6 +74,7 @@ function parse(tokens)
     global tok2index
     global prods
     global table
+    global produce_rules
 
-    return _parse(table, tokens, prods, tok2index)
+    return _parse(table, tokens, prods, tok2index, produce_rules)
 end

@@ -8,7 +8,6 @@ end
 mutable struct Prod
     left
     right
-    produce
     pos
     init
 end
@@ -25,8 +24,7 @@ Base.hash(a::Tok) = hash(a.id)
 Base.isequal(a::Tok, b::Tok) = a.id == b.id
 Base.print(io::IO, t::Tok) = print(io, t.id)
 
-# produce is a lambda : produce(right...) -> left
-prod_new(left::Tok, right::Array{Tok}, produce; pos = 1, init = false) = Prod(left, right, produce, pos, init)
+prod_new(left::Tok, right::Array{Tok}; pos = 1, init = false) = Prod(left, right, pos, init)
 
 function Base.hash(a::Prod)
     h = hash(a.left)
