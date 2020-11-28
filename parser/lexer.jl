@@ -2,6 +2,11 @@
 # Every public variable starts with l
 
 # --- Def ---
+mutable struct LCtx
+    state_id
+    states
+end
+
 mutable struct LState
     id
     # Associates a token or epsilon to a state
@@ -10,12 +15,13 @@ mutable struct LState
     terminal
 end
 
-lstate_id = 0
+lctx_new() = LCtx(0, [])
 
-function lstate_new(; transitions = [], terminal = false)
-    global lstate_id
+function lstate_new!(ctx; transitions = [], terminal = false)
+    s = LState(ctx.state_id += 1, transitions, terminal)
+    push!(ctx.states, s)
 
-    LState(lstate_id += 1, transitions, terminal)
+    return s
 end
 
 # Links a to b by the token tok (can be empty)
@@ -37,12 +43,12 @@ function Base.print(io::IO, s::LState)
 end
 
 # --- Functions ---
-lend() = lstate_new(terminal=true)
+lend!(ctx) = lstate_new!(ctx, terminal=true)
 
 # One token
-function ltok(tok)
-    start = lstate_new()
-    stop = lstate_new()
+function ltok!(ctx, tok)
+    start = lstate_new!(ctx)
+    stop = lstate_new!(ctx)
 
     lstate_link!(start, tok, stop)
 
@@ -56,17 +62,65 @@ function llink!(states...)
     end
 end
 
+# Solves all epsilon closures for all states
+# reachable from this state
+# function epsclosure!(ctx, state, closures)
+#     if closures[state.id] != nothing
+#         return closures[state.id]
+#     end
+
+#     clos = Set()
+#     for (tok, next_state) in state.transitions
+#         if next_state != state
+#             union!(clos, epsclosure!(ctx, next_state, closures))
+#         end
+#     end
+# end
+
+function determinize!(ctx)
+    # Epsilon closures
+    closures = [[] for _ in 1:length(ctx.states)]
+
+    for (i, s) in enumerate(ctx.states)
+        # Bfs
+        visited = Set([s])
+        q = [s]
+        while length(q) > 0
+            state = popfirst!(q)
+            push!(closures[i], state.id)
+
+            for (tok, next_state) in state.transitions
+                # Epsilon
+                if next_state ∉ visited && tok == ""
+                    push!(q, next_state)
+                    push!(visited, next_state)
+                end
+            end
+        end
+
+        println(closures[i])
+    end
+end
+
 # --- Main ---
-sinit = lstate_new()
-sa = ltok("a")
-sb = ltok("b")
-sc = ltok("c")
-send = lend()
+ctx = lctx_new()
+sinit = lstate_new!(ctx)
+# sa = ltok!(ctx, "a")
+# sb = ltok!(ctx, "b")
+# sc = ltok!(ctx, "c")
+sa = lstate_new!(ctx)
+sb = lstate_new!(ctx)
+# sc = lstate_new!(ctx)
+lstate_link!(sa, "A", sb)
+send = lend!(ctx)
 
-llink!(sinit, sa, sb, sc, send)
+llink!(sinit, sa)
+llink!(sb, send)
+llink!(send, sa)
+llink!(sa, send)
 
-println(sinit)
-println(sa)
-println(sb)
-println(sc)
-println(send)
+determinize!(ctx)
+
+for s in ctx.states
+    println(s)
+end
