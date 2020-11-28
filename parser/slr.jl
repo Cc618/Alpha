@@ -153,8 +153,6 @@ function slr_table(states, tokens, prods, follow)
             table[s.id, tok2index[tok]] = "S$(next_state.id)"
         end
 
-        # TODO : Reduce conflict
-        # TODO : First / follow
         # Reduce
         for p in s.prods
             if p.pos == length(p.right) + 1
@@ -220,7 +218,6 @@ function _first!(token, prods, first)
         for p in prods
             if p.left == token
                 # TODO : Epsilon
-                # TODO : Verify
                 tok = p.right[1]
                 if tok != token
                     union!(set, _first!(tok, prods, first))
