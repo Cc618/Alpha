@@ -132,7 +132,6 @@ function determinize!(ctx)
                     continue
                 end
 
-                # TODO : Can have multiple transitions same token
                 next_state_closure = closures[next_state.id]
 
                 if !haskey(transitions, tok)
