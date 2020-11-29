@@ -16,6 +16,12 @@ mutable struct LState
     terminal
 end
 
+mutable struct LTable
+    actions
+    terminal_states
+    tok2index
+end
+
 lctx_new() = LCtx(0, [])
 
 function lstate_new!(ctx; transitions = [], terminal = false)
@@ -45,6 +51,8 @@ function Base.print(io::IO, s::LState)
 
     print(io, ")")
 end
+
+ltable_new(action, terminal_states, tok2index) = LTable(action, terminal_states, tok2index)
 
 # --- Functions ---
 lend!(ctx) = lstate_new!(ctx, terminal=true)
@@ -178,16 +186,45 @@ function determinize!(ctx)
     ctx.states = states
 end
 
-function maketable(ctx, tok2index)
-    table = Matrix{Any}(nothing, length(ctx.states), length(tok2index))
+# tok2index maps a token (character) to an index, returns nothing if invalid token
+function maketable(ctx, tok2index, ntoks)
+    actions = Matrix{Any}(nothing, length(ctx.states), ntoks)
 
     for state in ctx.states
         for (tok, nstate) in state.transitions
-            table[state.id, tok2index[tok]] = nstate
+            @assert isa(tok, String) && length(tok) == 1 "Tokens must be strings containing 1 character"
+
+            t = tok2index(tok[1])
+
+            # TODO : Debug position
+            @assert t != nothing "Invalid character '$tok'"
+
+            actions[state.id, t] = nstate
         end
     end
 
-    return table
+    terminal_states = [s.terminal for s in ctx.states]
+
+    return ltable_new(actions, terminal_states, tok2index)
+end
+
+# Parses str with table from index i
+# Returns (accepted, end_index)
+function parse(table, str, i)
+    state = 1
+    while i <= length(str)
+        tok = tok2index(str[i])
+
+        nstate = table.actions[state, tok]
+        if nstate == nothing
+            break
+        end
+
+        state = nstate
+        i += 1
+    end
+
+    return (table.terminal_states[state] , i)
 end
 
 # --- Main ---
@@ -211,15 +248,36 @@ llink!(s4, s3)
 
 determinize!(ctx)
 
-tok2index = Dict(
-    "x" => 1,
-    "y" => 2,
-    "z" => 3,
+tok2indexmap = Dict(
+    'x' => 1,
+    'y' => 2,
+    'z' => 3,
 )
+tok2index = (tok) -> haskey(tok2indexmap, tok) ? tok2indexmap[tok] : nothing
 
-table = maketable(ctx, tok2index)
+table = maketable(ctx, tok2index, length(tok2indexmap))
 
-println(table)
+# regex = x(x|y)*|z
+strs = [
+        # true
+        "x",
+        "z",
+        "xxxxx",
+        "xyyy",
+        "xyxyxy",
+        # false
+        "",
+        "zx",
+        "zz",
+        "xyz",
+    ]
+
+# println(table)
+
+for s in strs
+    acc, i = parse(table, s, 1)
+    println("s = '$s' => acc = $acc, i = $i")
+end
 
 # sinit = lstate_new!(ctx)
 # # sa = ltok!(ctx, "a")
