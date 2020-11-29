@@ -349,47 +349,14 @@ function generate_parser(tokens, prods, produce_rules, file)
             src_prods,
             src_produce_rules,
             src_parse,
-            # TODO
-            """print(parse([Tok("n", true, 6), Tok("+", true, nothing), Tok("n", true, 4), Tok("\\\$", true, nothing)]))"""
+            # # TODO
+            # """print(parse([Tok("n", true, 6), Tok("+", true, nothing), Tok("n", true, 4), Tok("\\\$", true, nothing)]))"""
         ]
 
     open(file, "w") do io
         src = join(srcs, "\n")
         println(io, src)
     end
-    return
-
-    # TODO : rm
-
-    # Print states
-    println("# $(length(states)) states")
-    println(states[1])
-    # for s in states
-    #     println("* State #$(s.id)")
-    #     println(s)
-    # end
-
-    # Print table
-    printtable(table, tokens)
-
-    tok2index = Dict()
-    for (i, t) in enumerate(tokens)
-        tok2index[t] = i
-    end
-
-    function nb(val)
-        t = tok_new("n", terminal=true)
-        t.data = val
-
-        return t
-    end
-
-    source = [nb(6), t_plus, nb(3), t_times, nb(2)]
-    push!(source, tok_new("\$", terminal=true))
-    root = parse(table, source, prods, tok2index)
-
-    println()
-    println("Result : $(root.data) (token $root)")
 end
 
 # --- Main ---
@@ -415,7 +382,6 @@ tokens = [
     t_times,
    ]
 
-# TODO : Verify no set used
 prods = [
         prod_new(t_a, [t_e]),
         prod_new(t_e, [t_e, t_plus, t_t]),
