@@ -178,6 +178,18 @@ function determinize!(ctx)
     ctx.states = states
 end
 
+function maketable(ctx, tok2index)
+    table = Matrix{Any}(nothing, length(ctx.states), length(tok2index))
+
+    for state in ctx.states
+        for (tok, nstate) in state.transitions
+            table[state.id, tok2index[tok]] = nstate
+        end
+    end
+
+    return table
+end
+
 # --- Main ---
 ctx = lctx_new()
 
@@ -197,14 +209,17 @@ llink!(s2, s5)
 llink!(s4, s5)
 llink!(s4, s3)
 
-for s in ctx.states
-    println(s)
-end
-
-println("---")
-
 determinize!(ctx)
 
+tok2index = Dict(
+    "x" => 1,
+    "y" => 2,
+    "z" => 3,
+)
+
+table = maketable(ctx, tok2index)
+
+println(table)
 
 # sinit = lstate_new!(ctx)
 # # sa = ltok!(ctx, "a")
@@ -223,6 +238,6 @@ determinize!(ctx)
 
 # determinize!(ctx)
 
-for s in ctx.states
-    println(s)
-end
+# for s in ctx.states
+#     println(s)
+# end
