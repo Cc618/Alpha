@@ -219,11 +219,11 @@ function parsereg(reg)
     i = 1
     while i <= length(reg)
         char = reg[i]
-        if char == '*'
-            @assert length(states) != 0 "Invalid * at column $i for regex $reg"
+        if char in "*?"
+            @assert length(states) != 0 "Invalid $char at column $i for regex $reg"
 
             last_state = pop!(states)
-            new_state = ("*", last_state)
+            new_state = ("$char", last_state)
             push!(states, new_state)
         elseif char == '['
             start = i
@@ -292,6 +292,18 @@ function state2nfa!(ctx, state)
         llink!(suff, mid_start)
 
         return start, stop
+    elseif class == "?"
+        start = lstate_new!(ctx)
+        mid_start, mid_stop = state2nfa!(ctx, data)
+        stop = lstate_new!(ctx)
+
+        # start -------------------> stop
+        #   +-> mid_start -> mid_stop ^
+        llink!(start, stop)
+        llink!(start, mid_start)
+        llink!(mid_stop, stop)
+
+        return start, stop
     else
         error("Invalid state '$class'")
     end
@@ -335,23 +347,35 @@ function compilereg(reg)
 end
 
 # --- Main ---
-reg = "[alpha][alnum]*"
-# reg = "abc*[num]*"
+# reg = "[alpha][alnum]*"
+reg = "-?[num][num]*"
 
 table = compilereg(reg)
 println("Table of size $(length(table.actions))")
 
 strs = [
+        # Number :
         # true
-        "a",
-        "abc",
-        "_aa",
-        "a3a",
-        # false
-        "",
         "3",
-        "3a",
-        "a ",
+        "-3",
+        "42",
+        "-42",
+        # false
+        "--1",
+        "-",
+        "-2-2",
+        "",
+        # Identifier :
+        # # true
+        # "a",
+        # "abc",
+        # "_aa",
+        # "a3a",
+        # # false
+        # "",
+        # "3",
+        # "3a",
+        # "a ",
     ]
 
 println("Regex : $reg")
