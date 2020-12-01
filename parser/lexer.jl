@@ -249,7 +249,10 @@ reggroups = Dict(
                  "alpha" => Set("_" * String('a':'z') * String('A':'Z')),
                  "\\n" => Set("\n"),
                  "\\t" => Set("\t"),
+                 "\\s" => Set("\t "),
+                 "." => Set([Char(code) for code in 1:128]),
         )
+pop!(reggroups["."], '\n')
 reggroups["alnum"] = union(reggroups["num"], reggroups["alpha"])
 
 # Returns start automaton state and last one
@@ -348,23 +351,33 @@ end
 
 # --- Main ---
 # reg = "[alpha][alnum]*"
-reg = "-?[num][num]*"
+# reg = "-?[num][num]*"
+reg = "#[.]*"
 
 table = compilereg(reg)
 println("Table of size $(length(table.actions))")
 
 strs = [
-        # Number :
+        # Comments :
         # true
-        "3",
-        "-3",
-        "42",
-        "-42",
+        "# Hey",
         # false
-        "--1",
-        "-",
-        "-2-2",
         "",
+        " ",
+        "# Hey\nHow are you ?",
+
+        # # Number :
+        # # true
+        # "3",
+        # "-3",
+        # "42",
+        # "-42",
+        # # false
+        # "--1",
+        # "-",
+        # "-2-2",
+        # "",
+
         # Identifier :
         # # true
         # "a",
