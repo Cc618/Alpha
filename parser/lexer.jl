@@ -74,21 +74,6 @@ function llink!(states...)
     end
 end
 
-# Solves all epsilon closures for all states
-# reachable from this state
-# function epsclosure!(ctx, state, closures)
-#     if closures[state.id] != nothing
-#         return closures[state.id]
-#     end
-
-#     clos = Set()
-#     for (tok, next_state) in state.transitions
-#         if next_state != state
-#             union!(clos, epsclosure!(ctx, next_state, closures))
-#         end
-#     end
-# end
-
 # !!! The initial state must be the first created (with id 1)
 function determinize!(ctx)
     # Epsilon closures
@@ -349,6 +334,7 @@ function compilereg(reg)
     return table
 end
 
+# --- Main ---
 reg = "[alpha][alnum]*"
 # reg = "abc*[num]*"
 
@@ -373,77 +359,3 @@ for s in strs
     acc, i = parse(table, s, 1)
     println("s = '$s' => acc = $acc, i = $i")
 end
-exit()
-
-# --- Main ---
-ctx = lctx_new()
-
-# https://www.youtube.com/watch?v=dlH2pIndNrU
-s1 = lstate_new!(ctx)
-s2 = lstate_new!(ctx)
-s3 = lstate_new!(ctx)
-s4 = lstate_new!(ctx)
-s5 = lstate_new!(ctx, terminal=true)
-
-lstate_link!(s1, "x", s2)
-lstate_link!(s1, "z", s5)
-lstate_link!(s3, "x", s4)
-lstate_link!(s3, "y", s4)
-llink!(s2, s3)
-llink!(s2, s5)
-llink!(s4, s5)
-llink!(s4, s3)
-
-determinize!(ctx)
-
-tok2indexmap = Dict(
-    'x' => 1,
-    'y' => 2,
-    'z' => 3,
-)
-tok2index = (tok) -> haskey(tok2indexmap, tok) ? tok2indexmap[tok] : nothing
-
-table = maketable(ctx, tok2index, length(tok2indexmap))
-
-# regex = x(x|y)*|z
-strs = [
-        # true
-        "x",
-        "z",
-        "xxxxx",
-        "xyyy",
-        "xyxyxy",
-        # false
-        "",
-        "zx",
-        "zz",
-        "xyz",
-    ]
-
-# println(table)
-
-for s in strs
-    acc, i = parse(table, s, 1)
-    println("s = '$s' => acc = $acc, i = $i")
-end
-
-# sinit = lstate_new!(ctx)
-# # sa = ltok!(ctx, "a")
-# # sb = ltok!(ctx, "b")
-# # sc = ltok!(ctx, "c")
-# sa = lstate_new!(ctx)
-# sb = lstate_new!(ctx)
-# # sc = lstate_new!(ctx)
-# lstate_link!(sa, "A", sb)
-# send = lend!(ctx)
-
-# llink!(sinit, sa)
-# llink!(sb, send)
-# llink!(send, sa)
-# llink!(sa, send)
-
-# determinize!(ctx)
-
-# for s in ctx.states
-#     println(s)
-# end
