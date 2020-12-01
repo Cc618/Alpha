@@ -114,7 +114,7 @@ function determinize!(ctx)
     end
 
     # NFA to DFA
-    new_states = [Set([1])]
+    new_states = [closures[1]]
     visited_states = Set()
     states = Set([])
     init_state = nothing
@@ -192,11 +192,10 @@ function maketable(ctx, tok2index, ntoks)
 
     for state in ctx.states
         for (tok, nstate) in state.transitions
-            @assert isa(tok, String) && length(tok) == 1 "Tokens must be strings containing 1 character"
+            @assert isa(tok, Char) "Tokens must be chars (got $tok)"
 
-            t = tok2index(tok[1])
+            t = tok2index(tok)
 
-            # TODO : Debug position
             @assert t != nothing "Invalid character '$tok'"
 
             actions[state.id, t] = nstate
@@ -213,7 +212,7 @@ end
 function parse(table, str, i)
     state = 1
     while i <= length(str)
-        tok = tok2index(str[i])
+        tok = table.tok2index(str[i])
 
         nstate = table.actions[state, tok]
         if nstate == nothing
@@ -228,6 +227,7 @@ function parse(table, str, i)
 end
 
 # --- Parse Test ---
+# Intermediate automaton representation
 function parsereg(reg)
     states = []
 
@@ -259,10 +259,120 @@ function parsereg(reg)
     return states
 end
 
-reg = "abc*[num]*"
+reggroups = Dict(
+                 "num" => Set(String('0':'9')),
+                 "alpha" => Set("_" * String('a':'z') * String('A':'Z')),
+                 "\\n" => Set("\n"),
+                 "\\t" => Set("\t"),
+        )
+reggroups["alnum"] = union(reggroups["num"], reggroups["alpha"])
 
-# [(char, a), (char, b), (*, (char, c)), (*, (group, num))]
-println(parsereg(reg))
+# Returns start automaton state and last one
+# Thompson's construction basicaly
+function state2nfa!(ctx, state)
+    global reggroups
+
+    (class, data) = state
+
+    if class == "char"
+        start = lstate_new!(ctx)
+        stop = lstate_new!(ctx)
+
+        lstate_link!(start, data, stop)
+
+        return start, stop
+    elseif class == "group"
+        @assert haskey(reggroups, data) "No group named '$data'"
+
+        start = lstate_new!(ctx)
+        stop = lstate_new!(ctx)
+
+        for char in reggroups[data]
+            lstate_link!(start, char, stop)
+        end
+
+        return start, stop
+    elseif class == "*"
+        start = lstate_new!(ctx)
+        mid_start, mid_stop = state2nfa!(ctx, data)
+        suff = lstate_new!(ctx)
+        stop = lstate_new!(ctx)
+
+        # start ---------------------------------> stop
+        #   +-> mid_start -> mid_stop -> suff +^
+        #          ^----------------------+
+        llink!(start, stop)
+        llink!(start, mid_start)
+        llink!(mid_stop, suff, stop)
+        llink!(suff, mid_start)
+
+        return start, stop
+    else
+        error("Invalid state '$class'")
+    end
+end
+
+# Intermediate to epsilon NFA
+function states2nfa(states)
+    ctx = lctx_new()
+    init_state = lstate_new!(ctx)
+    last_state = init_state
+
+    for state in states
+        start, stop = state2nfa!(ctx, state)
+
+        transition = lstate_new!(ctx)
+        llink!(last_state, start)
+        llink!(stop, transition)
+        last_state = transition
+    end
+
+    terminal_state = lstate_new!(ctx, terminal=true)
+    llink!(last_state, terminal_state)
+
+    return ctx
+end
+
+# Regex to table
+function compilereg(reg)
+    # Compile
+    states = parsereg(reg)
+
+    # Create automaton
+    ctx = states2nfa(states)
+    determinize!(ctx)
+
+    # Create table
+    tok2index = (tok) -> codepoint(tok)
+    table = maketable(ctx, tok2index, 128)
+
+    return table
+end
+
+reg = "[alpha][alnum]*"
+# reg = "abc*[num]*"
+
+table = compilereg(reg)
+println("Table of size $(length(table.actions))")
+
+strs = [
+        # true
+        "a",
+        "abc",
+        "_aa",
+        "a3a",
+        # false
+        "",
+        "3",
+        "3a",
+        "a ",
+    ]
+
+println("Regex : $reg")
+for s in strs
+    acc, i = parse(table, s, 1)
+    println("s = '$s' => acc = $acc, i = $i")
+end
 exit()
 
 # --- Main ---
