@@ -227,6 +227,44 @@ function parse(table, str, i)
     return (table.terminal_states[state] , i)
 end
 
+# --- Parse Test ---
+function parsereg(reg)
+    states = []
+
+    i = 1
+    while i <= length(reg)
+        char = reg[i]
+        if char == '*'
+            @assert length(states) != 0 "Invalid * at column $i for regex $reg"
+
+            last_state = pop!(states)
+            new_state = ("*", last_state)
+            push!(states, new_state)
+        elseif char == '['
+            start = i
+            while i <= length(reg) && reg[i] != ']'
+                i += 1
+            end
+
+            @assert i <= length(reg) "Unmatched '[' at column $start for regex $reg"
+
+            push!(states, ("group", reg[start + 1 : i - 1]))
+        else
+            push!(states, ("char", reg[i]))
+        end
+
+        i += 1
+    end
+
+    return states
+end
+
+reg = "abc*[num]*"
+
+# [(char, a), (char, b), (*, (char, c)), (*, (group, num))]
+println(parsereg(reg))
+exit()
+
 # --- Main ---
 ctx = lctx_new()
 
