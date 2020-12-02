@@ -193,9 +193,10 @@ function maketable(ctx, tok2index, ntoks)
 end
 
 # Parses str with table from index i
-# Returns (accepted, end_index)
+# Returns (accepted, end_pos, next_pos)
 function parse(table, str, pos)
     state = 1
+    last_pos = deepcopy(pos)
     while pos.index <= length(str)
         char = str[pos.index]
         tok = table.tok2index(char)
@@ -206,6 +207,7 @@ function parse(table, str, pos)
         end
 
         state = nstate
+        last_pos = deepcopy(pos)
 
         # Change pos
         pos.index += 1
@@ -217,7 +219,7 @@ function parse(table, str, pos)
         end
     end
 
-    return (table.terminal_states[state], pos)
+    return (table.terminal_states[state], last_pos, pos)
 end
 
 # --- Parse Test ---
@@ -364,42 +366,58 @@ include("parserlexer.inc.jl")
 
 src = """
 # Comment
-identifier ! id_78 42
+identifier id_78 42
 
 42
 """
 # let a be 618
 
+# TODO : Simple regexes
+# rule : nothing = ignored, (s) -> nothing = no data but token sent to the parser
 regs = Array{Any}([
-        ("comment", "#[.]*"),
-        ("line", "[\\n][\\n]*"),
-        ("blank", "[\\s][\\s]*"),
-        ("id", "[alpha][alnum]*"),
-        ("int", "-?[num][num]*"),
+        ("comment", "#[.]*", nothing),
+        ("line", "[\\n][\\n]*", (s) -> nothing),
+        ("blank", "[\\s][\\s]*", nothing),
+        ("id", "[alpha][alnum]*", (s) -> s),
+        ("int", "-?[num][num]*", (s) -> Base.parse(Int, s)),
     ])
 
 # Compile regexes
-for (i, (name, reg)) in enumerate(regs)
-    regs[i] = (name, compilereg(reg))
+for (i, (name, reg, rule)) in enumerate(regs)
+    regs[i] = (name, compilereg(reg), rule)
 end
 
+# Main parse loop
+# TODO : End token ?
 pos = pos_new()
 while pos.index <= length(src)
     global pos
 
+    # Test each reg
     err = true
     newpos = nothing
-    tokid = nothing
-    for (name, reg) in regs
-        acc, newpos = parse(reg, src, deepcopy(pos))
+    for (id, reg, rule) in regs
+        # endpos is just before newpos
+        acc, endpos, newpos = parse(reg, src, deepcopy(pos))
 
+        # Match
         if acc && newpos != pos
             err = false
-            tokid = name
+
+            # Send token if not ignored
+            if rule != nothing
+                data = rule(src[pos.index:newpos.index - 1])
+                # TODO : End pos - 1 ?
+                tok = tok_new(id, terminal=true, data=data, start_pos=pos, end_pos=endpos)
+
+                # TODO : Send
+                println("Token $(tok.id) : $(tok.data) ($(tok.start_pos) -> $(tok.end_pos))")
+            end
             break
         end
     end
 
+    # Error case (no match)
     if err
         line_start = findprev('\n', src, pos.index)
         line_end = findnext('\n', src, pos.index + 1)
@@ -413,8 +431,6 @@ while pos.index <= length(src)
         # TODO : File
         error("Invalid syntax at position $pos, no token matched")
     end
-
-    println("Token $tokid : $(repr(src[pos.index:newpos.index - 1]))")
 
     pos = newpos
 end

@@ -8,6 +8,8 @@ mutable struct Tok
     id
     terminal
     data
+    start_pos
+    end_pos
 end
 
 mutable struct Prod
@@ -22,7 +24,10 @@ pos_new(; column = 1, line = 1, index = 1) = Pos(column, line, index)
 Base.isequal(a::Pos, b::Pos) = a.column == b.column && a.line == b.line
 Base.print(io::IO, p::Pos) = print(io, "(line: $(p.line), column: $(p.column))")
 
-tok_new(id; terminal = false, data = nothing) = Tok(id, terminal, data)
+function tok_new(id; terminal = false, data = nothing, start_pos = nothing, end_pos = nothing)
+    return Tok(id, terminal, data, start_pos, end_pos)
+end
+
 tok_eq(a, b) = a.id == b.id
 
 # Special tokens
