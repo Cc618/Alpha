@@ -194,10 +194,11 @@ end
 
 # Parses str with table from index i
 # Returns (accepted, end_index)
-function parse(table, str, i)
+function parse(table, str, pos)
     state = 1
-    while i <= length(str)
-        tok = table.tok2index(str[i])
+    while pos.index <= length(str)
+        char = str[pos.index]
+        tok = table.tok2index(char)
 
         nstate = table.actions[state, tok]
         if nstate == nothing
@@ -205,10 +206,18 @@ function parse(table, str, i)
         end
 
         state = nstate
-        i += 1
+
+        # Change pos
+        pos.index += 1
+        if char == '\n'
+            pos.line += 1
+            pos.column = 1
+        else
+            pos.column += 1
+        end
     end
 
-    return (table.terminal_states[state] , i)
+    return (table.terminal_states[state], pos)
 end
 
 # --- Parse Test ---
@@ -350,9 +359,12 @@ function compilereg(reg)
 end
 
 # --- Main ---
+# TODO : Remove once the lexer is auto generated
+include("parserlexer.inc.jl")
+
 src = """
 # Comment
-identifier id_78 42
+identifier ! id_78 42
 
 42
 """
@@ -371,15 +383,15 @@ for (i, (name, reg)) in enumerate(regs)
     regs[i] = (name, compilereg(reg))
 end
 
-pos = 1
-while pos <= length(src)
+pos = pos_new()
+while pos.index <= length(src)
     global pos
 
     err = true
     newpos = nothing
     tokid = nothing
     for (name, reg) in regs
-        acc, newpos = parse(reg, src, pos)
+        acc, newpos = parse(reg, src, deepcopy(pos))
 
         if acc && newpos != pos
             err = false
@@ -388,9 +400,21 @@ while pos <= length(src)
         end
     end
 
-    @assert !err "Invalid syntax at position $pos, no token matched"
+    if err
+        line_start = findprev('\n', src, pos.index)
+        line_end = findnext('\n', src, pos.index + 1)
 
-    println("Token $tokid : $(repr(src[pos:newpos - 1]))")
+        println("--- Error Info ---")
+        if line_start < line_end
+            println(src[line_start + 1:line_end - 1])
+            println(repeat(' ', pos.column - 1) * "^")
+        end
+
+        # TODO : File
+        error("Invalid syntax at position $pos, no token matched")
+    end
+
+    println("Token $tokid : $(repr(src[pos.index:newpos.index - 1]))")
 
     pos = newpos
 end

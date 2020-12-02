@@ -1,6 +1,7 @@
 mutable struct Pos
     column
     line
+    index
 end
 
 mutable struct Tok
@@ -15,6 +16,11 @@ mutable struct Prod
     pos
     init
 end
+
+pos_new(; column = 1, line = 1, index = 1) = Pos(column, line, index)
+
+Base.isequal(a::Pos, b::Pos) = a.column == b.column && a.line == b.line
+Base.print(io::IO, p::Pos) = print(io, "(line: $(p.line), column: $(p.column))")
 
 tok_new(id; terminal = false, data = nothing) = Tok(id, terminal, data)
 tok_eq(a, b) = a.id == b.id
