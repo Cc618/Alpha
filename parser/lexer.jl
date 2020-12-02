@@ -366,15 +366,14 @@ include("parserlexer.inc.jl")
 
 src = """
 # Comment
-identifier id_78 42
-
-42
+let a = 48
 """
-# let a be 618
 
 # TODO : Simple regexes
 # rule : nothing = ignored, (s) -> nothing = no data but token sent to the parser
 regs = Array{Any}([
+        ("let", "let", (s) -> nothing),
+        ("=", "=", (s) -> nothing),
         ("comment", "#[.]*", nothing),
         ("line", "[\\n][\\n]*", (s) -> nothing),
         ("blank", "[\\s][\\s]*", nothing),
@@ -388,7 +387,7 @@ for (i, (name, reg, rule)) in enumerate(regs)
 end
 
 # Main parse loop
-# TODO : End token ?
+tokens = []
 pos = pos_new()
 while pos.index <= length(src)
     global pos
@@ -407,11 +406,9 @@ while pos.index <= length(src)
             # Send token if not ignored
             if rule != nothing
                 data = rule(src[pos.index:newpos.index - 1])
-                # TODO : End pos - 1 ?
                 tok = tok_new(id, terminal=true, data=data, start_pos=pos, end_pos=endpos)
 
-                # TODO : Send
-                println("Token $(tok.id) : $(tok.data) ($(tok.start_pos) -> $(tok.end_pos))")
+                push!(tokens, tok)
             end
             break
         end
@@ -435,55 +432,10 @@ while pos.index <= length(src)
     pos = newpos
 end
 
+# End token
+push!(tokens, tok_end(start_pos=pos, end_pos=pos))
 
-
-exit()
-
-# reg = "[alpha][alnum]*"
-# reg = "-?[num][num]*"
-reg = "#[.]*"
-
-# TODO : Escape special chars
-
-table = compilereg(reg)
-println("Table of size $(length(table.actions))")
-
-strs = [
-        # Comments :
-        # true
-        "# Hey",
-        # false
-        "",
-        " ",
-        "# Hey\nHow are you ?",
-
-        # # Number :
-        # # true
-        # "3",
-        # "-3",
-        # "42",
-        # "-42",
-        # # false
-        # "--1",
-        # "-",
-        # "-2-2",
-        # "",
-
-        # Identifier :
-        # # true
-        # "a",
-        # "abc",
-        # "_aa",
-        # "a3a",
-        # # false
-        # "",
-        # "3",
-        # "3a",
-        # "a ",
-    ]
-
-println("Regex : $reg")
-for s in strs
-    acc, i = parse(table, s, 1)
-    println("s = '$s' => acc = $acc, i = $i")
+for tok in tokens
+    # TODO : Send
+    println("Token $(tok.id) : $(tok.data) ($(tok.start_pos) -> $(tok.end_pos))")
 end

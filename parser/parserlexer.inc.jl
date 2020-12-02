@@ -32,7 +32,10 @@ tok_eq(a, b) = a.id == b.id
 
 # Special tokens
 tok_eps() = tok_new("eps", terminal=true)
-tok_end() = tok_new("\$", terminal=true)
+
+function tok_end(; start_pos = nothing, end_pos = nothing)
+    return tok_new("\$", terminal=true, start_pos=start_pos, end_pos=end_pos)
+end
 
 # Only id matters for sets / dicts
 Base.hash(a::Tok) = hash(a.id)
