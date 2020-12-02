@@ -6,6 +6,12 @@ mutable struct Pos
     index
 end
 
+mutable struct LTable
+    actions
+    terminal_states
+    tok2index
+end
+
 mutable struct Tok
     id
     terminal
@@ -20,6 +26,8 @@ mutable struct Prod
     pos
     init
 end
+
+ltable_new(actions, terminal_states, tok2index) = LTable(actions, terminal_states, tok2index)
 
 pos_new(; column = 1, line = 1, index = 1) = Pos(column, line, index)
 

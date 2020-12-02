@@ -16,12 +16,6 @@ mutable struct LState
     terminal
 end
 
-mutable struct LTable
-    actions
-    terminal_states
-    tok2index
-end
-
 lctx_new() = LCtx(0, [])
 
 function lstate_new!(ctx; transitions = [], terminal = false)
@@ -51,8 +45,6 @@ function Base.print(io::IO, s::LState)
 
     print(io, ")")
 end
-
-ltable_new(actions, terminal_states, tok2index) = LTable(actions, terminal_states, tok2index)
 
 # --- Functions ---
 lend!(ctx) = lstate_new!(ctx, terminal=true)
@@ -361,8 +353,6 @@ end
 
 function generate_lexer(regs, file)
     # TODO : File
-    # TODO : ltable_new in parse.yy
-
     # Compile regexes
     for (i, (name, reg, rule)) in enumerate(regs)
         regs[i] = (name, compilereg(reg), rule)
@@ -382,11 +372,6 @@ end
 include("parserlexer.inc.jl")
 include("lexer_template.jl")
 
-src = """
-# Comment
-let a = 48
-"""
-
 # TODO : Simple regexes
 # rule : nothing = ignored, (s) -> nothing = no data but token sent to the parser
 regs = Array{Any}([
@@ -401,7 +386,24 @@ regs = Array{Any}([
 
 generate_lexer(regs, "lexer.yy.jl")
 
+
+# TODO : generate_parserlexer
+#=
+parserlexer.inc.jl
+lexer_template.jl
+generate_lexer()
+slr.parser_template.jl
+generate_parser()
+parserlexer_template.jl
+=#
+
+
 # # Main parse loop
+# src = """
+# # Comment
+# let a = 48
+# """
+
 # tokens = lparse(src, regs)
 
 # for tok in tokens
