@@ -350,9 +350,60 @@ function compilereg(reg)
 end
 
 # --- Main ---
+src = """
+# Comment
+identifier id_78 42
+
+42
+"""
+# let a be 618
+
+regs = Array{Any}([
+        ("comment", "#[.]*"),
+        ("line", "[\\n][\\n]*"),
+        ("blank", "[\\s][\\s]*"),
+        ("id", "[alpha][alnum]*"),
+        ("int", "-?[num][num]*"),
+    ])
+
+# Compile regexes
+for (i, (name, reg)) in enumerate(regs)
+    regs[i] = (name, compilereg(reg))
+end
+
+pos = 1
+while pos <= length(src)
+    global pos
+
+    err = true
+    newpos = nothing
+    tokid = nothing
+    for (name, reg) in regs
+        acc, newpos = parse(reg, src, pos)
+
+        if acc && newpos != pos
+            err = false
+            tokid = name
+            break
+        end
+    end
+
+    @assert !err "Invalid syntax at position $pos, no token matched"
+
+    println("Token $tokid : $(repr(src[pos:newpos - 1]))")
+
+    pos = newpos
+end
+
+
+
+exit()
+
 # reg = "[alpha][alnum]*"
 # reg = "-?[num][num]*"
 reg = "#[.]*"
+
+# TODO : Escape special chars
 
 table = compilereg(reg)
 println("Table of size $(length(table.actions))")

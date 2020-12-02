@@ -1,3 +1,7 @@
+mutable struct Pos
+    column
+    line
+end
 
 mutable struct Tok
     id
