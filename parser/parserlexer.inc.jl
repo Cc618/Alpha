@@ -68,3 +68,7 @@ function Base.print(io::IO, p::Prod)
 
     Base.print(io, str)
 end
+
+# Default character to table index mapping
+ldefault_chartok2index = (tok) -> codepoint(tok)
+ldefault_chartok2index_length = 128
