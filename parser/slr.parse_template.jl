@@ -1,3 +1,4 @@
+# Parser (SLR(1)) template
 
 tok2index = Dict()
 for (i, t) in enumerate(tokens)
