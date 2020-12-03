@@ -5,7 +5,7 @@ for (i, t) in enumerate(tokens)
     tok2index[t] = i
 end
 
-function _parse(table, tokens, prods, tok2index, produce_rules)
+function _pparse(table, tokens, prods, tok2index, produce_rules)
     stack = Array{Any}([1])
     while true
         @assert length(stack) > 0 && length(tokens) > 0 "Unexpected end of file"
@@ -70,11 +70,12 @@ function _parse(table, tokens, prods, tok2index, produce_rules)
     end
 end
 
-function parse(tokens)
+# Parser parse
+function pparse(tokens)
     global tok2index
     global prods
     global table
     global produce_rules
 
-    return _parse(table, tokens, prods, tok2index, produce_rules)
+    return _pparse(table, tokens, prods, tok2index, produce_rules)
 end

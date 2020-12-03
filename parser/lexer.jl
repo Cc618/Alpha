@@ -369,30 +369,6 @@ function generate_lexer(io, regs)
 end
 
 # --- Main ---
-# TODO : Remove once the lexer is auto generated
-# TODO : [\[] etc...
-include("lexerparser.inc.jl")
-include("lexer_template.jl")
-
-# TODO : Simple regexes
-# rule : nothing = ignored, (s) -> nothing = no data but token sent to the parser
-regs = Array{Any}([
-        ("let", "let", "(s) -> nothing"),
-        ("=", "=", "(s) -> nothing"),
-        ("comment", "#[.]*", "nothing"),
-        ("line", "[\\n][\\n]*", "(s) -> nothing"),
-        ("blank", "[\\s][\\s]*", "nothing"),
-        ("id", "[alpha][alnum]*", "(s) -> s"),
-        ("int", "-?[num][num]*", "(s) -> Base.parse(Int, s)"),
-    ])
-
-file = "lexer.yy.jl"
-open(file, "w") do io
-    # TODO : Will be done with lexerparser
-    println(io, """
-        include("lexerparser.inc.jl")""")
-    generate_lexer(io, regs)
-end
 
 
 # TODO : generate_parserlexer
