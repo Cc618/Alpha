@@ -1,2 +1,2 @@
 tests
-parser.yy.jl
+*.yy.jl

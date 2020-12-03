@@ -351,19 +351,21 @@ function compilereg(reg)
     return table
 end
 
-function generate_lexer(regs, file)
-    # TODO : File
+function generate_lexer(io, regs)
     # Compile regexes
     for (i, (name, reg, rule)) in enumerate(regs)
         regs[i] = (name, compilereg(reg), rule)
     end
 
     # Regs
-    println("regs = [")
+    println(io, "regs = [")
     for (name, reg, rule) in regs
-        println("    ($(repr(name)), ltable_new($(reg.actions), $(reg.terminal_states), ldefault_chartok2index), $rule),")
+        println(io, "    ($(repr(name)), ltable_new($(reg.actions), $(reg.terminal_states), ldefault_chartok2index), $rule),")
     end
-    println("]")
+    println(io, "]")
+
+    # Template
+    println(io, read("lexer_template.jl", String))
 end
 
 # --- Main ---
@@ -384,16 +386,22 @@ regs = Array{Any}([
         ("int", "-?[num][num]*", "(s) -> Base.parse(Int, s)"),
     ])
 
-generate_lexer(regs, "lexer.yy.jl")
+file = "lexer.yy.jl"
+open(file, "w") do io
+    # TODO : Will be done with lexerparser
+    println(io, """
+        include("parserlexer.inc.jl")""")
+    generate_lexer(io, regs)
+end
 
 
 # TODO : generate_parserlexer
 #=
 parserlexer.inc.jl
-lexer_template.jl
 generate_lexer()
-slr.parser_template.jl
+lexer_template.jl
 generate_parser()
+slr.parser_template.jl
 parserlexer_template.jl
 =#
 
