@@ -14,7 +14,7 @@ include to call the parse function that generates the AST.
 - lexer_\_template.jl : Included in the generated file for runtime (lexical analysis only).
 - lexerparser.jl : Main module to generate the lexer-parser (parser.yy.jl).
 - parser.yy.jl : Generated lexer-parser file, will be included in your code.
-- parserlexer.inc.jl : A file containing definitions for the runtime.
-- parserlexer\_template.jl : Contains functions to interact between lexing and parsing modules.
+- lexerparser.inc.jl : A file containing definitions for the runtime.
+- lexerparser\_template.jl : Contains functions to interact between lexing and parsing modules.
 - slr.jl : Generates the SLR(1) automaton and other functions usefull for syntax analysis.
 - slr.parse\_template.jl : Included in the generated file for runtime (SLR(1) only).

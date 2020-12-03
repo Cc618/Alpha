@@ -3,7 +3,7 @@
 using Printf
 
 # --- Def ---
-include("parserlexer.inc.jl")
+include("lexerparser.inc.jl")
 
 mutable struct State
     prods

@@ -371,7 +371,7 @@ end
 # --- Main ---
 # TODO : Remove once the lexer is auto generated
 # TODO : [\[] etc...
-include("parserlexer.inc.jl")
+include("lexerparser.inc.jl")
 include("lexer_template.jl")
 
 # TODO : Simple regexes
@@ -390,7 +390,7 @@ file = "lexer.yy.jl"
 open(file, "w") do io
     # TODO : Will be done with lexerparser
     println(io, """
-        include("parserlexer.inc.jl")""")
+        include("lexerparser.inc.jl")""")
     generate_lexer(io, regs)
 end
 
