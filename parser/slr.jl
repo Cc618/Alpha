@@ -315,6 +315,8 @@ end
 
 # Main function
 function generate_parser(io, tokens, prods, produce_rules)
+    parserdir = dirname(@__FILE__)
+
     # Setup and verify everything
     setup!(tokens, prods)
 
@@ -333,7 +335,7 @@ function generate_parser(io, tokens, prods, produce_rules)
     src_produce_rules = "produce_rules = [$(join(produce_rules, ", "))]"
 
     # Parse functions
-    src_parse = read("slr.parse_template.jl", String)
+    src_parse = read("$parserdir/slr.parse_template.jl", String)
 
     srcs = [
             src_table,

@@ -184,37 +184,7 @@ function maketable(ctx, tok2index, ntoks)
     return ltable_new(actions, terminal_states, tok2index)
 end
 
-# Parses str with table from index i
-# Returns (accepted, end_pos, next_pos)
-function parse(table, str, pos)
-    state = 1
-    last_pos = deepcopy(pos)
-    while pos.index <= length(str)
-        char = str[pos.index]
-        tok = table.tok2index(char)
-
-        nstate = table.actions[state, tok]
-        if nstate == nothing
-            break
-        end
-
-        state = nstate
-        last_pos = deepcopy(pos)
-
-        # Change pos
-        pos.index += 1
-        if char == '\n'
-            pos.line += 1
-            pos.column = 1
-        else
-            pos.column += 1
-        end
-    end
-
-    return (table.terminal_states[state], last_pos, pos)
-end
-
-# --- Parse Test ---
+# --- Parsing ---
 # Intermediate automaton representation
 function parsereg(reg)
     states = []
@@ -352,6 +322,8 @@ function compilereg(reg)
 end
 
 function generate_lexer(io, regs)
+    parserdir = dirname(@__FILE__)
+
     # Compile regexes
     for (i, (name, reg, rule)) in enumerate(regs)
         regs[i] = (name, compilereg(reg), rule)
@@ -365,32 +337,5 @@ function generate_lexer(io, regs)
     println(io, "]")
 
     # Template
-    println(io, read("lexer_template.jl", String))
+    println(io, read("$parserdir/lexer_template.jl", String))
 end
-
-# --- Main ---
-
-
-# TODO : generate_parserlexer
-#=
-parserlexer.inc.jl
-generate_lexer()
-lexer_template.jl
-generate_parser()
-slr.parser_template.jl
-parserlexer_template.jl
-=#
-
-
-# # Main parse loop
-# src = """
-# # Comment
-# let a = 48
-# """
-
-# tokens = lparse(src, regs)
-
-# for tok in tokens
-#     # TODO : Send
-#     println("Token $(tok.id) : $(tok.data) ($(tok.start_pos) -> $(tok.end_pos))")
-# end
