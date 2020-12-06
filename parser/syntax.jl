@@ -61,7 +61,9 @@ function parsesyntax(lines)
                 rule = strip(l[colon + 1:end])
 
                 @assert name ∉ terminals "Can't produce terminal $name from parser (line $lno)"
-                push!(nonterminals, name)
+
+                name ∉ nonterminals && push!(nonterminals, name)
+
 
                 # println("Parser |$name| |$prod| |$rule|")
                 push!(parser_items, (lno, name, prod, rule))
@@ -96,15 +98,4 @@ function parsesyntax(lines)
     end
 
     return (regs, tokens, prods, produce_rules)
-end
-
-file = "calculator.syntax"
-open(file) do io
-    lines = readlines(io)
-    (regs, tokens, prods, produce_rules) = parsesyntax(lines)
-
-    println("regs = $regs")
-    println("tokens = $tokens")
-    println("prods = $prods")
-    println("produce_rules = $produce_rules")
 end
