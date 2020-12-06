@@ -7,12 +7,12 @@ parsed by the lexer.
 The syntax is inspired by standard regexes.
 However, the syntax is slightly different than other regexes.
 
-
 ## Operators
 - <state>\* : Kleen star, 0 or more <state>
 - <state>? : 0 or 1 <state>
 
 ## Groups
+### Special characters / groups
 - alpha : \_a-zA-Z
 - num : 0-9
 - alnum : Union of alpha and num sets
@@ -20,6 +20,13 @@ However, the syntax is slightly different than other regexes.
 - \t : Tab
 - \s : Blank char (\t or space)
 - . : All characters except line feed ([\n])
+
+### Characters to escape (with \\)
+- \*
+- \\
+- "
+- :
+- \[
 
 ## Examples
 - Identifiers :

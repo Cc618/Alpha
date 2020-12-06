@@ -8,7 +8,7 @@ The file calculator.syntax contains all rules necessary to build the parser.
 ## Build and run
 To generate the parser :
 ```sh
-julia ../parser/LexerParser.jl calculator.syntax
+julia ../../parser/LexerParser.jl calculator.syntax
 ```
 
 Note that this will generate the file calculator.yy.jl.
