@@ -3,7 +3,7 @@ A simple calculator that supports basic algebraic expressions such as 3 + (2 + 2
 
 This test is made to test the parser generator.
 
-The file calculator.syntax contains all rules necessary to build the parser.
+The file [calculator.syntax](calculator.syntax) contains all rules necessary to build the parser.
 
 ## Build and run
 To generate the parser :

@@ -17,7 +17,7 @@ lang.yy.jl is the file to include to call the parse function
 that generates the AST.
 
 ## Syntax
-To see an improved example, look at the [calculator example](../examples/parser/calculator.syntax).
+To see an improved example, look at the [calculator example](../examples/parser/calculator.md).
 
 This syntax parses additions :
 ```julia
