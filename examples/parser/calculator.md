@@ -15,5 +15,5 @@ Note that this will generate the file calculator.yy.jl.
 
 To run :
 ```sh
-julia calculator_runtime.jl
+julia calculator.jl
 ```
