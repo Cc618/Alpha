@@ -223,6 +223,11 @@ reggroups = Dict(
                  "\\n" => Set("\n"),
                  "\\t" => Set("\t"),
                  "\\s" => Set("\t "),
+                 "\\:" => Set(":"),
+                 "\\\"" => Set("\""),
+                 "\\*" => Set("*"),
+                 "\\[" => Set("["),
+                 "\\\\" => Set("\\"),
                  "." => Set([Char(code) for code in 1:128]),
         )
 pop!(reggroups["."], '\n')
