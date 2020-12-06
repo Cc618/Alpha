@@ -37,6 +37,39 @@ This syntax parses additions :
     e -> N : (val) -> val
 ```
 
+As you can see, two sections are required :
+
+- lexer : Describes which tokens we tokenize.
+- parser : Describes how we produce the AST from these tokens.
+
+### Lexer
+The syntax is
+```
+<TOKEN_NAME> -> <REGEX> : <DATA_RULE>
+```
+
+Where :
+- TOKEN\_NAME : Name of the (terminal) token we match.
+- REGEX : A regular expression describing how to match the token.
+        The syntax is simplified and non standard See [lexer.md](lexer.md) for the regex syntax.
+- DATA\_RULE : If the token is ignored (i.e. a space), put nothing. Otherwise, put a function
+        that returns the (possibly null) data of the token, like in this example :
+        (s) -> Base.parse(Int, s) to parse an integer value.
+
+Note that the priority is defined from top (most priority) to bottom (least priority).
+
+### Parser
+Like in the previous section, the syntax is almost the same :
+```
+<TOKEN_NAME> -> <PRODUCTION> : <DATA_RULE>
+```
+
+Where :
+- TOKEN\_NAME : Name of the (non terminal) token we produce.
+- PRODUCTION : One or multiple tokens to produce this token (i.e. e PLUS e).
+- DATA\_RULE : A function that takes data from each token within PRODUCTION
+        and which returns the data for this token.
+
 ## Structure
 - lexer.jl : Generates all automatons and functions to tokenize the text.
 - lexer_\_template.jl : Included in the generated file for runtime (lexical analysis only).
