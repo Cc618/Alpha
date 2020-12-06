@@ -47,9 +47,9 @@ function parsesyntax(lines)
                 reg = strip(l[arrow.stop + 1:colon - 1])[2:end - 1]
 
                 @assert name ∉ nonterminals "Can't produce non terminal $name from lexer (line $lno)"
-                push!(terminals, name)
 
-                # println("Lexer |$name| |$reg| |$rule|")
+                name ∉ terminals && push!(terminals, name)
+
                 push!(lexer_items, (name, reg, rule))
             else
                 arrow = findfirst("->", l)
@@ -64,8 +64,6 @@ function parsesyntax(lines)
 
                 name ∉ nonterminals && push!(nonterminals, name)
 
-
-                # println("Parser |$name| |$prod| |$rule|")
                 push!(parser_items, (lno, name, prod, rule))
             end
         end

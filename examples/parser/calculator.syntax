@@ -4,6 +4,7 @@
     RPAREN  -> ")" : (s) -> nothing
     PLUS    -> "+" : (s) -> nothing
     TIMES   -> "x" : (s) -> nothing
+    TIMES   -> "[\*]" : (s) -> nothing
     N       -> "-?[num][num]*" : (s) -> Base.parse(Int, s)
     # Ignore it without a function
     BLANK   -> "[\s][\s]*" : nothing
