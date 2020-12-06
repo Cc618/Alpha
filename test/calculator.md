@@ -3,15 +3,15 @@ A simple calculator that supports basic algebraic expressions such as 3 + (2 + 2
 
 This test is made to test the parser generator.
 
-Until now, the parser is generated purely by julia code.
+The file calculator.syntax contains all rules necessary to build the parser.
 
 ## Build and run
 To generate the parser :
 ```sh
-julia calculator.jl
+julia ../parser/LexerParser.jl calculator.syntax
 ```
 
-Note that this will generate the file parser.yy.jl.
+Note that this will generate the file calculator.yy.jl.
 
 To run :
 ```sh

@@ -1,0 +1,22 @@
+@lexer:
+    # Return the data
+    LPAREN  -> "(" : (s) -> nothing
+    RPAREN  -> ")" : (s) -> nothing
+    PLUS    -> "+" : (s) -> nothing
+    TIMES   -> "x" : (s) -> nothing
+    N       -> "-?[num][num]*" : (s) -> Base.parse(Int, s)
+    # Ignore it without a function
+    BLANK   -> "[\s][\s]*" : nothing
+
+@parser:
+    # Root of the AST
+    a -> e : (val) -> val
+    # Expression (+ priority)
+    e -> e PLUS t : (a, _, b) -> a + b
+    e -> t : (val) -> val
+    # Term (* priority)
+    t -> t TIMES f : (a, _, b) -> a * b
+    t -> f : (val) -> val
+    # Factor (explicit or leftmost priority)
+    f -> LPAREN e RPAREN : (_, val, _) -> val
+    f -> N : (val) -> val
