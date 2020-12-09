@@ -41,6 +41,9 @@ function parsesyntax(lines)
             if section == "lexer"
                 arrow = findfirst("->", l)
                 colon = findfirst(r"[^\\]:", l)
+
+                @assert arrow != nothing && colon != nothing "Cannot find -> or : at line $lno"
+
                 colon = colon.stop
 
                 name, rule = strip(l[begin:arrow.start - 1]), strip(l[colon + 1:end])
@@ -54,6 +57,9 @@ function parsesyntax(lines)
             else
                 arrow = findfirst("->", l)
                 colon = findfirst(r"[^\\]:", l)
+
+                @assert arrow != nothing && colon != nothing "Cannot find -> or : at line $lno"
+
                 colon = colon.stop
 
                 name = strip(l[begin:arrow.start - 1])

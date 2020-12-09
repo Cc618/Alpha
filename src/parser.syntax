@@ -1,0 +1,47 @@
+# Syntax describing the language
+# Compile it to parser.yy.jl with julia ../parser/LexerParser.jl parser.syntax
+
+@lexer:
+    # LPAREN  -> "(" : (s) -> nothing
+    # RPAREN  -> ")" : (s) -> nothing
+    # PLUS    -> "+" : (s) -> nothing
+    # TIMES   -> "[\*]" : (s) -> nothing
+    # INT     -> "-?[num][num]*" : (s) -> Base.parse(Int, s)
+    # BLANK   -> "[\s][\s]*" : nothing
+
+    # Ignored
+    BLANK   -> "[\s][\s]*" : nothing
+
+    # Special TODO : Don't ignore
+    LF      -> "[\n]" : nothing
+
+    # Keywords
+    FUN     -> "fun" : (s) -> nothing
+
+    # Regexes
+    ID      -> "[alpha][alnum]*" : (s) -> s
+
+@parser:
+    # Root of the AST
+    ast -> decl : (d) -> begin ctx = ctx_new(); push!(ctx.decls, d); return ctx end
+
+    # Declaration TODO : args
+    decl -> FUN ID : (_, id) -> decl_new(decltype_new(k_fn_t), id)
+
+
+
+
+
+
+
+    # # Root of the AST
+    # a -> e : (val) -> val
+    # # Expression (+ priority)
+    # e -> e PLUS t : (a, _, b) -> a + b
+    # e -> t : (val) -> val
+    # # Term (* priority)
+    # t -> t TIMES f : (a, _, b) -> a * b
+    # t -> f : (val) -> val
+    # # Factor (explicit or leftmost priority)
+    # f -> LPAREN e RPAREN : (_, val, _) -> val
+    # f -> N : (val) -> val
