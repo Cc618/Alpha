@@ -1,6 +1,8 @@
 # Syntax describing the language
 # Compile it to parser.yy.jl with julia ../parser/LexerParser.jl parser.syntax
 
+# Convention : Upper case for terminals, lower case for non terminals
+
 @lexer:
     # LPAREN  -> "(" : (s) -> nothing
     # RPAREN  -> ")" : (s) -> nothing
@@ -12,11 +14,14 @@
     # Ignored
     BLANK   -> "[\s][\s]*" : nothing
 
-    # Special TODO : Don't ignore
+    # Punctuation TODO : Don't ignore
     LF      -> "[\n]" : nothing
+    COMMA   -> "," : nothing
+
 
     # Keywords
     FUN     -> "fun" : (s) -> nothing
+    TAKE    -> "take" : (s) -> nothing
 
     # Regexes
     ID      -> "[alpha][alnum]*" : (s) -> s
@@ -25,8 +30,14 @@
     # Root of the AST
     ast -> decl : (d) -> begin ctx = ctx_new(); push!(ctx.decls, d); return ctx end
 
-    # Declaration TODO : args
-    decl -> FUN ID : (_, id) -> decl_new(decltype_new(k_fn_t), id)
+    # TODO : Line feed
+
+    # Declaration
+    # TODO : no arglist with no args
+    decl -> FUN ID arglist : (_, id, args) -> decl_new(decltype_new(k_fn_t, args=args), id)
+
+    arglist -> TAKE ID : (_, id) -> [arg_new(id)]
+    arglist -> arglist COMMA ID : (args, _, id) -> vcat(args, [arg_new(id)])
 
 
 

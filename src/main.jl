@@ -19,6 +19,7 @@ end
 
 code = """
 fun hello
+take a, b, c
 """
 
 ast = parse(code)
@@ -27,6 +28,7 @@ println(ast)
 exit()
 
 # TODO : Verify test instruction (use cmp)
+# TODO : Improve error for parser (location)
 
 # --- Code Gen tests ---
 # --- Main ---
