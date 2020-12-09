@@ -33,7 +33,9 @@
 
     # --- Declarations ---
     decl -> declfun : (data) -> data
-    # TODO : decl -> declint : (data) -> data
+    decl -> declint : (data) -> data
+
+    declint -> LET ID BE exp : (_, id, _, exp) -> decl_new(decltype_new(k_int_t), id, value=exp)
 
     declfun -> FUN ID LF arglist LF stmt : (_, id, _, args, _, body) -> decl_new(decltype_new(k_fn_t, args=args), id, body=body)
     declfun -> FUN ID LF stmt : (_, id, _, body) -> decl_new(decltype_new(k_fn_t), id, body=body)
@@ -41,8 +43,6 @@
     # List of arguments for functions : take a, b, ...
     arglist -> TAKE ID : (_, id) -> [arg_new(id)]
     arglist -> arglist COMMA ID : (args, _, id) -> vcat(args, [arg_new(id)])
-
-    # TODO : declint -> LET ID BE exp
 
     # --- Statements ---
     # Statements are LF-terminated

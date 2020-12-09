@@ -20,8 +20,8 @@ end
 code = """
 fun hello
 begin
-    42
-    -618
+    let x be 42
+    let y be -618
 end
 """
 
