@@ -12,12 +12,11 @@ function _pparse(table, tokens, prods, tok2index, produce_rules)
 
         state = stack[end]
         token = tokens[1]
-        # println(tokens[1].data)
         action = table[state, tok2index[token]]
 
         if action == nothing
-            # TODO : Location
-            error("Syntax error")
+            # TODO : More info
+            error("Syntax error from $(token.start_pos) to $(token.end_pos) : Invalid token $token (data = $(token.data))")
         elseif action == "acc"
             @assert length(tokens) == 1 "Unexpected end of file"
 
@@ -37,7 +36,7 @@ function _pparse(table, tokens, prods, tok2index, produce_rules)
             rule = prods[i]
 
             # Pop right
-            right = stack[length(stack) - length(rule.right) * 2 + 1:2:length(stack)]
+            right_toks = stack[length(stack) - length(rule.right) * 2 + 1:2:length(stack)]
             splice!(stack, length(stack) - length(rule.right) * 2 + 1:length(stack))
 
             # State when we start to produce this token
@@ -51,10 +50,13 @@ function _pparse(table, tokens, prods, tok2index, produce_rules)
 
             new_state = Base.parse(Int, goto[2:end])
 
-            # TODO : Location
             new_tok = deepcopy(rule.left)
-            right = [r.data for r in right]
+            right = [r.data for r in right_toks]
             new_tok.data = produce_rules[i](right...)
+
+            # TODO : Verify
+            new_tok.start_pos = right_toks[begin].start_pos
+            new_tok.end_pos = right_toks[end].end_pos
 
             push!(stack, new_tok)
             push!(stack, new_state)

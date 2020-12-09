@@ -14,14 +14,17 @@
     # Ignored
     BLANK   -> "[\s][\s]*" : nothing
 
-    # Punctuation TODO : Don't ignore
+    # Punctuation
+    # TODO : Don't ignore
     LF      -> "[\n]" : nothing
-    COMMA   -> "," : nothing
+    COMMA   -> "," : (s) -> nothing
 
 
     # Keywords
     FUN     -> "fun" : (s) -> nothing
     TAKE    -> "take" : (s) -> nothing
+    BEGIN   -> "begin" : (s) -> nothing
+    END     -> "end" : (s) -> nothing
 
     # Regexes
     ID      -> "[alpha][alnum]*" : (s) -> s
@@ -33,12 +36,15 @@
     # TODO : Line feed
 
     # Declaration
-    # TODO : no arglist with no args
-    decl -> FUN ID arglist : (_, id, args) -> decl_new(decltype_new(k_fn_t, args=args), id)
+    decl -> FUN ID arglist stmt : (_, id, args, body) -> decl_new(decltype_new(k_fn_t, args=args), id, body=body)
+    decl -> FUN ID stmt : (_, id, body) -> decl_new(decltype_new(k_fn_t), id, body=body)
 
+    # List of arguments for functions : take a, b, ...
     arglist -> TAKE ID : (_, id) -> [arg_new(id)]
     arglist -> arglist COMMA ID : (args, _, id) -> vcat(args, [arg_new(id)])
 
+    # TODO : stmtblock
+    stmt -> BEGIN END : (_, _) -> 42
 
 
 

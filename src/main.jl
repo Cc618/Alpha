@@ -20,6 +20,8 @@ end
 code = """
 fun hello
 take a, b, c
+begin
+end
 """
 
 ast = parse(code)
