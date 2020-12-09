@@ -22,6 +22,11 @@ fun hello
 take a, b, c
 begin
 end
+
+fun func
+take x
+begin
+end
 """
 
 ast = parse(code)

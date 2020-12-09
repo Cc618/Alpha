@@ -19,19 +19,22 @@
     LF      -> "[\n]" : nothing
     COMMA   -> "," : (s) -> nothing
 
-
     # Keywords
-    FUN     -> "fun" : (s) -> nothing
-    TAKE    -> "take" : (s) -> nothing
-    BEGIN   -> "begin" : (s) -> nothing
-    END     -> "end" : (s) -> nothing
+    # TODO : If necessary, remove blanks at the end
+    FUN     -> "fun[\b]" : (s) -> nothing
+    TAKE    -> "take[\b]" : (s) -> nothing
+    BEGIN   -> "begin[\b]" : (s) -> nothing
+    END     -> "end[\b]" : (s) -> nothing
 
     # Regexes
     ID      -> "[alpha][alnum]*" : (s) -> s
 
 @parser:
     # Root of the AST
-    ast -> decl : (d) -> begin ctx = ctx_new(); push!(ctx.decls, d); return ctx end
+    root -> ctx : (ctx) -> ctx
+
+    ctx -> decl : (decl) -> begin ctx = ctx_new(); push!(ctx.decls, decl); return ctx end
+    ctx -> ctx decl : (ctx, decl) -> begin push!(ctx.decls, decl); return ctx end
 
     # TODO : Line feed
 

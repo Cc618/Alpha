@@ -18,7 +18,8 @@ However, the syntax is slightly different than other regexes.
 - alnum : Union of alpha and num sets
 - \n : Line feed
 - \t : Tab
-- \s : Blank char (\t or space)
+- \s : White space (\t or space)
+- \s : Blank char (white space or line feed)
 - . : All characters except line feed ([\n])
 
 ### Characters to escape (with \\)
