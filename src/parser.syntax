@@ -4,19 +4,11 @@
 # Convention : Upper case for terminals, lower case for non terminals
 
 @lexer:
-    # LPAREN  -> "(" : (s) -> nothing
-    # RPAREN  -> ")" : (s) -> nothing
-    # PLUS    -> "+" : (s) -> nothing
-    # TIMES   -> "[\*]" : (s) -> nothing
-    # INT     -> "-?[num][num]*" : (s) -> Base.parse(Int, s)
-    # BLANK   -> "[\s][\s]*" : nothing
-
     # Ignored
     BLANK   -> "[\s][\s]*" : nothing
 
     # Punctuation
-    # TODO : Don't ignore
-    LF      -> "[\n]" : nothing
+    LF      -> "[\n][\n]*" : (s) -> nothing
     COMMA   -> "," : (s) -> nothing
 
     # Keywords
@@ -25,9 +17,12 @@
     TAKE    -> "take[\b]" : (s) -> nothing
     BEGIN   -> "begin[\b]" : (s) -> nothing
     END     -> "end[\b]" : (s) -> nothing
+    LET     -> "let[\b]" : (s) -> nothing
+    BE      -> "be[\b]" : (s) -> nothing
 
     # Regexes
     ID      -> "[alpha][alnum]*" : (s) -> s
+    INT     -> "-?[num][num]*" : (s) -> Base.parse(Int, s)
 
 @parser:
     # Root of the AST
@@ -36,32 +31,36 @@
     ctx -> decl : (decl) -> begin ctx = ctx_new(); push!(ctx.decls, decl); return ctx end
     ctx -> ctx decl : (ctx, decl) -> begin push!(ctx.decls, decl); return ctx end
 
-    # TODO : Line feed
+    # --- Declarations ---
+    decl -> declfun : (data) -> data
+    # TODO : decl -> declint : (data) -> data
 
-    # Declaration
-    decl -> FUN ID arglist stmt : (_, id, args, body) -> decl_new(decltype_new(k_fn_t, args=args), id, body=body)
-    decl -> FUN ID stmt : (_, id, body) -> decl_new(decltype_new(k_fn_t), id, body=body)
+    declfun -> FUN ID LF arglist LF stmt : (_, id, _, args, _, body) -> decl_new(decltype_new(k_fn_t, args=args), id, body=body)
+    declfun -> FUN ID LF stmt : (_, id, _, body) -> decl_new(decltype_new(k_fn_t), id, body=body)
 
     # List of arguments for functions : take a, b, ...
     arglist -> TAKE ID : (_, id) -> [arg_new(id)]
     arglist -> arglist COMMA ID : (args, _, id) -> vcat(args, [arg_new(id)])
 
-    # TODO : stmtblock
-    stmt -> BEGIN END : (_, _) -> 42
+    # TODO : declint -> LET ID BE exp
 
+    # --- Statements ---
+    # Statements are LF-terminated
+    stmt -> stmtblock : (data) -> data
+    stmt -> stmtdecl : (data) -> data
+    stmt -> stmtexp : (data) -> data
 
+    stmtblock -> stmtblock_begin END : (stmt, _) -> stmt
+    stmtblock_begin -> stmtblock_begin stmt : (block, stmt) -> begin push!(block.stmts, stmt); return block end
+    stmtblock_begin -> BEGIN : (_) -> stmt_new(k_stmt_block, stmts=[])
 
+    stmtdecl -> decl LF : (decl, _) -> stmt_new(k_stmt_decl, decl=decl)
 
+    stmtexp -> exp LF : (exp, _) -> stmt_new(k_stmt_exp, exp=exp)
 
+    # --- Expressions ---
+    exp -> expint : (data) -> data
 
-    # # Root of the AST
-    # a -> e : (val) -> val
-    # # Expression (+ priority)
-    # e -> e PLUS t : (a, _, b) -> a + b
-    # e -> t : (val) -> val
-    # # Term (* priority)
-    # t -> t TIMES f : (a, _, b) -> a * b
-    # t -> f : (val) -> val
-    # # Factor (explicit or leftmost priority)
-    # f -> LPAREN e RPAREN : (_, val, _) -> val
-    # f -> N : (val) -> val
+    # TODO : number leaf
+    expint -> INT : (data) -> data
+

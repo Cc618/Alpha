@@ -19,15 +19,14 @@ end
 
 code = """
 fun hello
-take a, b, c
 begin
-end
-
-fun func
-take x
-begin
+    42
+    -618
 end
 """
+
+# TODO : Add on the parser if no \n at the end
+code[end] != '\n' && (code *= "\n")
 
 ast = parse(code)
 println(ast)

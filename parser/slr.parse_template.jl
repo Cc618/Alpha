@@ -26,7 +26,11 @@ function _pparse(table, tokens, prods, tok2index, produce_rules)
 
             new_tok = deepcopy(rule.left)
             right = [r.data for r in right]
-            new_tok.data = produce_rules[begin](right...)
+            try
+                new_tok.data = produce_rules[begin](right...)
+            catch e
+                error("Can't produce token $new_tok, invalid rule (got $(length(right)) right tokens)")
+            end
 
             # Return the root of the ast
             return new_tok.data
@@ -52,7 +56,11 @@ function _pparse(table, tokens, prods, tok2index, produce_rules)
 
             new_tok = deepcopy(rule.left)
             right = [r.data for r in right_toks]
-            new_tok.data = produce_rules[i](right...)
+            try
+                new_tok.data = produce_rules[i](right...)
+            catch e
+                error("Can't produce token $new_tok, invalid rule (got $(length(right)) right tokens)")
+            end
 
             # TODO : Verify
             new_tok.start_pos = right_toks[begin].start_pos
