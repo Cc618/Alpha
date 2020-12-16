@@ -2,10 +2,12 @@
 # Compile it to parser.yy.jl with julia ../parser/LexerParser.jl parser.syntax
 
 # Convention : Upper case for terminals, lower case for non terminals
+# Tip : Use Julia syntax highlighting to have colors
 
 @lexer:
     # Ignored
     BLANK   -> "[\s][\s]*" : nothing
+    COMMENT -> "#[.]*[\n]" : nothing
 
     # Punctuation
     LF      -> "[\n][\n]*" : (s) -> nothing
@@ -19,6 +21,7 @@
     END     -> "end[\b]" : (s) -> nothing
     LET     -> "let[\b]" : (s) -> nothing
     BE      -> "be[\b]" : (s) -> nothing
+    SET     -> "[\:]=" : (s) -> nothing
 
     # Regexes
     ID      -> "[alpha][alnum]*" : (s) -> s
@@ -60,6 +63,12 @@
 
     # --- Expressions ---
     exp -> expint : (data) -> data
+    exp -> expid : (data) -> data
+    # exp -> expset : (data) -> data
+
+    # expset -> ID SET exp : (id, _, data) -> exp_newset(id, data)
+
+    expid -> ID : (id) -> exp_newid(id)
 
     # TODO : number leaf
     expint -> INT : (data) -> data
