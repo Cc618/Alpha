@@ -24,8 +24,10 @@ take a, b
 begin
     let x be 42
     let y be -618
-    let z be a
-    # x := a
+
+
+
+    x := 42
 end
 """
 

@@ -4,6 +4,8 @@
 all: src
 
 .PHONY: src
-src:
-	julia parser/LexerParser.jl src/parser.syntax
+src: src/*.jl
 	julia src/main.jl
+
+src/parser.yy.jl: src/parser.syntax
+	julia parser/LexerParser.jl src/parser.syntax
