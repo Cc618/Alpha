@@ -44,9 +44,11 @@ code = """
 fun hello
 begin
     let x be 42
-    let y be -618
+    # let y be -618
 
-    x := 2 * (y + 4)
+    # x := 2 * (y + 4)
+
+    return x
 end
 """
 

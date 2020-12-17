@@ -23,13 +23,14 @@
     END     -> "end[\b]" : (s) -> nothing
     LET     -> "let[\b]" : (s) -> nothing
     BE      -> "be[\b]" : (s) -> nothing
-    SET     -> "[\:]=" : (s) -> nothing
+    RETURN  -> "return[\b]" : (s) -> nothing
 
     # Regexes
     ID      -> "[alpha][alnum]*" : (s) -> s
     INT     -> "-?[num][num]*" : (s) -> Base.parse(Int, s)
 
     # Operators
+    SET     -> "[\:]=" : (s) -> nothing
     ADD     -> "+" : (s) -> nothing
     # SUB     -> "-" : (s) -> nothing
     MUL     -> "[\*]" : (s) -> nothing
@@ -60,27 +61,19 @@
     stmt -> stmtblock : (data) -> data
     stmt -> stmtdecl : (data) -> data
     stmt -> stmtexp : (data) -> data
+    stmt -> stmtreturn : (data) -> data
 
     stmtblock -> stmtblock_begin endblock : (stmt, _) -> stmt
     stmtblock_begin -> stmtblock_begin stmt : (block, stmt) -> begin push!(block.stmts, stmt); return block end
-    stmtblock_begin -> beginblock : (_) -> stmt_new(k_stmt_block, stmts=[])
+    stmtblock_begin -> beginblock : (_) -> stmt_newblock()
 
-    stmtdecl -> decl line : (decl, _) -> stmt_new(k_stmt_decl, decl=decl)
+    stmtdecl -> decl line : (decl, _) -> stmt_newdecl(decl)
 
-    stmtexp -> exp line : (exp, _) -> stmt_new(k_stmt_exp, exp=exp)
+    stmtexp -> exp line : (exp, _) -> stmt_newexp(exp)
+
+    stmtreturn -> RETURN exp line : (_, exp, _) -> stmt_newreturn(exp)
 
     # --- Expressions ---
-    # exp -> expset : (data) -> data
-    # exp -> expid : (data) -> data
-    # exp -> expint : (data) -> data
-
-    # TODO : Within int9
-    # expset -> ID SET exp : (id, _, data) -> exp_newset(id, data)
-
-    # expid -> ID : (id) -> exp_newid(id)
-
-    # expint -> int9 : (data) -> data
-
     exp -> int9 : (data) -> data
 
     # TODO : int8
@@ -107,7 +100,7 @@
 
     # --- Misc ---
     line -> LF : (_) -> nothing
-    line -> line LF : (_) -> nothing
+    line -> line LF : (_, _) -> nothing
 
     beginblock -> BEGIN : (_) -> nothing
     beginblock -> beginblock line : (_, _) -> nothing
