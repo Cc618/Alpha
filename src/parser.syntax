@@ -31,9 +31,9 @@
 
     # Operators
     ADD     -> "+" : (s) -> nothing
-    SUB     -> "-" : (s) -> nothing
+    # SUB     -> "-" : (s) -> nothing
     MUL     -> "[\*]" : (s) -> nothing
-    DIV     -> "/" : (s) -> nothing
+    # DIV     -> "/" : (s) -> nothing
 
 @parser:
     # Root of the AST
@@ -70,19 +70,22 @@
     stmtexp -> exp line : (exp, _) -> stmt_new(k_stmt_exp, exp=exp)
 
     # --- Expressions ---
-    exp -> expset : (data) -> data
-    exp -> expid : (data) -> data
-    exp -> expint : (data) -> data
+    # exp -> expset : (data) -> data
+    # exp -> expid : (data) -> data
+    # exp -> expint : (data) -> data
 
     # TODO : Within int9
-    expset -> ID SET exp : (id, _, data) -> exp_newset(id, data)
+    # expset -> ID SET exp : (id, _, data) -> exp_newset(id, data)
 
-    expid -> ID : (id) -> exp_newid(id)
+    # expid -> ID : (id) -> exp_newid(id)
 
-    expint -> int9 : (data) -> data
+    # expint -> int9 : (data) -> data
+
+    exp -> int9 : (data) -> data
 
     # TODO : int8
     int9 -> int4 : (data) -> data
+    int9 -> unary SET exp : (lhs, _, data) -> exp_newset(lhs, data)
 
     # int<precedance>
     int4 -> int3 : (data) -> data
@@ -93,8 +96,14 @@
 
     int2 -> int1 : (data) -> data
 
-    int1 -> INT : (data) -> data
+    # TODO : Verify
+    int1 -> primary : (data) -> data
     int1 -> LPAREN int9 RPAREN : (_, data, _) -> data
+
+    unary -> primary : (data) -> data
+
+    primary -> ID : (name) -> exp_newid(name)
+    primary -> INT : (val) -> exp_newint(val)
 
     # --- Misc ---
     line -> LF : (_) -> nothing

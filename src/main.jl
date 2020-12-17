@@ -9,6 +9,11 @@ include("codegen.jl")
 include("parser.yy.jl")
 
 #=
+# TODO Zone
+# - / % - (negate + sub)
+=#
+
+#=
 TODO : In documentation
 # Operator Precedance
 | Precedance | Operators |
@@ -21,7 +26,7 @@ TODO : In documentation
 | 6 | is != |
 | 7 | and |
 | 8 | or |
-| 9 | += -= *= := |
+| 9 | := += -= *= |
 =#
 
 
@@ -38,10 +43,10 @@ end
 code = """
 fun hello
 begin
-    # let x be 42
-    # let y be -618
+    let x be 42
+    let y be -618
 
-    x := 2 * (3 + 4)
+    x := 2 * (y + 4)
 end
 """
 
