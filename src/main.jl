@@ -10,8 +10,14 @@ include("parser.yy.jl")
 
 #=
 # TODO Zone
+# # Syntax
 # - / % - (negate + sub)
 # - true / false
+# - not and or (+ in code gen)
+# - += -= *= (+ in code gen)
+#
+# # Codegen
+# - If without else (+ in syntax)
 =#
 
 #=
@@ -49,7 +55,7 @@ begin
 
     # x := 3 < 2 * y
 
-    return x > 6 != y > 3
+    return 3 < 2 is false
 end
 """
 

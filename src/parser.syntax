@@ -7,7 +7,7 @@
 @lexer:
     # Ignored
     BLANK   -> "[\s][\s]*" : nothing
-    COMMENT -> "#[.]*[\n]" : nothing
+    COMMENT -> "#[.]*" : nothing
 
     # Punctuation
     LF      -> "[\n][\n]*" : (s) -> nothing
@@ -16,7 +16,6 @@
     RPAREN  -> ")" : (s) -> nothing
 
     # Keywords
-    # TODO : If necessary, remove blanks at the end
     FUN     -> "fun[\b]" : (s) -> nothing
     TAKE    -> "take[\b]" : (s) -> nothing
     BEGIN   -> "begin[\b]" : (s) -> nothing
@@ -25,6 +24,11 @@
     BE      -> "be[\b]" : (s) -> nothing
     IS      -> "is[\b]" : (s) -> nothing
     RETURN  -> "return[\b]" : (s) -> nothing
+
+    # TODO : If necessary, remove blanks at the end (and test whether naming a variable true... is possible)
+    # Try otherwise in the parser : ID -> true ID
+    TRUE    -> "true" : (s) -> nothing
+    FALSE   -> "false" : (s) -> nothing
 
     # Regexes
     ID      -> "[alpha][alnum]*" : (s) -> s
@@ -117,6 +121,8 @@
 
     primary -> ID : (name) -> exp_newid(name)
     primary -> INT : (val) -> exp_newint(val)
+    primary -> TRUE : (_) -> exp_newint(1)
+    primary -> FALSE : (_) -> exp_newint(0)
 
     # --- Misc ---
     line -> LF : (_) -> nothing
