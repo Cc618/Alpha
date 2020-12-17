@@ -8,7 +8,8 @@ stmt_newexp(exp::Exp) = stmt_new(k_stmt_exp, exp=exp)
 stmt_newreturn(exp::Exp) = stmt_new(k_stmt_return, exp=exp)
 stmt_newifelse(condition::Exp, iftrue, iffalse = nothing) =
         stmt_new(k_stmt_ifelse, exp=condition, ifbody=iftrue, elsebody=iffalse)
-stmt_newloop(init::Stmt, condition::Exp, iter::Stmt, body::Stmt) =
+# TODO : Handle Nothing for init and iter
+stmt_newloop(init::Union{Stmt, Nothing}, condition::Exp, iter::Union{Stmt, Nothing}, body::Stmt) =
         stmt_new(k_stmt_loop, exp=condition, initbody=init, iterbody=iter, loopbody=body)
 
 # --- Exp ---

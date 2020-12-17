@@ -17,6 +17,7 @@ include("parser.yy.jl")
 # - += -= *= (+ in code gen)
 #
 # # Codegen
+# - Handle iter = init = nothing in loops (see ast.jl:11)
 =#
 
 #=
@@ -56,10 +57,8 @@ begin
 
     # return 3 < 2 is false
 
-    if true
-        x := true
-    else
-        y := false
+    loop when x < 618
+        x := x + 1
 
 end
 """
