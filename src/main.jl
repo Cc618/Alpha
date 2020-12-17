@@ -11,6 +11,7 @@ include("parser.yy.jl")
 #=
 # TODO Zone
 # - / % - (negate + sub)
+# - true / false
 =#
 
 #=
@@ -43,12 +44,12 @@ end
 code = """
 fun hello
 begin
-    let x be 42
+    # let x be 42
     # let y be -618
 
-    # x := 2 * (y + 4)
+    # x := 3 < 2 * y
 
-    return x
+    return x > 6 != y > 3
 end
 """
 
