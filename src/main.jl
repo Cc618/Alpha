@@ -17,7 +17,6 @@ include("parser.yy.jl")
 # - += -= *= (+ in code gen)
 #
 # # Codegen
-# - If without else (+ in syntax)
 =#
 
 #=
@@ -55,7 +54,13 @@ begin
 
     # x := 3 < 2 * y
 
-    return 3 < 2 is false
+    # return 3 < 2 is false
+
+    if true
+        x := true
+    else
+        y := false
+
 end
 """
 

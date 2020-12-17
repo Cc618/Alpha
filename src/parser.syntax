@@ -25,6 +25,8 @@
     BE      -> "be[\b]" : (s) -> nothing
     IS      -> "is[\b]" : (s) -> nothing
     RETURN  -> "return[\b]" : (s) -> nothing
+    IF      -> "if[\b]" : (s) -> nothing
+    ELSE    -> "else[\b]" : (s) -> nothing
 
     # TODO : If necessary, remove blanks at the end (and test whether naming a variable true... is possible)
     # Try otherwise in the parser : ID -> true ID
@@ -77,6 +79,7 @@
     stmt -> stmtdecl : (data) -> data
     stmt -> stmtexp : (data) -> data
     stmt -> stmtreturn : (data) -> data
+    stmt -> stmtif : (data) -> data
 
     stmtblock -> stmtblock_begin endblock : (stmt, _) -> stmt
     stmtblock_begin -> stmtblock_begin stmt : (block, stmt) -> begin push!(block.stmts, stmt); return block end
@@ -87,6 +90,9 @@
     stmtexp -> exp line : (exp, _) -> stmt_newexp(exp)
 
     stmtreturn -> RETURN exp line : (_, exp, _) -> stmt_newreturn(exp)
+
+    stmtif -> IF exp line stmt : (_, condition, _, iftrue) -> stmt_newifelse(condition, iftrue)
+    stmtif -> IF exp line stmt ELSE stmt : (_, condition, _, iftrue, _, iffalse) -> stmt_newifelse(condition, iftrue, iffalse)
 
     # --- Expressions ---
     exp -> int9 : (data) -> data
