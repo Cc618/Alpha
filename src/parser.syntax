@@ -12,6 +12,8 @@
     # Punctuation
     LF      -> "[\n][\n]*" : (s) -> nothing
     COMMA   -> "," : (s) -> nothing
+    LPAREN  -> "(" : (s) -> nothing
+    RPAREN  -> ")" : (s) -> nothing
 
     # Keywords
     # TODO : If necessary, remove blanks at the end
@@ -26,6 +28,12 @@
     # Regexes
     ID      -> "[alpha][alnum]*" : (s) -> s
     INT     -> "-?[num][num]*" : (s) -> Base.parse(Int, s)
+
+    # Operators
+    ADD     -> "+" : (s) -> nothing
+    SUB     -> "-" : (s) -> nothing
+    MUL     -> "[\*]" : (s) -> nothing
+    DIV     -> "/" : (s) -> nothing
 
 @parser:
     # Root of the AST
@@ -53,9 +61,9 @@
     stmt -> stmtdecl : (data) -> data
     stmt -> stmtexp : (data) -> data
 
-    stmtblock -> stmtblock_begin END : (stmt, _) -> stmt
+    stmtblock -> stmtblock_begin endblock : (stmt, _) -> stmt
     stmtblock_begin -> stmtblock_begin stmt : (block, stmt) -> begin push!(block.stmts, stmt); return block end
-    stmtblock_begin -> BEGIN : (_) -> stmt_new(k_stmt_block, stmts=[])
+    stmtblock_begin -> beginblock : (_) -> stmt_new(k_stmt_block, stmts=[])
 
     stmtdecl -> decl line : (decl, _) -> stmt_new(k_stmt_decl, decl=decl)
 
@@ -66,13 +74,34 @@
     exp -> expid : (data) -> data
     exp -> expint : (data) -> data
 
+    # TODO : Within int9
     expset -> ID SET exp : (id, _, data) -> exp_newset(id, data)
 
     expid -> ID : (id) -> exp_newid(id)
 
-    # TODO : number leaf
-    expint -> INT : (data) -> data
+    expint -> int9 : (data) -> data
+
+    # TODO : int8
+    int9 -> int4 : (data) -> data
+
+    # int<precedance>
+    int4 -> int3 : (data) -> data
+    int4 -> int4 ADD int3 : (l, _, r) -> exp_newadd(l, r)
+
+    int3 -> int2 : (data) -> data
+    int3 -> int3 MUL int2 : (l, _, r) -> exp_newmul(l, r)
+
+    int2 -> int1 : (data) -> data
+
+    int1 -> INT : (data) -> data
+    int1 -> LPAREN int9 RPAREN : (_, data, _) -> data
 
     # --- Misc ---
     line -> LF : (_) -> nothing
     line -> line LF : (_) -> nothing
+
+    beginblock -> BEGIN : (_) -> nothing
+    beginblock -> beginblock line : (_, _) -> nothing
+
+    endblock -> END : (_) -> nothing
+    endblock -> endblock line : (_, _) -> nothing
