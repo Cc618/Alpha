@@ -17,6 +17,7 @@
 
     # Keywords
     FUN     -> "fun[\b]" : (s) -> nothing
+    PROC    -> "proc[\b]" : (s) -> nothing
     TAKE    -> "take[\b]" : (s) -> nothing
     BEGIN   -> "begin[\b]" : (s) -> nothing
     END     -> "end[\b]" : (s) -> nothing
@@ -55,12 +56,16 @@
 
     # --- Declarations ---
     decl -> declfun : (data) -> data
+    decl -> declproc : (data) -> data
     decl -> declint : (data) -> data
 
     declint -> LET ID BE exp : (_, id, _, exp) -> decl_new(decltype_new(k_int_t), id, value=exp)
 
     declfun -> FUN ID line arglist line stmt : (_, id, _, args, _, body) -> decl_new(decltype_new(k_fn_t, args=args), id, body=body)
     declfun -> FUN ID line stmt : (_, id, _, body) -> decl_new(decltype_new(k_fn_t), id, body=body)
+
+    declproc -> PROC ID line arglist line stmt : (_, id, _, args, _, body) -> decl_new(decltype_new(k_proc_t, args=args), id, body=body)
+    declproc -> PROC ID line stmt : (_, id, _, body) -> decl_new(decltype_new(k_proc_t), id, body=body)
 
     # List of arguments for functions : take a, b, ...
     arglist -> TAKE ID : (_, id) -> [arg_new(id)]

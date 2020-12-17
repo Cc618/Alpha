@@ -48,7 +48,7 @@ end
 
 # TODO : Multiple LF
 code = """
-fun hello
+proc hello
 begin
     # let x be 42
     # let y be -618
