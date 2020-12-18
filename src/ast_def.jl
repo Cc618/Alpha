@@ -93,6 +93,7 @@ mutable struct Arg
     id
 end
 
+# C to asm test flags
 test_operators = Dict(
         ">" => "jg",
         ">=" => "jge",

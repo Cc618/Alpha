@@ -17,8 +17,7 @@ stmt_newloop(init::Union{Stmt, Nothing}, condition::Exp, iter::Union{Stmt, Nothi
 # TODO : Verify
 function stmt_newloopwith(id, from, to, body)
     init = stmt_newdecl(decl_newint(id, from))
-    # TODO : Check test operator
-    condition = exp_newtest(exp_newid(id), "le", to)
+    condition = exp_newtest(exp_newid(id), "<=", to)
     iter = exp_newset(exp_newid(id), exp_newadd(exp_newid(id), exp_newint(1)))
 
     return stmt_newloop(init, condition, stmt_newexp(iter), body)

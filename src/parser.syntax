@@ -67,7 +67,7 @@
     decl -> declproc : (data) -> data
     decl -> declint : (data) -> data
 
-    declint -> LET ID BE exp : (_, id, _, exp) -> decl_new(decltype_new(k_int_t), id, value=exp)
+    declint -> LET ID BE exp : (_, id, _, exp) -> decl_newint(id, exp)
 
     declfun -> FUN ID line arglist line stmt : (_, id, _, args, _, body) -> decl_new(decltype_new(k_fn_t, args=args), id, body=body)
     declfun -> FUN ID line stmt : (_, id, _, body) -> decl_new(decltype_new(k_fn_t), id, body=body)
@@ -120,15 +120,15 @@
     int7 -> int6 : (data) -> data
 
     int6 -> int5 : (data) -> data
-    int6 -> int6 IS int5 : (l, _, r) -> exp_newtest(l, "e", r)
-    int6 -> int6 NE int5 : (l, _, r) -> exp_newtest(l, "ne", r)
+    int6 -> int6 IS int5 : (l, _, r) -> exp_newtest(l, "==", r)
+    int6 -> int6 NE int5 : (l, _, r) -> exp_newtest(l, "!=", r)
 
     int5 -> int4 : (data) -> data
     # TODO : Verify operator type
-    int5 -> int5 LE int4 : (l, _, r) -> exp_newtest(l, "le", r)
-    int5 -> int5 LT int4 : (l, _, r) -> exp_newtest(l, "lt", r)
-    int5 -> int5 GE int4 : (l, _, r) -> exp_newtest(l, "ge", r)
-    int5 -> int5 GT int4 : (l, _, r) -> exp_newtest(l, "gt", r)
+    int5 -> int5 LE int4 : (l, _, r) -> exp_newtest(l, "<=", r)
+    int5 -> int5 LT int4 : (l, _, r) -> exp_newtest(l, "<", r)
+    int5 -> int5 GE int4 : (l, _, r) -> exp_newtest(l, ">=", r)
+    int5 -> int5 GT int4 : (l, _, r) -> exp_newtest(l, ">", r)
 
     int4 -> int3 : (data) -> data
     int4 -> int4 ADD int3 : (l, _, r) -> exp_newadd(l, r)

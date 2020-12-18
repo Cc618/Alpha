@@ -48,20 +48,6 @@ end
 
 # TODO : Multiple LF
 code = """
-# proc hello
-# begin
-#     # let x be 42
-#     # let y be -618
-
-#     # x := 3 < 2 * y
-
-#     # return 3 < 2 is false
-
-#     loop with x from 6 to 8
-#         let a be x
-
-# end
-
 fun fac
 take n
 begin
@@ -71,8 +57,8 @@ begin
     begin
         let result be 1
 
-        loop with i from 1 to n
-            result := result * n
+        # loop with i from 1 to n
+        #     result := result * n
 
         return result
     end
@@ -82,8 +68,15 @@ end
 # TODO : Add on the parser if no \n at the end
 code[end] != '\n' && (code *= "\n")
 
-ast = parse(code)
-println(ast)
+ctx = parse(code)
+# println(ast)
+
+semanticanalysis!(ctx)
+open("tests/source.asm", "w") do io
+    println(io, codegen!(ctx))
+end
+
+println("Done")
 
 exit()
 
