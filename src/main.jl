@@ -57,8 +57,8 @@ begin
 
     # return 3 < 2 is false
 
-    loop when x < 618
-        x := x + 1
+    loop with x from 6 to 8
+        let a be x
 
 end
 """

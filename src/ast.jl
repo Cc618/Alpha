@@ -12,6 +12,18 @@ stmt_newifelse(condition::Exp, iftrue, iffalse = nothing) =
 stmt_newloop(init::Union{Stmt, Nothing}, condition::Exp, iter::Union{Stmt, Nothing}, body::Stmt) =
         stmt_new(k_stmt_loop, exp=condition, initbody=init, iterbody=iter, loopbody=body)
 
+# Wrappers
+# loop with <id> from <from> to <to>
+# TODO : Verify
+function stmt_newloopwith(id, from, to, body)
+    init = stmt_newdecl(decl_newint(id, from))
+    # TODO : Check test operator
+    condition = exp_newtest(exp_newid(id), "le", to)
+    iter = exp_newset(exp_newid(id), exp_newadd(exp_newid(id), exp_newint(1)))
+
+    return stmt_newloop(init, condition, stmt_newexp(iter), body)
+end
+
 # --- Exp ---
 exp_newint(value::Int) = exp_new(k_exp_int, type=t_int, value=value)
 exp_newid(id::String) = exp_new(k_exp_id, id=id)

@@ -30,6 +30,8 @@
     LOOP    -> "loop[\b]" : (s) -> nothing
     WITH    -> "with[\b]" : (s) -> nothing
     WHEN    -> "when[\b]" : (s) -> nothing
+    FROM    -> "from[\b]" : (s) -> nothing
+    TO      -> "to[\b]" : (s) -> nothing
 
     # TODO : If necessary, remove blanks at the end (and test whether naming a variable true... is possible)
     # Try otherwise in the parser : ID -> true ID
@@ -101,6 +103,7 @@
     # While
     # TODO : Check nothing is possible in init / iter
     stmtloop -> LOOP WHEN exp line stmt : (_, _, condition, _, body) -> stmt_newloop(nothing, condition, nothing, body)
+    stmtloop -> LOOP WITH ID FROM exp TO exp line stmt : (_, _, id, _, from, _, to, _, body) -> stmt_newloopwith(id, from, to, body)
 
     # --- Expressions ---
     exp -> int9 : (data) -> data
