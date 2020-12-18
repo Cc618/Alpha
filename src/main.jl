@@ -57,8 +57,15 @@ begin
     begin
         let result be 1
 
-        # loop with i from 1 to n
-        #     result := result * n
+        # let i be 1
+        # loop when i <= n
+        # begin
+        #     result := result * i
+        #     i := i + 1
+        # end
+
+        loop with i from 1 to n
+            result := result * i
 
         return result
     end

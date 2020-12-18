@@ -98,7 +98,7 @@ function stmt_codegen!(ctx, stmt)
 
         # stmt.exp.reg is 0 if false
         exp_codegen!(ctx, stmt.exp)
-        ctx_push!(ctx, "test $(regstr(stmt.exp.reg))")
+        ctx_push!(ctx, "cmp $(regstr(stmt.exp.reg)), 0")
         ctx_freescratch!(ctx, stmt.exp.reg)
         ctx_push!(ctx, "je $(labelstr(labelfalse))")
 
@@ -124,9 +124,9 @@ function stmt_codegen!(ctx, stmt)
 
         # Test condition
         exp_codegen!(ctx, condition)
-        ctx_push!(ctx, "test $(regstr(condition.reg))")
+        ctx_push!(ctx, "cmp $(regstr(condition.reg)), 0")
         ctx_freescratch!(ctx, condition.reg)
-        ctx_push!(ctx, "jne $(labelstr(label_end))")
+        ctx_push!(ctx, "je $(labelstr(label_end))")
 
         # Body
         stmt_codegen!(ctx, body)
