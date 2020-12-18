@@ -62,6 +62,7 @@
     ctx -> ctx decl : (ctx, decl) -> begin push!(ctx.decls, decl); return ctx end
 
     # --- Declarations ---
+    decl -> LF decl : (_, decl) -> decl
     decl -> declfun : (data) -> data
     decl -> declproc : (data) -> data
     decl -> declint : (data) -> data
@@ -103,6 +104,8 @@
     # While
     # TODO : Check nothing is possible in init / iter
     stmtloop -> LOOP WHEN exp line stmt : (_, _, condition, _, body) -> stmt_newloop(nothing, condition, nothing, body)
+
+    # For
     stmtloop -> LOOP WITH ID FROM exp TO exp line stmt : (_, _, id, _, from, _, to, _, body) -> stmt_newloopwith(id, from, to, body)
 
     # --- Expressions ---

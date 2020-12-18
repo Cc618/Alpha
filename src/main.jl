@@ -48,18 +48,34 @@ end
 
 # TODO : Multiple LF
 code = """
-proc hello
+# proc hello
+# begin
+#     # let x be 42
+#     # let y be -618
+
+#     # x := 3 < 2 * y
+
+#     # return 3 < 2 is false
+
+#     loop with x from 6 to 8
+#         let a be x
+
+# end
+
+fun fac
+take n
 begin
-    # let x be 42
-    # let y be -618
+    if n < 0
+        return -1
+    else
+    begin
+        let result be 1
 
-    # x := 3 < 2 * y
+        loop with i from 1 to n
+            result := result * n
 
-    # return 3 < 2 is false
-
-    loop with x from 6 to 8
-        let a be x
-
+        return result
+    end
 end
 """
 
