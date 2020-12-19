@@ -124,7 +124,6 @@
     int6 -> int6 NE int5 : (l, _, r) -> exp_newtest(l, "!=", r)
 
     int5 -> int4 : (data) -> data
-    # TODO : Verify operator type
     int5 -> int5 LE int4 : (l, _, r) -> exp_newtest(l, "<=", r)
     int5 -> int5 LT int4 : (l, _, r) -> exp_newtest(l, "<", r)
     int5 -> int5 GE int4 : (l, _, r) -> exp_newtest(l, ">=", r)
@@ -141,6 +140,11 @@
     # TODO : Verify
     int1 -> primary : (data) -> data
     int1 -> LPAREN int9 RPAREN : (_, data, _) -> data
+    int1 -> ID calllist : (id, args) -> exp_newcall(id, args)
+
+    calllist -> LPAREN int9 : (_, data) -> [data]
+    calllist -> calllist RPAREN : (data, _) -> data
+    calllist -> calllist COMMA int9 : (args, _, n) -> begin push!(args, n); return args end
 
     unary -> primary : (data) -> data
 

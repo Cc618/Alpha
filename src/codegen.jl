@@ -100,11 +100,12 @@ function stmt_codegen!(ctx, stmt)
         exp_codegen!(ctx, stmt.exp)
         ctx_push!(ctx, "cmp $(regstr(stmt.exp.reg)), 0")
         ctx_freescratch!(ctx, stmt.exp.reg)
-        ctx_push!(ctx, "je $(labelstr(labelfalse))")
+        # TODO : Debug
+        ctx_push!(ctx, "je $(labelstr(labelfalse))  ; -> je labelfalse")
 
         # True
         stmt_codegen!(ctx, stmt.ifbody)
-        ctx_push!(ctx, "jmp $(labelstr(labelend))")
+        ctx_push!(ctx, "jmp $(labelstr(labelend))  ; -> je labelend")
 
         # False
         label_codegen!(ctx, labelfalse)
@@ -225,6 +226,13 @@ function exp_codegen!(ctx, exp)
         ctx_freescratch!(ctx, r.reg)
         exp.reg = l.reg
     elseif exp.kind == k_exp_call
+        # Push all scratch regs
+        push_scratch = scratchregs_new()
+        push_scratch = [r for r in push_scratch if r ∉ ctx.scratch_regs]
+        for r in push_scratch
+            ctx_push!(ctx, "push $(regstr(r))")
+        end
+
         for (i, arg) in enumerate(exp.args)
             exp_codegen!(ctx, arg)
 
@@ -239,14 +247,19 @@ function exp_codegen!(ctx, exp)
         # Call
         ctx_push!(ctx, "call $(exp.id)")
 
-        # Save return
-        exp.reg = ctx_newscratch!(ctx)
-        ctx_push!(ctx, "mov $(exp.reg), rax")
-
         # Pop arg regs
         for i in length(exp.args):-1:1
             ctx_push!(ctx, "pop $(regstr(arg_regs[i]))")
         end
+
+        # Pop scratch regs
+        for r in reverse(push_scratch)
+            ctx_push!(ctx, "pop $(regstr(r))")
+        end
+
+        # Save return
+        exp.reg = ctx_newscratch!(ctx)
+        ctx_push!(ctx, "mov $(exp.reg), rax")
     else
         error("Invalid expession kind $(exp.kind)")
     end

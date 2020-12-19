@@ -48,28 +48,27 @@ end
 
 # TODO : Multiple LF
 code = """
-fun fac
-take n
+# Power function (recursive)
+fun ipow
+take x, n
 begin
-    if n < 0
-        return -1
+    # if n < 0
+        # return -1
+    # else
+    if n is 0
+        return 1
     else
-    begin
-        let result be 1
-
-        # let i be 1
-        # loop when i <= n
-        # begin
-        #     result := result * i
-        #     i := i + 1
-        # end
-
-        loop with i from 1 to n
-            result := result * i
-
-        return result
-    end
+        return x * ipow(x, n + -1)
 end
+
+# fun rec
+# take n
+# begin
+#     if n is 0
+#         return 1
+#     else
+#         return n + rec(0) # n + -1)
+# end
 """
 
 # TODO : Add on the parser if no \n at the end
