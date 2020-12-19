@@ -100,12 +100,11 @@ function stmt_codegen!(ctx, stmt)
         exp_codegen!(ctx, stmt.exp)
         ctx_push!(ctx, "cmp $(regstr(stmt.exp.reg)), 0")
         ctx_freescratch!(ctx, stmt.exp.reg)
-        # TODO : Debug
-        ctx_push!(ctx, "je $(labelstr(labelfalse))  ; -> je labelfalse")
+        ctx_push!(ctx, "je $(labelstr(labelfalse))")
 
         # True
         stmt_codegen!(ctx, stmt.ifbody)
-        ctx_push!(ctx, "jmp $(labelstr(labelend))  ; -> je labelend")
+        ctx_push!(ctx, "jmp $(labelstr(labelend))")
 
         # False
         label_codegen!(ctx, labelfalse)
@@ -169,6 +168,15 @@ function exp_codegen!(ctx, exp)
         ctx_push!(ctx, "add $(regstr(l.reg)), $(regstr(r.reg))")
 
         ctx_freescratch!(ctx, r.reg)
+        exp.reg = l.reg
+    elseif exp.kind == k_exp_neg
+        l = exp.left
+
+        exp_codegen!(ctx, l)
+
+        # l = -l
+        ctx_push!(ctx, "neg $(regstr(l.reg))")
+
         exp.reg = l.reg
     elseif exp.kind == k_exp_mul
         l, r = exp.left, exp.right

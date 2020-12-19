@@ -46,29 +46,16 @@ begin
 end
 """
 
-# TODO : Multiple LF
+# TODO : Negate value
 code = """
-# Power function (recursive)
-fun ipow
-take x, n
+fun fib
+take n
 begin
-    # if n < 0
-        # return -1
-    # else
-    if n is 0
+    if n <= 1
         return 1
     else
-        return x * ipow(x, n + -1)
+        return fib(n - 1) + fib(n - 2)
 end
-
-# fun rec
-# take n
-# begin
-#     if n is 0
-#         return 1
-#     else
-#         return n + rec(0) # n + -1)
-# end
 """
 
 # TODO : Add on the parser if no \n at the end
