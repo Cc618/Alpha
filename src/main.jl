@@ -34,7 +34,7 @@ TODO : In documentation
 | 7  | and |
 | 8  | or |
 | 9  | not |
-| 10 | := += -= *= |
+| 10 | := += -= *= /= |
 =#
 
 code = """
@@ -46,10 +46,12 @@ begin
 end
 """
 
+# TODO : Divide
 code = """
 fun fib
 take n
 begin
+    n -= 1
     return n > 2 and n <= 3 or n is 42
 end
 """

@@ -47,6 +47,10 @@
 
     # Operators
     SET     -> "[\:]=" : (s) -> nothing
+    RADD    -> "+=" : (s) -> nothing
+    RSUB    -> "-=" : (s) -> nothing
+    RMUL    -> "[\*]=" : (s) -> nothing
+    RDIV    -> "/=" : (s) -> nothing
     ADD     -> "+" : (s) -> nothing
     SUB     -> "-" : (s) -> nothing
     MUL     -> "[\*]" : (s) -> nothing
@@ -116,11 +120,15 @@
 
     # int<precedance>
     int10 -> int9 : (data) -> data
-    # not x <=> x == false
-    int10 -> NOT int9 : (_, data) -> exp_newtest(data, "==", exp_newint(0))
+    int10 -> unary SET int9 : (lhs, _, data) -> exp_newset(lhs, data)
+    # x OP= a <=> x = x OP a
+    int10 -> unary RADD int9 : (lhs, _, data) -> exp_newset(lhs, exp_newadd(lhs, data))
+    int10 -> unary RSUB int9 : (lhs, _, data) -> exp_newset(lhs, exp_newadd(lhs, exp_newneg(data)))
+    int10 -> unary RMUL int9 : (lhs, _, data) -> exp_newset(lhs, exp_newmul(lhs, data))
 
     int9 -> int8 : (data) -> data
-    int9 -> unary SET exp : (lhs, _, data) -> exp_newset(lhs, data)
+    # not x <=> x == false
+    int9 -> NOT int8 : (_, data) -> exp_newtest(data, "==", exp_newint(0))
 
     int8 -> int7 : (data) -> data
     int8 -> int8 OR int7 : (l, _, r) -> exp_newbool(l, "or", r)
@@ -149,7 +157,6 @@
     int2 -> int1 : (data) -> data
     int2 -> SUB int1 : (_, data) -> exp_newneg(data)
 
-    # TODO : Verify
     int1 -> primary : (data) -> data
     int1 -> LPAREN int9 RPAREN : (_, data, _) -> data
     int1 -> ID calllist : (id, args) -> exp_newcall(id, args)
