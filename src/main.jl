@@ -46,7 +46,7 @@ begin
 end
 """
 
-# TODO : Divide
+# TODO : Divide + Modulo
 code = """
 fun fib
 take n
