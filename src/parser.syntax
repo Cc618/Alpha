@@ -32,6 +32,9 @@
     WHEN    -> "when[\b]" : (s) -> nothing
     FROM    -> "from[\b]" : (s) -> nothing
     TO      -> "to[\b]" : (s) -> nothing
+    NOT     -> "not[\b]" : (s) -> nothing
+    OR      -> "or[\b]" : (s) -> nothing
+    AND     -> "and[\b]" : (s) -> nothing
 
     # TODO : If necessary, remove blanks at the end (and test whether naming a variable true... is possible)
     # Try otherwise in the parser : ID -> true ID
@@ -109,9 +112,13 @@
     stmtloop -> LOOP WITH ID FROM exp TO exp line stmt : (_, _, id, _, from, _, to, _, body) -> stmt_newloopwith(id, from, to, body)
 
     # --- Expressions ---
-    exp -> int9 : (data) -> data
+    exp -> int10 : (data) -> data
 
     # int<precedance>
+    int10 -> int9 : (data) -> data
+    # not x <=> x == false
+    int10 -> NOT int9 : (_, data) -> exp_newtest(data, "==", exp_newint(0))
+
     int9 -> int8 : (data) -> data
     int9 -> unary SET exp : (lhs, _, data) -> exp_newset(lhs, data)
 
@@ -131,6 +138,7 @@
 
     int4 -> int3 : (data) -> data
     int4 -> int4 ADD int3 : (l, _, r) -> exp_newadd(l, r)
+    # a - b <=> a + -b
     int4 -> int4 SUB int3 : (l, _, r) -> exp_newadd(l, exp_newneg(r))
 
     int3 -> int2 : (data) -> data
@@ -144,9 +152,9 @@
     int1 -> LPAREN int9 RPAREN : (_, data, _) -> data
     int1 -> ID calllist : (id, args) -> exp_newcall(id, args)
 
-    calllist -> LPAREN int9 : (_, data) -> [data]
+    calllist -> LPAREN exp : (_, data) -> [data]
     calllist -> calllist RPAREN : (data, _) -> data
-    calllist -> calllist COMMA int9 : (args, _, n) -> begin push!(args, n); return args end
+    calllist -> calllist COMMA exp : (args, _, n) -> begin push!(args, n); return args end
 
     unary -> primary : (data) -> data
 

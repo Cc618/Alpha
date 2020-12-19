@@ -25,15 +25,16 @@ TODO : In documentation
 # Operator Precedance
 | Precedance | Operators |
 | ---------- | --------- |
-| 1 | call() |
-| 2 | not - (unary) |
-| 3 | * / |
-| 4 | + - |
-| 5 | <= >= < > |
-| 6 | is != |
-| 7 | and |
-| 8 | or |
-| 9 | := += -= *= |
+| 1  | call() |
+| 2  | - (unary) |
+| 3  | * / |
+| 4  | + - |
+| 5  | <= >= < > |
+| 6  | is != |
+| 7  | and |
+| 8  | or |
+| 9  | not |
+| 10 | := += -= *= |
 =#
 
 
@@ -46,15 +47,11 @@ begin
 end
 """
 
-# TODO : Negate value
 code = """
 fun fib
 take n
 begin
-    if n <= 1
-        return 1
-    else
-        return fib(n - 1) + fib(n - 2)
+    return not n is 2 * 2
 end
 """
 
