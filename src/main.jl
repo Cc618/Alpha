@@ -26,7 +26,7 @@ TODO : In documentation
 | Precedance | Operators |
 | ---------- | --------- |
 | 1 | call() |
-| 2 | not |
+| 2 | not - (unary) |
 | 3 | * / |
 | 4 | + - |
 | 5 | <= >= < > |

@@ -137,6 +137,7 @@
     int3 -> int3 MUL int2 : (l, _, r) -> exp_newmul(l, r)
 
     int2 -> int1 : (data) -> data
+    int2 -> SUB int1 : (_, data) -> exp_newneg(data)
 
     # TODO : Verify
     int1 -> primary : (data) -> data
