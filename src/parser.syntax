@@ -123,8 +123,10 @@
     int9 -> unary SET exp : (lhs, _, data) -> exp_newset(lhs, data)
 
     int8 -> int7 : (data) -> data
+    int8 -> int8 OR int7 : (l, _, r) -> exp_newbool(l, "or", r)
 
     int7 -> int6 : (data) -> data
+    int7 -> int7 AND int6 : (l, _, r) -> exp_newbool(l, "and", r)
 
     int6 -> int5 : (data) -> data
     int6 -> int6 IS int5 : (l, _, r) -> exp_newtest(l, "==", r)

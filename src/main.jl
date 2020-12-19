@@ -37,7 +37,6 @@ TODO : In documentation
 | 10 | := += -= *= |
 =#
 
-
 code = """
 fun hello
 take a, b, c
@@ -51,7 +50,7 @@ code = """
 fun fib
 take n
 begin
-    return not n is 2 * 2
+    return n > 2 and n <= 3 or n is 42
 end
 """
 

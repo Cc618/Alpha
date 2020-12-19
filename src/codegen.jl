@@ -158,6 +158,15 @@ function exp_codegen!(ctx, exp)
         exp.reg = ctx_newscratch!(ctx)
 
         ctx_push!(ctx, "mov $(regstr(exp.reg)), $(exp.value)")
+    elseif exp.kind == k_exp_neg
+        l = exp.left
+
+        exp_codegen!(ctx, l)
+
+        # l = -l
+        ctx_push!(ctx, "neg $(regstr(l.reg))")
+
+        exp.reg = l.reg
     elseif exp.kind == k_exp_add
         l, r = exp.left, exp.right
 
@@ -169,14 +178,18 @@ function exp_codegen!(ctx, exp)
 
         ctx_freescratch!(ctx, r.reg)
         exp.reg = l.reg
-    elseif exp.kind == k_exp_neg
-        l = exp.left
+    elseif exp.kind == k_exp_bool
+        l, r = exp.left, exp.right
 
         exp_codegen!(ctx, l)
+        exp_codegen!(ctx, r)
 
-        # l = -l
-        ctx_push!(ctx, "neg $(regstr(l.reg))")
+        @assert exp.operator ∈ ("and", "or", "xor", "nand", "nor") "Invalid booleand operator $(exp.operator)"
 
+        # l op r
+        ctx_push!(ctx, "$(exp.operator) $(regstr(l.reg)), $(regstr(r.reg))")
+
+        ctx_freescratch!(ctx, r.reg)
         exp.reg = l.reg
     elseif exp.kind == k_exp_mul
         l, r = exp.left, exp.right
