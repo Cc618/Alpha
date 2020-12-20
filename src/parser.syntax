@@ -160,6 +160,7 @@
     int1 -> primary : (data) -> data
     int1 -> LPAREN int9 RPAREN : (_, data, _) -> data
     int1 -> ID calllist : (id, args) -> exp_newcall(id, args, location=parser_pos())
+    int1 -> ID LPAREN RPAREN : (id, _, _) -> exp_newcall(id, Exp[], location=parser_pos())
 
     calllist -> LPAREN exp : (_, data) -> [data]
     calllist -> calllist RPAREN : (data, _) -> data

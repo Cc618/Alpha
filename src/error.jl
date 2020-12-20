@@ -24,5 +24,5 @@ function alphaerror(msg, ctx, loc)
 end
 
 macro alphaassert(condition, location, msg)
-    return :( $(esc(condition)) ? nothing : alphaerror($(esc(msg)), ctx, $(esc(location))) )
+    return :( ($(esc(condition))) ? nothing : alphaerror(($(esc(msg))), ctx, $(esc(location))) )
 end

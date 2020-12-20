@@ -133,4 +133,4 @@ end
 
 symtable_new(decl) = SymTable(Dict{String, Sym}(), 0, decl)
 
-decltype_new(kind::TypeKind; args = nothing) = DeclType(kind, args)
+decltype_new(kind::TypeKind; args = []) = DeclType(kind, args)

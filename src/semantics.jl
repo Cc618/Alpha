@@ -3,9 +3,7 @@
 function semanticanalysis!(ctx)
     # 1st pass : Register global scope functions
     for decl in ctx.decls
-        # TODO : Error
-        @assert decl.type.kind == k_proc_t || decl.type.kind == k_fn_t
-                "Unsupported global declaration type $(decl.type)"
+        @alphaassert decl.type.kind == k_proc_t || decl.type.kind == k_fn_t decl.location "Unsupported global declaration type $(decl.type)"
 
         ctx_newsymglobal!(ctx, decl.type, decl.id)
     end
@@ -19,8 +17,7 @@ end
 # Semantic analysis for a declaration
 function decl_resolve!(ctx, decl, pushsym=true)
     if decl.type.kind == k_proc_t || decl.type.kind == k_fn_t
-        # TODO : Error
-        @assert length(ctx.scopes) == 1 "Can't declare functions in a local scope"
+        @alphaassert length(ctx.scopes) == 1 decl.location "Can't declare functions in a local scope"
 
         ctx_pushscope!(ctx, decl)
 
@@ -33,11 +30,9 @@ function decl_resolve!(ctx, decl, pushsym=true)
     elseif decl.type.kind == k_int_t
         exp_resolve!(ctx, decl.value)
 
-        # TODO : Error
-        @assert decl.type == decl.value.type "Invalid type of expression"
+        @alphaassert decl.type == decl.value.type decl.location "Invalid type of expression"
     else
-        # TODO : Custom error
-        error("Unsupported type '$(decl.type)' for declaration")
+        alphaerror("Unsupported type '$(decl.type)' for declaration", ctx, decl.location)
     end
 
     # Declare this symbol to the inner scope
@@ -67,15 +62,13 @@ function stmt_resolve!(ctx, stmt)
         # TODO : Empty return
 
         # TODO : Check function not proc
-        # TODO : Error
-        @assert stmt.exp.type.kind == k_int_t "Functions must return ints"
+        @alphaassert stmt.exp.type.kind == k_int_t stmt.location "Functions must return ints"
     elseif stmt.kind == k_stmt_ifelse
         exp_resolve!(ctx, stmt.exp)
         stmt_resolve!(ctx, stmt.ifbody)
         stmt_resolve!(ctx, stmt.elsebody)
 
-        # TODO : Error
-        @assert stmt.exp.type.kind == k_int_t "Invalid condition expression"
+        @alphaassert stmt.exp.type.kind == k_int_t stmt.location "Invalid condition expression"
     elseif stmt.kind == k_stmt_loop
         ctx_pushscope!(ctx)
 
@@ -86,8 +79,7 @@ function stmt_resolve!(ctx, stmt)
 
         ctx_popscope!(ctx)
 
-        # TODO : Error
-        @assert stmt.exp.type.kind == k_int_t "Invalid condition expression"
+        @alphaassert stmt.exp.type.kind == k_int_t stmt.location "Invalid condition expression"
     elseif stmt.kind == k_stmt_block
         ctx_pushscope!(ctx)
 
@@ -97,7 +89,7 @@ function stmt_resolve!(ctx, stmt)
 
         ctx_popscope!(ctx)
     else
-        error("Unsupported statement kind $(stmt.kind)")
+        alphaerror("Unsupported statement kind $(stmt.kind)", ctx, stmt.location)
     end
 end
 
@@ -112,8 +104,7 @@ function exp_resolve!(ctx, exp)
         exp_resolve!(ctx, exp.right)
 
         if exp.right != nothing && exp.right.type != exp.left.type
-            # TODO : Error
-            error("Invalid type for this expression")
+            alphaerror("Invalid type for this expression", ctx, stmt.location)
         end
 
         exp.type = exp.left.type
@@ -122,53 +113,27 @@ function exp_resolve!(ctx, exp)
     if exp.kind == k_exp_id
         exp.sym = ctx_fetchscope(ctx, exp.id)
 
-        # TODO : Error
-        # @assert exp.sym != nothing "Not found variable named '$(exp.id)'"
-
-        # println(@macroexpand @alphaassert exp.sym != nothing exp.location "Not found variable named '$(exp.id)'")
         @alphaassert exp.sym != nothing exp.location "Not found variable named '$(exp.id)'"
-        # if !(exp.sym != nothing)
-        #     pos = exp.location[begin]
-
-        #     line_start = findprev('\n', ctx.sourcecode, pos.index)
-        #     line_end = findnext('\n', ctx.sourcecode, pos.index + 1)
-
-        #     line_start == nothing && (line_start = 0)
-        #     line_end == nothing && (line_end = length(ctx.sourcecode) + 1)
-
-        #     println(stderr, "--- Error Info ---")
-        #     println(stderr, "Error from $(exp.location[begin]) to $(exp.location[end]):")
-        #     if line_start < line_end
-        #         println(stderr, ctx.sourcecode[line_start + 1:line_end - 1])
-        #         println(stderr, repeat(' ', pos.column - 1) * "^")
-        #     end
-
-        #     error("Not found variable named '$(exp.id)'")
-        # end
 
         exp.type = exp.sym.type
     elseif exp.kind == k_exp_int
         exp.type = t_int
     elseif exp.kind == k_exp_set
-        # TODO : Error
-        @assert exp.left.sym != nothing "Can't assign an rvalue"
+        @alphaassert exp.left.sym != nothing exp.location "Can't assign an rvalue"
     elseif exp.kind == k_exp_call
         # Check args
         for (i, arg) in enumerate(exp.args)
             exp_resolve!(ctx, arg)
 
-            # TODO : Error
-            @assert arg.type.kind == k_int_t "Invalid arg #$(i + 1) type, must be int"
+            @alphaassert arg.type.kind == k_int_t exp.location "Invalid arg #$(i + 1) type, must be int"
         end
 
         exp.type = t_int
         fun = ctx_fetchglobal(ctx, exp.id)
 
-        # TODO : Error
-        @assert fun.type.kind == k_fn_t "Invalid type for symbol $(exp.id), must be int function"
-        @assert length(fun.type.args) == length(exp.args)
-                "Invalid number of arguments to call $(fun.id), $(length(fun.type.args)) args required"
+        @alphaassert fun.type.kind == k_fn_t exp.location "Invalid type for symbol $(exp.id), must be int function"
+        @alphaassert length(fun.type.args) == length(exp.args) exp.location "Invalid number of arguments to call $(fun.id), $(length(fun.type.args)) args required"
     elseif exp.kind == k_exp_test
-        @assert haskey(test_operators, exp.operator) "Invalid conditional operator $(exp.operator)"
+        @alphaassert haskey(test_operators, exp.operator) exp.location "Invalid conditional operator $(exp.operator)"
     end
 end

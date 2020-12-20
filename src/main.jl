@@ -32,10 +32,15 @@ end
 
 # TODO : Divide + Modulo
 code = """
+fun tst
+take a
+begin
+end
+
 fun fib
 take n
 begin
-    n -= 1 + x
+    n -= 1 + tst()
     return n > 2 and n <= 3 or n is 42
 end
 """
