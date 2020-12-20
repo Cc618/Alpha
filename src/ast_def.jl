@@ -22,6 +22,7 @@ mutable struct Decl
     # Semantic analysis
     nlocals
     sym
+    location
 end
 
 # Statement
@@ -40,6 +41,7 @@ mutable struct Stmt
     initbody
     iterbody
     loopbody
+    location
 end
 
 # Expression
@@ -61,6 +63,7 @@ mutable struct Exp
     sym
     # For code gen
     reg
+    location
 end
 
 # Symbol
@@ -105,21 +108,23 @@ test_operators = Dict(
 
 # --- Constructors ---
 function decl_new(type::DeclType, id::String; value = nothing,
-        body = nothing)
-    return Decl(type, id, value, body, 0, nothing)
+        body = nothing, location = nothing)
+    return Decl(type, id, value, body, 0, nothing, location)
 end
 
 function stmt_new(kind::StmtKind; stmts = nothing, exp = nothing,
         decl = nothing, ifbody = nothing, elsebody = nothing,
-        initbody = nothing, iterbody = nothing, loopbody = nothing)
+        initbody = nothing, iterbody = nothing, loopbody = nothing,
+        location = nothing)
     return Stmt(kind, stmts, exp, decl, ifbody, elsebody,
-            initbody, iterbody, loopbody)
+            initbody, iterbody, loopbody, location)
 end
 
 function exp_new(kind::ExpKind; type = nothing, left = nothing,
         right = nothing, value = nothing, id = nothing, args = nothing,
-        operator=nothing, sym = nothing, register = nothing)
-    return Exp(kind, type, left, right, value, id, args, operator, sym, register)
+        operator=nothing, sym = nothing, register = nothing,
+        location = nothing)
+    return Exp(kind, type, left, right, value, id, args, operator, sym, register, location)
 end
 
 function sym_new(kind::SymKind, type::DeclType, id::String, position = 0)

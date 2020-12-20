@@ -28,7 +28,11 @@ function _pparse(table, tokens, prods, tok2index, produce_rules)
         action = table[state, tok2index[token]]
 
         if action == nothing
-            error("Syntax error from $(token.start_pos) to $(token.end_pos) : Invalid token $token (data = $(token.data))")
+            if token.id == "\$"
+                error("Syntax error : Unexpected end of file")
+            else
+                error("Syntax error from $(token.start_pos) to $(token.end_pos) : Invalid token $token (data = $(token.data))")
+            end
         elseif action == "acc"
             @assert length(tokens) == 1 "Unexpected end of file"
 

@@ -74,13 +74,13 @@
     decl -> declproc : (data) -> data
     decl -> declint : (data) -> data
 
-    declint -> LET ID BE exp : (_, id, _, exp) -> decl_newint(id, exp)
+    declint -> LET ID BE exp : (_, id, _, exp) -> decl_newint(id, exp, location=parser_pos())
 
-    declfun -> FUN ID line arglist line stmt : (_, id, _, args, _, body) -> decl_new(decltype_new(k_fn_t, args=args), id, body=body)
-    declfun -> FUN ID line stmt : (_, id, _, body) -> decl_new(decltype_new(k_fn_t), id, body=body)
+    declfun -> FUN ID line arglist line stmt : (_, id, _, args, _, body) -> decl_new(decltype_new(k_fn_t, args=args), id, body=body, location=parser_pos())
+    declfun -> FUN ID line stmt : (_, id, _, body) -> decl_new(decltype_new(k_fn_t), id, body=body, location=parser_pos())
 
-    declproc -> PROC ID line arglist line stmt : (_, id, _, args, _, body) -> decl_new(decltype_new(k_proc_t, args=args), id, body=body)
-    declproc -> PROC ID line stmt : (_, id, _, body) -> decl_new(decltype_new(k_proc_t), id, body=body)
+    declproc -> PROC ID line arglist line stmt : (_, id, _, args, _, body) -> decl_new(decltype_new(k_proc_t, args=args), id, body=body, location=parser_pos())
+    declproc -> PROC ID line stmt : (_, id, _, body) -> decl_new(decltype_new(k_proc_t), id, body=body, location=parser_pos())
 
     # List of arguments for functions : take a, b, ...
     arglist -> TAKE ID : (_, id) -> [arg_new(id)]
@@ -97,69 +97,69 @@
 
     stmtblock -> stmtblock_begin endblock : (stmt, _) -> stmt
     stmtblock_begin -> stmtblock_begin stmt : (block, stmt) -> begin push!(block.stmts, stmt); return block end
-    stmtblock_begin -> beginblock : (_) -> stmt_newblock()
+    stmtblock_begin -> beginblock : (_) -> stmt_newblock(location=parser_pos())
 
-    stmtdecl -> decl line : (decl, _) -> stmt_newdecl(decl)
+    stmtdecl -> decl line : (decl, _) -> stmt_newdecl(decl, location=parser_pos())
 
-    stmtexp -> exp line : (exp, _) -> stmt_newexp(exp)
+    stmtexp -> exp line : (exp, _) -> stmt_newexp(exp, location=parser_pos())
 
-    stmtreturn -> RETURN exp line : (_, exp, _) -> stmt_newreturn(exp)
+    stmtreturn -> RETURN exp line : (_, exp, _) -> stmt_newreturn(exp, location=parser_pos())
 
-    stmtif -> IF exp line stmt : (_, condition, _, iftrue) -> stmt_newifelse(condition, iftrue)
-    stmtif -> IF exp line stmt ELSE stmt : (_, condition, _, iftrue, _, iffalse) -> stmt_newifelse(condition, iftrue, iffalse)
+    stmtif -> IF exp line stmt : (_, condition, _, iftrue) -> stmt_newifelse(condition, iftrue, location=parser_pos())
+    stmtif -> IF exp line stmt ELSE stmt : (_, condition, _, iftrue, _, iffalse) -> stmt_newifelse(condition, iftrue, iffalse, location=parser_pos())
 
     # While
     # TODO : Check nothing is possible in init / iter
-    stmtloop -> LOOP WHEN exp line stmt : (_, _, condition, _, body) -> stmt_newloop(nothing, condition, nothing, body)
+    stmtloop -> LOOP WHEN exp line stmt : (_, _, condition, _, body) -> stmt_newloop(nothing, condition, nothing, body, location=parser_pos())
 
     # For
-    stmtloop -> LOOP WITH ID FROM exp TO exp line stmt : (_, _, id, _, from, _, to, _, body) -> stmt_newloopwith(id, from, to, body)
+    stmtloop -> LOOP WITH ID FROM exp TO exp line stmt : (_, _, id, _, from, _, to, _, body) -> stmt_newloopwith(id, from, to, body, location=parser_pos())
 
     # --- Expressions ---
     exp -> int10 : (data) -> data
 
     # int<precedance>
     int10 -> int9 : (data) -> data
-    int10 -> unary SET int9 : (lhs, _, data) -> exp_newset(lhs, data)
+    int10 -> unary SET int9 : (lhs, _, data) -> exp_newset(lhs, data, location=parser_pos())
     # x OP= a <=> x = x OP a
-    int10 -> unary RADD int9 : (lhs, _, data) -> exp_newset(lhs, exp_newadd(lhs, data))
-    int10 -> unary RSUB int9 : (lhs, _, data) -> exp_newset(lhs, exp_newadd(lhs, exp_newneg(data)))
-    int10 -> unary RMUL int9 : (lhs, _, data) -> exp_newset(lhs, exp_newmul(lhs, data))
+    int10 -> unary RADD int9 : (lhs, _, data) -> exp_newset(lhs, exp_newadd(lhs, data), location=parser_pos())
+    int10 -> unary RSUB int9 : (lhs, _, data) -> exp_newset(lhs, exp_newadd(lhs, exp_newneg(data)), location=parser_pos())
+    int10 -> unary RMUL int9 : (lhs, _, data) -> exp_newset(lhs, exp_newmul(lhs, data), location=parser_pos())
 
     int9 -> int8 : (data) -> data
     # not x <=> x == false
-    int9 -> NOT int8 : (_, data) -> exp_newtest(data, "==", exp_newint(0))
+    int9 -> NOT int8 : (_, data) -> exp_newtest(data, "==", exp_newint(0), location=parser_pos())
 
     int8 -> int7 : (data) -> data
-    int8 -> int8 OR int7 : (l, _, r) -> exp_newbool(l, "or", r)
+    int8 -> int8 OR int7 : (l, _, r) -> exp_newbool(l, "or", r, location=parser_pos())
 
     int7 -> int6 : (data) -> data
-    int7 -> int7 AND int6 : (l, _, r) -> exp_newbool(l, "and", r)
+    int7 -> int7 AND int6 : (l, _, r) -> exp_newbool(l, "and", r, location=parser_pos())
 
     int6 -> int5 : (data) -> data
-    int6 -> int6 IS int5 : (l, _, r) -> exp_newtest(l, "==", r)
-    int6 -> int6 NE int5 : (l, _, r) -> exp_newtest(l, "!=", r)
+    int6 -> int6 IS int5 : (l, _, r) -> exp_newtest(l, "==", r, location=parser_pos())
+    int6 -> int6 NE int5 : (l, _, r) -> exp_newtest(l, "!=", r, location=parser_pos())
 
     int5 -> int4 : (data) -> data
-    int5 -> int5 LE int4 : (l, _, r) -> exp_newtest(l, "<=", r)
-    int5 -> int5 LT int4 : (l, _, r) -> exp_newtest(l, "<", r)
-    int5 -> int5 GE int4 : (l, _, r) -> exp_newtest(l, ">=", r)
-    int5 -> int5 GT int4 : (l, _, r) -> exp_newtest(l, ">", r)
+    int5 -> int5 LE int4 : (l, _, r) -> exp_newtest(l, "<=", r, location=parser_pos())
+    int5 -> int5 LT int4 : (l, _, r) -> exp_newtest(l, "<", r, location=parser_pos())
+    int5 -> int5 GE int4 : (l, _, r) -> exp_newtest(l, ">=", r, location=parser_pos())
+    int5 -> int5 GT int4 : (l, _, r) -> exp_newtest(l, ">", r, location=parser_pos())
 
     int4 -> int3 : (data) -> data
-    int4 -> int4 ADD int3 : (l, _, r) -> exp_newadd(l, r)
+    int4 -> int4 ADD int3 : (l, _, r) -> exp_newadd(l, r, location=parser_pos())
     # a - b <=> a + -b
-    int4 -> int4 SUB int3 : (l, _, r) -> exp_newadd(l, exp_newneg(r))
+    int4 -> int4 SUB int3 : (l, _, r) -> exp_newadd(l, exp_newneg(r), location=parser_pos())
 
     int3 -> int2 : (data) -> data
-    int3 -> int3 MUL int2 : (l, _, r) -> exp_newmul(l, r)
+    int3 -> int3 MUL int2 : (l, _, r) -> exp_newmul(l, r, location=parser_pos())
 
     int2 -> int1 : (data) -> data
-    int2 -> SUB int1 : (_, data) -> exp_newneg(data)
+    int2 -> SUB int1 : (_, data) -> exp_newneg(data, location=parser_pos())
 
     int1 -> primary : (data) -> data
     int1 -> LPAREN int9 RPAREN : (_, data, _) -> data
-    int1 -> ID calllist : (id, args) -> exp_newcall(id, args)
+    int1 -> ID calllist : (id, args) -> exp_newcall(id, args, location=parser_pos())
 
     calllist -> LPAREN exp : (_, data) -> [data]
     calllist -> calllist RPAREN : (data, _) -> data
@@ -167,11 +167,10 @@
 
     unary -> primary : (data) -> data
 
-    # TODO
-    primary -> ID : (name) -> begin println("$(parser_pos()[begin]) $(parser_pos()[end])"); return exp_newid(name) end
-    primary -> INT : (val) -> exp_newint(val)
-    primary -> TRUE : (_) -> exp_newint(1)
-    primary -> FALSE : (_) -> exp_newint(0)
+    primary -> ID : (name) -> exp_newid(name, location=parser_pos())
+    primary -> INT : (val) -> exp_newint(val, location=parser_pos())
+    primary -> TRUE : (_) -> exp_newint(1, location=parser_pos())
+    primary -> FALSE : (_) -> exp_newint(0, location=parser_pos())
 
     # --- Misc ---
     line -> LF : (_) -> nothing

@@ -123,7 +123,28 @@ function exp_resolve!(ctx, exp)
         exp.sym = ctx_fetchscope(ctx, exp.id)
 
         # TODO : Error
-        @assert exp.sym != nothing "Not found variable named '$(exp.id)'"
+        # @assert exp.sym != nothing "Not found variable named '$(exp.id)'"
+
+        # println(@macroexpand @alphaassert exp.sym != nothing exp.location "Not found variable named '$(exp.id)'")
+        @alphaassert exp.sym != nothing exp.location "Not found variable named '$(exp.id)'"
+        # if !(exp.sym != nothing)
+        #     pos = exp.location[begin]
+
+        #     line_start = findprev('\n', ctx.sourcecode, pos.index)
+        #     line_end = findnext('\n', ctx.sourcecode, pos.index + 1)
+
+        #     line_start == nothing && (line_start = 0)
+        #     line_end == nothing && (line_end = length(ctx.sourcecode) + 1)
+
+        #     println(stderr, "--- Error Info ---")
+        #     println(stderr, "Error from $(exp.location[begin]) to $(exp.location[end]):")
+        #     if line_start < line_end
+        #         println(stderr, ctx.sourcecode[line_start + 1:line_end - 1])
+        #         println(stderr, repeat(' ', pos.column - 1) * "^")
+        #     end
+
+        #     error("Not found variable named '$(exp.id)'")
+        # end
 
         exp.type = exp.sym.type
     elseif exp.kind == k_exp_int

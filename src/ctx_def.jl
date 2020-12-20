@@ -4,6 +4,7 @@
 
 mutable struct Ctx
     # --- AST ---
+    sourcecode
     # Global scope functions
     decls
     # --- Semantic Analysis ---
@@ -24,7 +25,7 @@ mutable struct Ctx
 end
 
 # Push global scope
-ctx_new() = Ctx([], [symtable_new(nothing)], [], [], [], [], Set(), 0, nothing)
+ctx_new(; sourcecode = "") = Ctx(sourcecode, [], [symtable_new(nothing)], [], [], [], [], Set(), 0, nothing)
 
 reg2str = Dict{Reg, String}(
         ax => "rax",

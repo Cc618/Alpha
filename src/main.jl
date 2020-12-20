@@ -1,3 +1,4 @@
+include("error.jl")
 include("ast_def.jl")
 include("ctx_def.jl")
 include("ast.jl")
@@ -34,7 +35,7 @@ code = """
 fun fib
 take n
 begin
-    n -= 1
+    n -= 1 + x
     return n > 2 and n <= 3 or n is 42
 end
 """
@@ -43,9 +44,10 @@ end
 code[end] != '\n' && (code *= "\n")
 
 ctx = parse(code)
-# println(ast)
+ctx.sourcecode = code
 
 semanticanalysis!(ctx)
+
 open("tests/source.asm", "w") do io
     println(io, codegen!(ctx))
 end
