@@ -20,23 +20,6 @@ include("parser.yy.jl")
 # - Handle iter = init = nothing in loops (see ast.jl:11)
 =#
 
-#=
-TODO : In documentation
-# Operator Precedance
-| Precedance | Operators |
-| ---------- | --------- |
-| 1  | call() |
-| 2  | - (unary) |
-| 3  | * / |
-| 4  | + - |
-| 5  | <= >= < > |
-| 6  | is != |
-| 7  | and |
-| 8  | or |
-| 9  | not |
-| 10 | := += -= *= /= |
-=#
-
 code = """
 fun hello
 take a, b, c
@@ -71,7 +54,6 @@ println("Done")
 
 exit()
 
-# TODO : Verify test instruction (use cmp)
 # TODO : Improve error for parser (location)
 
 # --- Code Gen tests ---

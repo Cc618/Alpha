@@ -70,6 +70,11 @@ Where :
 - DATA\_RULE : A function that takes data from each token within PRODUCTION
         and which returns the data for this token.
 
+#### Locations
+We can also display locations using the parser\_pos function.
+It returns the start and the end location of the production (left hand side).
+Each location contains the line, the column and the index of the point in the source code.
+
 ## Structure
 - lexer.jl : Generates all automatons and functions to tokenize the text.
 - lexer_\_template.jl : Included in the generated file for runtime (lexical analysis only).

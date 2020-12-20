@@ -1,11 +1,24 @@
 # Parser (SLR(1)) template
 
+parser_pos_start = pos_new()
+parser_pos_end = pos_new()
+
 tok2index = Dict()
 for (i, t) in enumerate(tokens)
     tok2index[t] = i
 end
 
+# Returns (start, end) describing the start / end
+# location of the current token being produced
+function parser_pos()
+    global parser_pos_start, parser_pos_end
+
+    return (parser_pos_start, parser_pos_end)
+end
+
 function _pparse(table, tokens, prods, tok2index, produce_rules)
+    global parser_pos_start, parser_pos_end
+
     stack = Array{Any}([1])
     while true
         @assert length(stack) > 0 && length(tokens) > 0 "Unexpected end of file"
@@ -15,7 +28,6 @@ function _pparse(table, tokens, prods, tok2index, produce_rules)
         action = table[state, tok2index[token]]
 
         if action == nothing
-            # TODO : More info
             error("Syntax error from $(token.start_pos) to $(token.end_pos) : Invalid token $token (data = $(token.data))")
         elseif action == "acc"
             @assert length(tokens) == 1 "Unexpected end of file"
@@ -25,6 +37,12 @@ function _pparse(table, tokens, prods, tok2index, produce_rules)
             rule = prods[begin]
 
             new_tok = deepcopy(rule.left)
+            new_tok.start_pos = right[begin].start_pos
+            new_tok.end_pos = right[end].end_pos
+
+            parser_pos_start = deepcopy(new_tok.start_pos)
+            parser_pos_end = deepcopy(new_tok.end_pos)
+
             right = [r.data for r in right]
             try
                 new_tok.data = produce_rules[begin](right...)
@@ -55,6 +73,12 @@ function _pparse(table, tokens, prods, tok2index, produce_rules)
             new_state = Base.parse(Int, goto[2:end])
 
             new_tok = deepcopy(rule.left)
+
+            new_tok.start_pos = right_toks[begin].start_pos
+            new_tok.end_pos = right_toks[end].end_pos
+            parser_pos_start = deepcopy(new_tok.start_pos)
+            parser_pos_end = deepcopy(new_tok.end_pos)
+
             right = [r.data for r in right_toks]
             try
                 new_tok.data = produce_rules[i](right...)
@@ -62,9 +86,6 @@ function _pparse(table, tokens, prods, tok2index, produce_rules)
                 error("Can't produce token $new_tok, invalid rule (got $(length(right)) right tokens)")
             end
 
-            # TODO : Verify
-            new_tok.start_pos = right_toks[begin].start_pos
-            new_tok.end_pos = right_toks[end].end_pos
 
             push!(stack, new_tok)
             push!(stack, new_state)

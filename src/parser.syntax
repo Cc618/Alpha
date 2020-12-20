@@ -167,7 +167,8 @@
 
     unary -> primary : (data) -> data
 
-    primary -> ID : (name) -> exp_newid(name)
+    # TODO
+    primary -> ID : (name) -> begin println("$(parser_pos()[begin]) $(parser_pos()[end])"); return exp_newid(name) end
     primary -> INT : (val) -> exp_newint(val)
     primary -> TRUE : (_) -> exp_newint(1)
     primary -> FALSE : (_) -> exp_newint(0)

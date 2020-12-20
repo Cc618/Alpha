@@ -343,8 +343,6 @@ function generate_parser(io, tokens, prods, produce_rules)
             src_prods,
             src_produce_rules,
             src_parse,
-            # # TODO
-            # """print(parse([Tok("n", true, 6), Tok("+", true, nothing), Tok("n", true, 4), Tok("\\\$", true, nothing)]))"""
         ]
 
     src = join(srcs, "\n")
