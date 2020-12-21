@@ -331,9 +331,5 @@ end
 
 # Returns the NASM compatible string
 function str_escape(s::String)
-    # TODO : \\
-    s = replace(s, "\"" => "\", '\"', \"")
-    s = replace(s, "\\n" => "\", 10, \"")
-
-    return "\"$s\", 0"
+    return "`$s`, 0"
 end

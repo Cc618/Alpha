@@ -49,7 +49,7 @@ end
 code = """
 fun main
 begin
-    print "Hello" foo(42) + 2 'world'
+    print "Hel\\\\nlo\\t" foo(42) + 2 'wor\\nld'
 
     return 0
 end
