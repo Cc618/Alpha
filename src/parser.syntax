@@ -45,6 +45,8 @@
     # Regexes
     ID      -> "[alpha][alnum]*" : (s) -> s
     INT     -> "-?[num][num]*" : (s) -> Base.parse(Int, s)
+    STR     -> "[\"][^\"]*[\"]" : (s) -> s[begin + 1 : end - 1]
+    STR     -> "'[^']*'" : (s) -> s[begin + 1 : end - 1]
 
     # Operators
     SET     -> "[\:]=" : (s) -> nothing
@@ -116,7 +118,11 @@
     # For
     stmtloop -> LOOP WITH ID FROM exp TO exp line stmt : (_, _, id, _, from, _, to, _, body) -> stmt_newloopwith(id, from, to, body, location=parser_pos())
 
-    stmtprint -> PRINT exp line : (_, data, _) -> stmt_newprint(data)
+    # Printing
+    stmtprint -> printlist line : (data, _) -> stmt_newprint(data, location=parser_pos())
+    printlist -> PRINT : (_) -> []
+    printlist -> printlist exp : (lst, item) -> begin push!(lst, item); return lst end
+    printlist -> printlist STR : (lst, item) -> begin push!(lst, item); return lst end
 
     # --- Expressions ---
     exp -> int10 : (data) -> data

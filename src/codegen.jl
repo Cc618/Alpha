@@ -89,17 +89,28 @@ function stmt_codegen!(ctx, stmt)
         ctx_push!(ctx, "jmp .$(ctx.current_func.id).epilogue")
 
         ctx_freescratch!(ctx, exp.reg)
-    elseif stmt.kind == k_stmt_print
-        # TODO : Display all exps
+    elseif stmt.kind == k_stmt_printint
         # TODO : Use the call statement (that pushes scratch regs)
         exp = stmt.exp
         exp_codegen!(ctx, exp)
 
         # Move the result into rax
         ctx_push!(ctx, "mov rdi, $(regstr(exp.reg))")
-        ctx_push!(ctx, "call alphaprint")
+        ctx_push!(ctx, "call alphaprintint")
 
         ctx_freescratch!(ctx, exp.reg)
+        # TODO : Other prints
+    elseif stmt.kind == k_stmt_printstr
+        # Generate data
+        # TODO : Escape string
+        io = IOBuffer()
+        show(io, stmt.exp)
+        str = String(take!(io)) * ", 0"
+        data = ctx_newdata!(ctx, "db $str")
+
+        # TODO : Push / pop rdi
+        ctx_push!(ctx, "mov rdi, $data")
+        ctx_push!(ctx, "call alphaprintstr")
     elseif stmt.kind == k_stmt_block
         for st in stmt.stmts
             stmt_codegen!(ctx, st)

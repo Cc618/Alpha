@@ -232,7 +232,14 @@ reggroups = Dict(
                  "." => Set([Char(code) for code in 1:128]),
         )
 pop!(reggroups["."], '\n')
+
 reggroups["alnum"] = union(reggroups["num"], reggroups["alpha"])
+
+reggroups["^'"] = Set(reggroups["."])
+pop!(reggroups["^'"], '\'')
+
+reggroups["^\\\""] = Set(reggroups["."])
+pop!(reggroups["^\\\""], '"')
 
 # Returns start automaton state and last one
 # Thompson's construction basicaly

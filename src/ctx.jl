@@ -135,3 +135,16 @@ function ctx_newlabel!(ctx)
 
     return ctx.n_labels
 end
+
+# --- Data ---
+# Returns the name of the label
+function ctx_newdata!(ctx, data)
+    ctx.n_data += 1
+
+    name = "D$(ctx.n_data)"
+
+    instruction = "$name:\n$data"
+    ctx_push!(ctx, instruction, code=false, indent=false)
+
+    return name
+end

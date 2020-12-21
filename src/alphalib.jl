@@ -2,7 +2,10 @@
 # to use alphalib
 function alphalib_head()
     funcs = [
-             "alphaprint",
+             "alphaprintint",
+             "alphaprintstr",
+             "alphaprintline",
+             "alphaprintspace",
         ]
 
     s = ""

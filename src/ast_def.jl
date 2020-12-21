@@ -8,7 +8,11 @@
 # --- Types ---
 @enum TypeKind k_int_t k_void_t k_proc_t k_fn_t
 @enum SymKind k_sym_local k_sym_arg k_sym_global
-@enum StmtKind k_stmt_block k_stmt_exp k_stmt_decl k_stmt_return k_stmt_ifelse k_stmt_loop k_stmt_print
+@enum(StmtKind,
+        k_stmt_block, k_stmt_exp, k_stmt_decl, k_stmt_return,
+        k_stmt_ifelse, k_stmt_loop,
+        k_stmt_printint, k_stmt_printstr, k_stmt_printline, k_stmt_printspace
+    )
 @enum ExpKind k_exp_add k_exp_neg k_exp_mul k_exp_id k_exp_int k_exp_set k_exp_test k_exp_bool k_exp_call
 
 # Declaration

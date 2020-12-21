@@ -2,7 +2,7 @@
 decl_newint(id::String, value::Exp; location = nothing) = decl_new(t_int, id, value=value, location=location)
 
 # --- Stmt ---
-stmt_newblock(; location = nothing) = stmt_new(k_stmt_block, stmts=[], location=location)
+stmt_newblock(stmts = []; location = nothing) = stmt_new(k_stmt_block, stmts=stmts, location=location)
 stmt_newdecl(decl::Decl; location = nothing) = stmt_new(k_stmt_decl, decl=decl, location=location)
 stmt_newexp(exp::Exp; location = nothing) = stmt_new(k_stmt_exp, exp=exp, location=location)
 stmt_newreturn(exp::Exp; location = nothing) = stmt_new(k_stmt_return, exp=exp, location=location)
@@ -11,7 +11,12 @@ stmt_newifelse(condition::Exp, iftrue, iffalse = nothing; location = nothing) =
 stmt_newloop(init::Union{Stmt, Nothing}, condition::Exp,
              iter::Union{Stmt, Nothing}, body::Stmt; location = nothing) =
         stmt_new(k_stmt_loop, exp=condition, initbody=init, iterbody=iter, loopbody=body, location=location)
-stmt_newprint(exp) = stmt_new(k_stmt_print, exp=exp)
+
+# Printing
+stmt_newprintint(exp; location = nothing) = stmt_new(k_stmt_printint, exp=exp, location=location)
+stmt_newprintstr(s; location = nothing) = stmt_new(k_stmt_printstr, exp=s, location=location)
+stmt_newprintline(; location = nothing) = stmt_new(k_stmt_printline, location=location)
+stmt_newprintspace(; location = nothing) = stmt_new(k_stmt_printspace, location=location)
 
 # Wrappers
 # loop with <id> from <from> to <to>
@@ -21,6 +26,17 @@ function stmt_newloopwith(id, from, to, body; location = nothing)
     iter = exp_newset(exp_newid(id), exp_newadd(exp_newid(id), exp_newint(1)))
 
     return stmt_newloop(init, condition, stmt_newexp(iter), body, location=location)
+end
+
+# Items is an array of Exp / String
+function stmt_newprint(items; location = nothing)
+    stmts = []
+    # TODO : Spaces + line
+    for (i, item) in enumerate(items)
+        push!(stmts, (isa(item, String) ? stmt_newprintstr : stmt_newprintint)(item))
+    end
+
+    return stmt_newblock(stmts, location=location)
 end
 
 # --- Exp ---

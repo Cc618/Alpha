@@ -88,10 +88,12 @@ function stmt_resolve!(ctx, stmt)
         end
 
         ctx_popscope!(ctx)
-    elseif stmt.kind == k_stmt_print
-        # TODO : Resolve all exps
+    elseif stmt.kind == k_stmt_printint
         exp_resolve!(ctx, stmt.exp)
+
         @alphaassert stmt.exp.type.kind == k_int_t stmt.exp.location "Cannot display this value"
+    elseif stmt.kind ∈ (k_stmt_printstr, k_stmt_printline, k_stmt_printspace)
+        # Ignored
     else
         alphaerror("Unsupported statement kind $(stmt.kind)", ctx, stmt.location)
     end

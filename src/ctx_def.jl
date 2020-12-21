@@ -20,12 +20,14 @@ mutable struct Ctx
     # TODO preserved : Preserved regs used in the function (useless now)
     torestore_regs
     n_labels
+    # Number of data section variables
+    n_data
     # Current function we parse
     current_func
 end
 
 # Push global scope
-ctx_new(; sourcecode = "") = Ctx(sourcecode, [], [symtable_new(nothing)], [], [], [], [], Set(), 0, nothing)
+ctx_new(; sourcecode = "") = Ctx(sourcecode, [], [symtable_new(nothing)], [], [], [], [], Set(), 0, 0, nothing)
 
 reg2str = Dict{Reg, String}(
         ax => "rax",
