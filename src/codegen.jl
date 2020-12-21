@@ -102,10 +102,7 @@ function stmt_codegen!(ctx, stmt)
         # TODO : Other prints
     elseif stmt.kind == k_stmt_printstr
         # Generate data
-        # TODO : Escape string
-        io = IOBuffer()
-        show(io, stmt.exp)
-        str = String(take!(io)) * ", 0"
+        str = str_escape(stmt.exp)
         data = ctx_newdata!(ctx, "db $str")
 
         # TODO : Push / pop rdi
@@ -330,4 +327,13 @@ function sym_codegen(sym::Sym)
 
         return "[rbp - $negoffset]"
     end
+end
+
+# Returns the NASM compatible string
+function str_escape(s::String)
+    # TODO : \\
+    s = replace(s, "\"" => "\", '\"', \"")
+    s = replace(s, "\\n" => "\", 10, \"")
+
+    return "\"$s\", 0"
 end

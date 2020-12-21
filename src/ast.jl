@@ -15,8 +15,8 @@ stmt_newloop(init::Union{Stmt, Nothing}, condition::Exp,
 # Printing
 stmt_newprintint(exp; location = nothing) = stmt_new(k_stmt_printint, exp=exp, location=location)
 stmt_newprintstr(s; location = nothing) = stmt_new(k_stmt_printstr, exp=s, location=location)
-stmt_newprintline(; location = nothing) = stmt_new(k_stmt_printline, location=location)
-stmt_newprintspace(; location = nothing) = stmt_new(k_stmt_printspace, location=location)
+stmt_newprintline(; location = nothing) = stmt_new(k_stmt_printstr, exp="\\n", location=location)
+stmt_newprintspace(; location = nothing) = stmt_new(k_stmt_printstr, exp=" ", location=location)
 
 # Wrappers
 # loop with <id> from <from> to <to>
@@ -31,9 +31,9 @@ end
 # Items is an array of Exp / String
 function stmt_newprint(items; location = nothing)
     stmts = []
-    # TODO : Spaces + line
     for (i, item) in enumerate(items)
         push!(stmts, (isa(item, String) ? stmt_newprintstr : stmt_newprintint)(item))
+        push!(stmts, (i == length(items) ? stmt_newprintline : stmt_newprintspace)())
     end
 
     return stmt_newblock(stmts, location=location)

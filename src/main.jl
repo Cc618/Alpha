@@ -46,14 +46,10 @@ end
 """
 
 # TODO : Divide + Modulo
-# TODO : Strings ' matches not the first
 code = """
 fun main
 begin
-    print "Hello" 42 'world'
-    # print 'skljfl' 42
-    # 42 "Hello"
-    print foo(4)
+    print "Hello" foo(42) + 2 'world'
 
     return 0
 end
