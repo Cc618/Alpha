@@ -43,6 +43,8 @@ end
 exp_newint(value::Int; location = nothing) = exp_new(k_exp_int, type=t_int, value=value, location=location)
 exp_newid(id::String; location = nothing) = exp_new(k_exp_id, id=id, location=location)
 exp_newadd(left, right; location = nothing) = exp_new(k_exp_add, left=left, right=right, location=location)
+exp_newdiv(left, right; location = nothing) = exp_new(k_exp_div, left=left, right=right, location=location)
+exp_newmod(left, right; location = nothing) = exp_new(k_exp_mod, left=left, right=right, location=location)
 exp_newneg(val; location = nothing) = exp_new(k_exp_neg, left=val, location=location)
 exp_newmul(left, right; location = nothing) = exp_new(k_exp_mul, left=left, right=right, location=location)
 exp_newset(left, right; location = nothing) = exp_new(k_exp_set, left=left, right=right, location=location)

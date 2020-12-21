@@ -229,6 +229,40 @@ function exp_codegen!(ctx, exp)
 
         ctx_freescratch!(ctx, r.reg)
         exp.reg = l.reg
+    elseif exp.kind == k_exp_div
+        l, r = exp.left, exp.right
+
+        exp_codegen!(ctx, l)
+        exp_codegen!(ctx, r)
+
+        ctx_push!(ctx, "push rdx")
+
+        # l /= r
+        ctx_push!(ctx, "mov rax, $(regstr(l.reg))")
+        ctx_push!(ctx, "idiv $(regstr(r.reg))")
+        ctx_push!(ctx, "mov $(regstr(l.reg)), rax")
+
+        ctx_push!(ctx, "pop rdx")
+
+        ctx_freescratch!(ctx, r.reg)
+        exp.reg = l.reg
+    elseif exp.kind == k_exp_mod
+        l, r = exp.left, exp.right
+
+        exp_codegen!(ctx, l)
+        exp_codegen!(ctx, r)
+
+        ctx_push!(ctx, "push rdx")
+
+        # l /= r
+        ctx_push!(ctx, "mov rax, $(regstr(l.reg))")
+        ctx_push!(ctx, "idiv $(regstr(r.reg))")
+        ctx_push!(ctx, "mov $(regstr(l.reg)), rdx")
+
+        ctx_push!(ctx, "pop rdx")
+
+        ctx_freescratch!(ctx, r.reg)
+        exp.reg = l.reg
     elseif exp.kind == k_exp_set
         l, r = exp.left, exp.right
 

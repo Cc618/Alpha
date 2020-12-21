@@ -58,7 +58,8 @@
     ADD     -> "+" : (s) -> nothing
     SUB     -> "-" : (s) -> nothing
     MUL     -> "[\*]" : (s) -> nothing
-    # DIV     -> "/" : (s) -> nothing
+    DIV     -> "/" : (s) -> nothing
+    MOD     -> "%" : (s) -> nothing
     NE      -> "!=" : (s) -> nothing
     LE      -> "<=" : (s) -> nothing
     LT      -> "<" : (s) -> nothing
@@ -163,6 +164,8 @@
 
     int3 -> int2 : (data) -> data
     int3 -> int3 MUL int2 : (l, _, r) -> exp_newmul(l, r, location=parser_pos())
+    int3 -> int3 DIV int2 : (l, _, r) -> exp_newdiv(l, r, location=parser_pos())
+    int3 -> int3 MOD int2 : (l, _, r) -> exp_newmod(l, r, location=parser_pos())
 
     int2 -> int1 : (data) -> data
     int2 -> SUB int1 : (_, data) -> exp_newneg(data, location=parser_pos())

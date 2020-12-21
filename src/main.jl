@@ -66,7 +66,7 @@ begin
         a := b
         b := c
         c := a + b
-        print i ':' a '% 5 =' a % 5
+        print i ':' a a % 5 a / 2
     end
 
     return a
