@@ -34,8 +34,7 @@ function ctx_newsymlocal!(ctx::Ctx, decl::Decl)
     type = decl.type
     id = decl.id
 
-    # TODO : Record number of locals in decl
-    @assert length(ctx.scopes) >= 2 "Cannot declare local symbols outside of a function"
+    @alphaassert length(ctx.scopes) >= 2 decl.location "Cannot declare local symbols outside of a function"
 
     func_scope = ctx.scopes[2]
     func_scope.decl.nlocals += 1
@@ -44,8 +43,7 @@ function ctx_newsymlocal!(ctx::Ctx, decl::Decl)
     scope = last(ctx.scopes)
     sym = sym_new(k_sym_local, type, id, position)
 
-    # TODO : Error
-    @assert !haskey(scope.syms, id) "Variable named '$id' already declared"
+    @alphaassert !haskey(scope.syms, id) decl.location "Variable named '$id' already declared"
 
     scope.syms[id] = sym
 
@@ -59,6 +57,7 @@ function ctx_newsymarg!(ctx::Ctx, type::DeclType, id::String, position::Int)
     sym = sym_new(k_sym_arg, type, id, position)
 
     # TODO : Error
+    # TODO : Location (check semantics:46)
     @assert !haskey(scope.syms, id) "Argument named '$id' already declared"
 
     scope.syms[id] = sym
@@ -69,6 +68,7 @@ function ctx_newsymglobal!(ctx::Ctx, type::DeclType, id::String)
     scope = first(ctx.scopes)
 
     # TODO : Error
+    # TODO : Location
     @assert !haskey(scope.syms, id) "Declaration named '$id' already declared"
 
     scope.syms[id] = sym
@@ -93,7 +93,6 @@ arg_regs = [
 
 # Allocates a new scratch register
 function ctx_newscratch!(ctx::Ctx)
-    # TODO : Throw error / return nothing
     @assert length(ctx.scratch_regs) != 0 "Not enough scratch registers"
 
     reg = pop!(ctx.scratch_regs)

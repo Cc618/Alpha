@@ -88,6 +88,10 @@ function stmt_resolve!(ctx, stmt)
         end
 
         ctx_popscope!(ctx)
+    elseif stmt.kind == k_stmt_print
+        # TODO : Resolve all exps
+        exp_resolve!(ctx, stmt.exp)
+        @alphaassert stmt.exp.type.kind == k_int_t stmt.exp.location "Cannot display this value"
     else
         alphaerror("Unsupported statement kind $(stmt.kind)", ctx, stmt.location)
     end
@@ -131,6 +135,7 @@ function exp_resolve!(ctx, exp)
         exp.type = t_int
         fun = ctx_fetchglobal(ctx, exp.id)
 
+        @alphaassert fun != nothing exp.location "Function $(exp.id) not declared"
         @alphaassert fun.type.kind == k_fn_t exp.location "Invalid type for symbol $(exp.id), must be int function"
         @alphaassert length(fun.type.args) == length(exp.args) exp.location "Invalid number of arguments to call $(fun.id), $(length(fun.type.args)) args required"
     elseif exp.kind == k_exp_test

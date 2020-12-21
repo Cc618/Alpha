@@ -3,6 +3,7 @@ include("ast_def.jl")
 include("ctx_def.jl")
 include("ast.jl")
 include("ctx.jl")
+include("alphalib.jl")
 include("semantics.jl")
 include("codegen.jl")
 
@@ -14,11 +15,25 @@ include("parser.yy.jl")
 # # Syntax
 # - / % - (negate + sub)
 # - true / false
-# - not and or (+ in code gen)
 # - += -= *= (+ in code gen)
+# - Print multiple values, print line or not...
+# - Print strings
 #
 # # Codegen
 # - Handle iter = init = nothing in loops (see ast.jl:11)
+# - alphalib extern decls
+#
+# # alphalib
+# - Check main defined
+# - Link alphalib
+# - Can't define alphaprint functions
+# - alphainput
+#
+# # CLI
+# - Compile to asm
+# - Compile to object
+# - Link with alphalib
+# - Compile multiple files
 =#
 
 code = """
@@ -32,18 +47,21 @@ end
 
 # TODO : Divide + Modulo
 code = """
-fun tst
-take a
+fun main
 begin
+    print 42
+    print foo(4)
+    return 0
 end
 
-fun fib
+fun foo
 take n
 begin
-    n -= 1 + tst()
-    return n > 2 and n <= 3 or n is 42
+    return n * 2
 end
 """
+
+# TODO : print 42 "hey" 618 -> printint(42) printspace() printstr("hey") printspace() printint(618) printline()
 
 # TODO : Add on the parser if no \n at the end
 code[end] != '\n' && (code *= "\n")

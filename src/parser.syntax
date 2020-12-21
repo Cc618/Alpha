@@ -35,6 +35,7 @@
     NOT     -> "not[\b]" : (s) -> nothing
     OR      -> "or[\b]" : (s) -> nothing
     AND     -> "and[\b]" : (s) -> nothing
+    PRINT   -> "print[\b]" : (s) -> nothing
 
     # TODO : If necessary, remove blanks at the end (and test whether naming a variable true... is possible)
     # Try otherwise in the parser : ID -> true ID
@@ -94,6 +95,7 @@
     stmt -> stmtreturn : (data) -> data
     stmt -> stmtif : (data) -> data
     stmt -> stmtloop : (data) -> data
+    stmt -> stmtprint : (data) -> data
 
     stmtblock -> stmtblock_begin endblock : (stmt, _) -> stmt
     stmtblock_begin -> stmtblock_begin stmt : (block, stmt) -> begin push!(block.stmts, stmt); return block end
@@ -109,11 +111,12 @@
     stmtif -> IF exp line stmt ELSE stmt : (_, condition, _, iftrue, _, iffalse) -> stmt_newifelse(condition, iftrue, iffalse, location=parser_pos())
 
     # While
-    # TODO : Check nothing is possible in init / iter
     stmtloop -> LOOP WHEN exp line stmt : (_, _, condition, _, body) -> stmt_newloop(nothing, condition, nothing, body, location=parser_pos())
 
     # For
     stmtloop -> LOOP WITH ID FROM exp TO exp line stmt : (_, _, id, _, from, _, to, _, body) -> stmt_newloopwith(id, from, to, body, location=parser_pos())
+
+    stmtprint -> PRINT exp line : (_, data, _) -> stmt_newprint(data)
 
     # --- Expressions ---
     exp -> int10 : (data) -> data

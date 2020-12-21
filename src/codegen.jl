@@ -6,15 +6,16 @@ function codegen!(ctx::Ctx)
     end
 
     # Combine instructions
-    asm = "; Auto generated file\n"
+    asm = "; Auto generated file\n\n"
 
-    # TODO : Declare sections
-    asm *= "\n; --- Data section ---\n"
+    asm *= alphalib_head()
+
+    asm *= "\nsection .data\n"
     for inst in ctx.data
         asm *= inst * "\n"
     end
 
-    asm *= "\n; --- Text section ---\n"
+    asm *= "\nsection .text\n"
     for inst in ctx.text
         asm *= inst * "\n"
     end
@@ -86,6 +87,17 @@ function stmt_codegen!(ctx, stmt)
         # Move the result into rax
         ctx_push!(ctx, "mov rax, $(regstr(exp.reg))")
         ctx_push!(ctx, "jmp .$(ctx.current_func.id).epilogue")
+
+        ctx_freescratch!(ctx, exp.reg)
+    elseif stmt.kind == k_stmt_print
+        # TODO : Display all exps
+        # TODO : Use the call statement (that pushes scratch regs)
+        exp = stmt.exp
+        exp_codegen!(ctx, exp)
+
+        # Move the result into rax
+        ctx_push!(ctx, "mov rdi, $(regstr(exp.reg))")
+        ctx_push!(ctx, "call alphaprint")
 
         ctx_freescratch!(ctx, exp.reg)
     elseif stmt.kind == k_stmt_block

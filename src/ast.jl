@@ -11,6 +11,7 @@ stmt_newifelse(condition::Exp, iftrue, iffalse = nothing; location = nothing) =
 stmt_newloop(init::Union{Stmt, Nothing}, condition::Exp,
              iter::Union{Stmt, Nothing}, body::Stmt; location = nothing) =
         stmt_new(k_stmt_loop, exp=condition, initbody=init, iterbody=iter, loopbody=body, location=location)
+stmt_newprint(exp) = stmt_new(k_stmt_print, exp=exp)
 
 # Wrappers
 # loop with <id> from <from> to <to>
