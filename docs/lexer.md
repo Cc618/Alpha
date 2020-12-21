@@ -21,6 +21,8 @@ However, the syntax is slightly different than other regexes.
 - \s : White space (\t or space)
 - \s : Blank char (white space or line feed)
 - . : All characters except line feed ([\n])
+- ^' : . without '
+- ^\" : . without "
 
 ### Characters to escape (with \\)
 - \*
