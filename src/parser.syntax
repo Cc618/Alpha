@@ -54,6 +54,7 @@
     RSUB    -> "-=" : (s) -> nothing
     RMUL    -> "[\*]=" : (s) -> nothing
     RDIV    -> "/=" : (s) -> nothing
+    RMOD    -> "%=" : (s) -> nothing
     ADD     -> "+" : (s) -> nothing
     SUB     -> "-" : (s) -> nothing
     MUL     -> "[\*]" : (s) -> nothing

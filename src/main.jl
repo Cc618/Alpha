@@ -13,7 +13,6 @@ include("parser.yy.jl")
 #=
 # TODO Zone
 # # Syntax
-# - / % - (negate + sub)
 # - true / false
 # - += -= *= (+ in code gen)
 # - Print multiple values, print line or not...
@@ -49,21 +48,32 @@ end
 code = """
 fun main
 begin
-    print "Hel\\\\nlo\\t" foo(42) + 2 'wor\\nld'
+    let result be fib(10)
+
+    print 'Final result :' result
 
     return 0
 end
 
-fun foo
+fun fib
 take n
 begin
-    return n * 2
+    let a be 0
+    let b be 1
+    let c be 1
+    loop with i from 1 to n
+    begin
+        a := b
+        b := c
+        c := a + b
+        print i ':' a '% 5 =' a % 5
+    end
+
+    return a
 end
 """
 
-# TODO : print 42 "hey" 618 -> printint(42) printspace() printstr("hey") printspace() printint(618) printline()
-
-# TODO : Add on the parser if no \n at the end
+code = replace(code, "\t" => "    ")
 code[end] != '\n' && (code *= "\n")
 
 ctx = parse(code)

@@ -90,24 +90,29 @@ function stmt_codegen!(ctx, stmt)
 
         ctx_freescratch!(ctx, exp.reg)
     elseif stmt.kind == k_stmt_printint
-        # TODO : Use the call statement (that pushes scratch regs)
         exp = stmt.exp
         exp_codegen!(ctx, exp)
 
-        # Move the result into rax
+        # TODO : Push arg regs (same for printstr and exp_call)
+        ctx_push!(ctx, "push rdi")
+        ctx_push!(ctx, "push rsi")
         ctx_push!(ctx, "mov rdi, $(regstr(exp.reg))")
         ctx_push!(ctx, "call alphaprintint")
+        ctx_push!(ctx, "pop rsi")
+        ctx_push!(ctx, "pop rdi")
 
         ctx_freescratch!(ctx, exp.reg)
-        # TODO : Other prints
     elseif stmt.kind == k_stmt_printstr
         # Generate data
         str = str_escape(stmt.exp)
         data = ctx_newdata!(ctx, "db $str")
 
-        # TODO : Push / pop rdi
+        ctx_push!(ctx, "push rdi")
+        ctx_push!(ctx, "push rsi")
         ctx_push!(ctx, "mov rdi, $data")
         ctx_push!(ctx, "call alphaprintstr")
+        ctx_push!(ctx, "pop rsi")
+        ctx_push!(ctx, "pop rdi")
     elseif stmt.kind == k_stmt_block
         for st in stmt.stmts
             stmt_codegen!(ctx, st)
