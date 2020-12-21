@@ -13,10 +13,6 @@ include("parser.yy.jl")
 #=
 # TODO Zone
 # # Syntax
-# - true / false
-# - += -= *= (+ in code gen)
-# - Print multiple values, print line or not...
-# - Print strings
 #
 # # Codegen
 # - Handle iter = init = nothing in loops (see ast.jl:11)
@@ -68,6 +64,9 @@ begin
         c := a + b
         print i ':' a a % 5 a / 2
     end
+
+    a %= 10
+    a /= 3
 
     return a
 end

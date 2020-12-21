@@ -136,6 +136,8 @@
     int10 -> unary RADD int9 : (lhs, _, data) -> exp_newset(lhs, exp_newadd(lhs, data), location=parser_pos())
     int10 -> unary RSUB int9 : (lhs, _, data) -> exp_newset(lhs, exp_newadd(lhs, exp_newneg(data)), location=parser_pos())
     int10 -> unary RMUL int9 : (lhs, _, data) -> exp_newset(lhs, exp_newmul(lhs, data), location=parser_pos())
+    int10 -> unary RDIV int9 : (lhs, _, data) -> exp_newset(lhs, exp_newdiv(lhs, data), location=parser_pos())
+    int10 -> unary RMOD int9 : (lhs, _, data) -> exp_newset(lhs, exp_newmod(lhs, data), location=parser_pos())
 
     int9 -> int8 : (data) -> data
     # not x <=> x == false
