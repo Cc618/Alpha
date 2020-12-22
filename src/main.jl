@@ -47,9 +47,7 @@ begin
     # print 'Final result :' result
 
     print 'Enter a number:'
-    let a be 0
-    let b be 0
-    scan a
+    let scan a
     print 'You typed' a
 
     return 0

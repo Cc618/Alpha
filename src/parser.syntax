@@ -130,6 +130,7 @@
 
     # Scanning
     stmtscan -> SCAN ID line : (_, id, _) -> stmt_newscan(exp_newid(id, location=parser_pos()), location=parser_pos())
+    stmtscan -> LET SCAN ID line : (_, _, id, _) -> stmt_newletscan(id, location=parser_pos())
 
     # --- Expressions ---
     exp -> int10 : (data) -> data

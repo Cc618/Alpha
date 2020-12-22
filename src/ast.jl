@@ -3,6 +3,7 @@ decl_newint(id::String, value::Exp; location = nothing) = decl_new(t_int, id, va
 
 # --- Stmt ---
 stmt_newblock(stmts = []; location = nothing) = stmt_new(k_stmt_block, stmts=stmts, location=location)
+stmt_newchain(stmts = []; location = nothing) = stmt_new(k_stmt_chain, stmts=stmts, location=location)
 stmt_newdecl(decl::Decl; location = nothing) = stmt_new(k_stmt_decl, decl=decl, location=location)
 stmt_newexp(exp::Exp; location = nothing) = stmt_new(k_stmt_exp, exp=exp, location=location)
 stmt_newreturn(exp::Exp; location = nothing) = stmt_new(k_stmt_return, exp=exp, location=location)
@@ -37,7 +38,14 @@ function stmt_newprint(items; location = nothing)
         push!(stmts, (i == length(items) ? stmt_newprintline : stmt_newprintspace)())
     end
 
-    return stmt_newblock(stmts, location=location)
+    return stmt_newchain(stmts, location=location)
+end
+
+function stmt_newletscan(id; location = nothing)
+    stmtlet = stmt_newdecl(decl_newint(id, exp_newint(0), location=location), location=location)
+    stmtscan = stmt_newscan(exp_newid(id, location=location), location=location)
+
+    return stmt_newchain([stmtlet, stmtscan], location=location)
 end
 
 # --- Exp ---

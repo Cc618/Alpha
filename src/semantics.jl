@@ -88,6 +88,13 @@ function stmt_resolve!(ctx, stmt)
         end
 
         ctx_popscope!(ctx)
+    elseif stmt.kind == k_stmt_chain
+        for child in stmt.stmts
+            stmt_resolve!(ctx, child)
+        end
+
+        # Generate this statement as a block
+        stmt.kind = k_stmt_block
     elseif stmt.kind == k_stmt_printint
         exp_resolve!(ctx, stmt.exp)
 
