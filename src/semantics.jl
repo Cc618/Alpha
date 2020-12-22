@@ -92,6 +92,10 @@ function stmt_resolve!(ctx, stmt)
         exp_resolve!(ctx, stmt.exp)
 
         @alphaassert stmt.exp.type.kind == k_int_t stmt.exp.location "Cannot display this value"
+    elseif stmt.kind == k_stmt_scan
+        exp_resolve!(ctx, stmt.exp)
+
+        @alphaassert stmt.exp.type.kind == k_int_t stmt.exp.location "Invalid type for scan"
     elseif stmt.kind ∈ (k_stmt_printstr,)
         # Ignored
     else

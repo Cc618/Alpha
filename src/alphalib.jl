@@ -6,6 +6,7 @@ function alphalib_head()
              "alphaprintstr",
              "alphaprintline",
              "alphaprintspace",
+             "alphascan",
         ]
 
     s = ""

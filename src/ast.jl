@@ -12,11 +12,12 @@ stmt_newloop(init::Union{Stmt, Nothing}, condition::Exp,
              iter::Union{Stmt, Nothing}, body::Stmt; location = nothing) =
         stmt_new(k_stmt_loop, exp=condition, initbody=init, iterbody=iter, loopbody=body, location=location)
 
-# Printing
+# IO
 stmt_newprintint(exp; location = nothing) = stmt_new(k_stmt_printint, exp=exp, location=location)
 stmt_newprintstr(s; location = nothing) = stmt_new(k_stmt_printstr, exp=s, location=location)
 stmt_newprintline(; location = nothing) = stmt_new(k_stmt_printstr, exp="\\n", location=location)
 stmt_newprintspace(; location = nothing) = stmt_new(k_stmt_printstr, exp=" ", location=location)
+stmt_newscan(exp; location = nothing) = stmt_new(k_stmt_scan, exp=exp, location=location)
 
 # Wrappers
 # loop with <id> from <from> to <to>

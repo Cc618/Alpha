@@ -32,8 +32,9 @@ function decl_codegen!(ctx::Ctx, decl::Decl)
         stmt_codegen!(ctx, decl.body)
 
         fun_name = decl.id
-        # TODO : Number of locals
         frame_size = decl.nlocals * 8
+        # The stack is aligned by a step of 16 bytes
+        frame_size % 16 != 0 && (frame_size = floor(Int, frame_size / 16 + 1) * 16)
 
         # Prologue generation
         prologue = []
@@ -93,7 +94,7 @@ function stmt_codegen!(ctx, stmt)
         exp = stmt.exp
         exp_codegen!(ctx, exp)
 
-        # TODO : Push arg regs (same for printstr and exp_call)
+        # TODO : Push arg regs (same for printstr, scan and exp_call)
         ctx_push!(ctx, "push rdi")
         ctx_push!(ctx, "push rsi")
         ctx_push!(ctx, "mov rdi, $(regstr(exp.reg))")
@@ -111,6 +112,16 @@ function stmt_codegen!(ctx, stmt)
         ctx_push!(ctx, "push rsi")
         ctx_push!(ctx, "mov rdi, $data")
         ctx_push!(ctx, "call alphaprintstr")
+        ctx_push!(ctx, "pop rsi")
+        ctx_push!(ctx, "pop rdi")
+    elseif stmt.kind == k_stmt_scan
+        lsym = sym_codegen(stmt.exp.sym)
+
+        # Generate data
+        ctx_push!(ctx, "push rdi")
+        ctx_push!(ctx, "push rsi")
+        ctx_push!(ctx, "call alphascan")
+        ctx_push!(ctx, "mov $lsym, rax")
         ctx_push!(ctx, "pop rsi")
         ctx_push!(ctx, "pop rdi")
     elseif stmt.kind == k_stmt_block

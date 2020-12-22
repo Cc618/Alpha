@@ -36,6 +36,7 @@
     OR      -> "or[\b]" : (s) -> nothing
     AND     -> "and[\b]" : (s) -> nothing
     PRINT   -> "print[\b]" : (s) -> nothing
+    SCAN    -> "scan[\b]" : (s) -> nothing
 
     # TODO : If necessary, remove blanks at the end (and test whether naming a variable true... is possible)
     # Try otherwise in the parser : ID -> true ID
@@ -100,6 +101,7 @@
     stmt -> stmtif : (data) -> data
     stmt -> stmtloop : (data) -> data
     stmt -> stmtprint : (data) -> data
+    stmt -> stmtscan : (data) -> data
 
     stmtblock -> stmtblock_begin endblock : (stmt, _) -> stmt
     stmtblock_begin -> stmtblock_begin stmt : (block, stmt) -> begin push!(block.stmts, stmt); return block end
@@ -125,6 +127,9 @@
     printlist -> PRINT : (_) -> []
     printlist -> printlist exp : (lst, item) -> begin push!(lst, item); return lst end
     printlist -> printlist STR : (lst, item) -> begin push!(lst, item); return lst end
+
+    # Scanning
+    stmtscan -> SCAN ID line : (_, id, _) -> stmt_newscan(exp_newid(id, location=parser_pos()), location=parser_pos())
 
     # --- Expressions ---
     exp -> int10 : (data) -> data

@@ -15,7 +15,6 @@ include("parser.yy.jl")
 # # Syntax
 #
 # # Codegen
-# - Handle iter = init = nothing in loops (see ast.jl:11)
 # - alphalib extern decls
 #
 # # alphalib
@@ -40,38 +39,44 @@ begin
 end
 """
 
-# TODO : Divide + Modulo
 code = """
 fun main
 begin
-    let result be fib(10)
+    # let result be fib(10)
 
-    print 'Final result :' result
+    # print 'Final result :' result
+
+    print 'Enter a number:'
+    let a be 0
+    let b be 0
+    scan a
+    print 'You typed' a
 
     return 0
 end
 
-fun fib
-take n
-begin
-    let a be 0
-    let b be 1
-    let c be 1
-    loop with i from 1 to n
-    begin
-        a := b
-        b := c
-        c := a + b
-        print i ':' a a % 5 a / 2
-    end
+# fun fib
+# take n
+# begin
+#     let a be 0
+#     let b be 1
+#     let c be 1
+#     loop with i from 1 to n
+#     begin
+#         a := b
+#         b := c
+#         c := a + b
+#         print i ':' a a % 5 a / 2
+#     end
 
-    a %= 10
-    a /= 3
+#     a %= 10
+#     a /= 3
 
-    return a
-end
+#     return a
+# end
 """
 
+# TODO : Let with a scan
 code = replace(code, "\t" => "    ")
 code[end] != '\n' && (code *= "\n")
 
