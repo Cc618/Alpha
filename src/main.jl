@@ -39,3 +39,5 @@ include("parser.yy.jl")
 # out = clicompileall("tests/source.alpha")
 # cmd = `cp $out $targetout`
 # run(cmd)
+
+climain(split("run tests/source.alpha", ' '))

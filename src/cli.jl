@@ -6,11 +6,48 @@ tored = "\x1b[1;31m"
 toblue = "\x1b[1;34m"
 tonormal = "\x1b[1;0m"
 
-function
+function climain(args)
+    local out
+    local outdir
+
+    if length(args) == 0
+        clihelp()
+    elseif length(args) == 1
+        if args[begin] ∈ ("help", "-h", "--help")
+            clihelp()
+        else
+            out = clicompileall(args[begin])
+            outdir = dirname(args[begin])
+        end
+    elseif length(args) == 2
+        args[begin] ∉ ("run", "build", "generate") && clihelp()
+
+        method = args[begin]
+        src = args[end]
+        out = clicompileall(src, method)
+        outdir = dirname(src)
+
+        # Run tmp program
+        if method == "run"
+            cmd = `$out`
+            run(cmd)
+
+            out = nothing
+        end
+    else
+        clihelp()
+    end
+
+    if isa(out, String) && isa(outdir, String)
+        cmd = `cp $out $outdir`
+        run(cmd)
+    end
+end
 
 function clihelp()
     # TODO : Print alphalib path
     # TODO : -o option
+    # TODO : run
     text = [
             "usage:",
             "   alpha <file>.alpha              Compile <file>.alpha to <file>",
@@ -106,14 +143,9 @@ function clicompileall(src, stop="compile")
     asmout = "$tmp/source.asm"
     objout = "$tmp/source.o"
     exeout = "$tmp/source"
-    println(tmp)
 
     # Generate
     climake(cligenerate, src, out=asmout)
-
-    println("Generated $asmout")
-    run(`cat $asmout`)
-    println()
 
     if stop == "generate"
         return asmout
@@ -121,9 +153,6 @@ function clicompileall(src, stop="compile")
 
     # Build
     clibuild(asmout, objout)
-
-    println("Generated $objout")
-    println()
 
     if stop == "build"
         return objout
