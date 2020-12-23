@@ -10,8 +10,8 @@ function clihelp()
             "usage:",
             "   alpha <file>.alpha              Compile <file>.alpha to <file>",
             "   alpha run <file>.alpha          Run <file>.alpha",
-            "   alpha generate <file>.alpha     Generate <file>.asm assembly code",
             "   alpha build <file>.alpha        Build <file>.o object file",
+            "   alpha generate <file>.alpha     Generate <file>.asm assembly code",
         ]
 
     for t in text
@@ -46,15 +46,25 @@ function cligenerate(src, out)
     end
 end
 
-function clierr(msg)
+# Build asm to object
+function clibuild(src, out)
+    cmd = `nasm -o $out -f elf64 $src`
 
+    try
+        run(cmd)
+    catch e
+        clierr("Failed to build using NASM, fix the error above to build")
+    end
+end
+
+function clierr(msg)
     println(stderr, "$(tored)Error$tonormal : $msg")
     exit(-1)
 end
 
 # Runs the function fun on path
 # which outputs path with the new extension ext
-function climake(fun, path, newext)
+function climake(fun, path, newext, verifext="alpha")
     err = false
 
     slash = findlast('/', path)
@@ -65,14 +75,13 @@ function climake(fun, path, newext)
         err = true
     else
         ext = path[period + 1:end]
-        ext != "alpha" && (err = true)
+        ext != verifext && (err = true)
     end
 
     if err
-        clierr("Invalid file $toblue$path$tonormal, must have a .alpha extension")
+        clierr("Invalid file $toblue$path$tonormal, must have a .$verifext extension")
     end
 
     out = path[begin : period - 1] * "." * newext
-    println(out)
     fun(path, out)
 end

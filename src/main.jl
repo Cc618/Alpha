@@ -30,5 +30,5 @@ include("parser.yy.jl")
 # - Compile multiple files
 =#
 
-# cligenerate("tests/source.alpha", "tests/source.asm")
-climake(cligenerate, "tests/sourcealpha", "asm")
+# climake(cligenerate, "tests/source.alpha", "asm")
+climake(clibuild, "tests/source.asm", "o", "asm")
