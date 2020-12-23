@@ -30,7 +30,12 @@ include("parser.yy.jl")
 # - Compile multiple files
 =#
 
-# TODO : Use abspaths
 # climake(cligenerate, "tests/source.alpha", "asm")
 # climake(clibuild, "tests/source.asm", "o", "asm")
-clicompile("tests/source.o", "tests/a")
+# clicompile("tests/source.o", "tests/a")
+
+
+# targetout = "tests/source"
+# out = clicompileall("tests/source.alpha")
+# cmd = `cp $out $targetout`
+# run(cmd)

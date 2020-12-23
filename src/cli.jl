@@ -6,14 +6,20 @@ tored = "\x1b[1;31m"
 toblue = "\x1b[1;34m"
 tonormal = "\x1b[1;0m"
 
+function
+
 function clihelp()
     # TODO : Print alphalib path
+    # TODO : -o option
     text = [
             "usage:",
             "   alpha <file>.alpha              Compile <file>.alpha to <file>",
             "   alpha run <file>.alpha          Run <file>.alpha",
             "   alpha build <file>.alpha        Build <file>.o object file",
             "   alpha generate <file>.alpha     Generate <file>.asm assembly code",
+            "   alpha help                      Show help",
+            "   alpha -h                        Show help",
+            "   alpha --help                    Show help",
         ]
 
     for t in text
@@ -90,6 +96,45 @@ function clicompile(src, out)
     end
 end
 
+# Wrapper that compiles everything up to the stop step
+# Returns the path of the output
+function clicompileall(src, stop="compile")
+    src = abspath(src)
+
+    # Auto deleted
+    tmp = mktempdir()
+    asmout = "$tmp/source.asm"
+    objout = "$tmp/source.o"
+    exeout = "$tmp/source"
+    println(tmp)
+
+    # Generate
+    climake(cligenerate, src, out=asmout)
+
+    println("Generated $asmout")
+    run(`cat $asmout`)
+    println()
+
+    if stop == "generate"
+        return asmout
+    end
+
+    # Build
+    clibuild(asmout, objout)
+
+    println("Generated $objout")
+    println()
+
+    if stop == "build"
+        return objout
+    end
+
+    # Compile
+    clicompile(objout, exeout)
+
+    return exeout
+end
+
 function clierr(msg)
     println(stderr, "$(tored)Error$tonormal : $msg")
     exit(-1)
@@ -97,7 +142,7 @@ end
 
 # Runs the function fun on path
 # which outputs path with the new extension ext
-function climake(fun, path, newext, verifext="alpha")
+function climake(fun, path; newext = nothing, verifext = "alpha", out = nothing)
     err = false
 
     slash = findlast('/', path)
@@ -115,7 +160,8 @@ function climake(fun, path, newext, verifext="alpha")
         clierr("Invalid file $toblue$path$tonormal, must have a .$verifext extension")
     end
 
-    out = path[begin : period - 1] * "." * newext
+    # Generate out
+    newext != nothing && out != nothing && (out = path[begin : period - 1] * "." * newext)
     fun(path, out)
 end
 
