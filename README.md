@@ -18,3 +18,15 @@ Alpha is inspired by Julia and Python for the syntax, though it supports only in
 - src : The Alpha Compiler
 <!-- TODO : DOC link -->
 - vim : Plugin for syntax highlighting
+
+## Lexer-Parser
+<!-- TODO : DOC link -->
+A lexer and parser generator has been created.
+The lexer supports custom regexes, the syntax is simple because Alpha's syntax is pretty easy.
+The parser is an SLR(1) parser, it handles location detection to display meaningful errors.
+
+## Vim
+The vim folder contains a plugin for Vim syntax highlighting, the script install.sh can be used to install it
+or any Vim plugin manager can be used.
+
+<!-- TODO : Examples -->
