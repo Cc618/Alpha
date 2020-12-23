@@ -15,7 +15,6 @@ include("parser.yy.jl")
 # # Syntax
 #
 # # Codegen
-# - alphalib extern decls
 #
 # # alphalib
 # - Check main defined
