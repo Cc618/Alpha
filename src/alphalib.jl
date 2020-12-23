@@ -4,8 +4,6 @@ function alphalib_head()
     funcs = [
              "alphaprintint",
              "alphaprintstr",
-             "alphaprintline",
-             "alphaprintspace",
              "alphascan",
         ]
 
