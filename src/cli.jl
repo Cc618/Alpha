@@ -1,5 +1,9 @@
 # Command line interface functions
 
+tored = "\x1b[1;31m"
+toblue = "\x1b[1;34m"
+tonormal = "\x1b[1;0m"
+
 function clihelp()
     # TODO : Print alphalib path
     text = [
@@ -42,12 +46,33 @@ function cligenerate(src, out)
     end
 end
 
-# Replaces the extension by newext
-# This function assumes that there is already an extension
-function changeext(path, newext)
-    period = findlast(path, '.')
+function clierr(msg)
 
-    @assert period != nothing "The file $path has no extension"
+    println(stderr, "$(tored)Error$tonormal : $msg")
+    exit(-1)
+end
 
-    return path[begin : period - 1] * "." * newext
+# Runs the function fun on path
+# which outputs path with the new extension ext
+function climake(fun, path, newext)
+    err = false
+
+    slash = findlast('/', path)
+    period = findlast('.', path)
+
+    slash == nothing && (slash = -1)
+    if period == nothing || slash > period
+        err = true
+    else
+        ext = path[period + 1:end]
+        ext != "alpha" && (err = true)
+    end
+
+    if err
+        clierr("Invalid file $toblue$path$tonormal, must have a .alpha extension")
+    end
+
+    out = path[begin : period - 1] * "." * newext
+    println(out)
+    fun(path, out)
 end
