@@ -19,27 +19,10 @@ include("parser.yy.jl")
 #
 # # alphalib
 # - Check main defined
-# - Link alphalib
-# - Can't define alphaprint functions
-# - alphainput
+# - Can't define alphalib functions in alpha
 #
 # # CLI
-# - Compile to asm
-# - Compile to object
-# - Link with alphalib
 # - Compile multiple files
 =#
-
-# climake(cligenerate, "tests/source.alpha", "asm")
-# climake(clibuild, "tests/source.asm", "o", "asm")
-# clicompile("tests/source.o", "tests/a")
-
-
-# targetout = "tests/source"
-# out = clicompileall("tests/source.alpha")
-# cmd = `cp $out $targetout`
-# run(cmd)
-
-# climain(split("run tests/source.alpha", ' '))
 
 alphamain() = climain(ARGS)
