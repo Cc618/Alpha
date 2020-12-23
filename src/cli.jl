@@ -1,5 +1,7 @@
 # Command line interface functions
 
+using Base.Filesystem
+
 tored = "\x1b[1;31m"
 toblue = "\x1b[1;34m"
 tonormal = "\x1b[1;0m"
@@ -53,7 +55,38 @@ function clibuild(src, out)
     try
         run(cmd)
     catch e
-        clierr("Failed to build using NASM, fix the error above to build")
+        clierr("Failed to build using NASM, fix errors above to build")
+    end
+end
+
+# Links th alpha source object file
+# with the alphalib to out
+function clicompile(src, out)
+    libdir = alphalibdir()
+    alphalibbin = "$libdir/bin/alpha.o"
+
+    # Build alphalib
+    cmd = Cmd(`make`, dir=libdir)
+    cmdout = IOBuffer()
+
+    try
+        run(pipeline(cmd, stdout=cmdout))
+    catch e
+        # Show stdout if needed
+        cmdoutstr = read(cmdout, String)
+        if cmdoutstr != ""
+            println("$toblue* Command output:$tonormal")
+            println(cmdoutstr)
+        end
+
+        clierr("Failed to build alphalib, fix errors above to compile")
+    end
+
+    cmd = `gcc -static -o $out $src $alphalibbin`
+    try
+        run(cmd)
+    catch e
+        clierr("Failed to link, fix errors above to compile")
     end
 end
 
@@ -85,3 +118,7 @@ function climake(fun, path, newext, verifext="alpha")
     out = path[begin : period - 1] * "." * newext
     fun(path, out)
 end
+
+# Returns the root dir of alpha
+alphadir() = dirname(@__DIR__)
+alphalibdir() = "$(alphadir())/alphalib"
