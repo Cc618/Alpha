@@ -40,4 +40,6 @@ include("parser.yy.jl")
 # cmd = `cp $out $targetout`
 # run(cmd)
 
-climain(split("run tests/source.alpha", ' '))
+# climain(split("run tests/source.alpha", ' '))
+
+alphamain() = climain(ARGS)

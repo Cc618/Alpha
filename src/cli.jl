@@ -47,7 +47,6 @@ end
 function clihelp()
     # TODO : Print alphalib path
     # TODO : -o option
-    # TODO : run
     text = [
             "usage:",
             "   alpha <file>.alpha              Compile <file>.alpha to <file>",
@@ -191,6 +190,7 @@ function climake(fun, path; newext = nothing, verifext = "alpha", out = nothing)
 
     # Generate out
     newext != nothing && out != nothing && (out = path[begin : period - 1] * "." * newext)
+
     fun(path, out)
 end
 
