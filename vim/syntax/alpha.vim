@@ -1,21 +1,24 @@
 syntax match alphaComment "\v#.*"
 
 syntax keyword alphaKeyword
-    \ if
-    \ let
-    \ be
-    \ loop
-    \ when
-    \ with
-    \ from
-    \ to
-    \ begin
-    \ end
     \ fun
     \ proc
     \ take
-    \ else
+    \ begin
+    \ end
+    \ let
+    \ be
+    \ is
     \ return
+    \ if
+    \ else
+    \ loop
+    \ with
+    \ when
+    \ from
+    \ to
+    \ print
+    \ scan
 
 syntax match alphaNumber "\v-?<\d+>"
 syntax keyword alphaBoolean
@@ -29,6 +32,11 @@ syntax keyword alphaOperator
     \ /
     \ %
     \ :=
+    \ +=
+    \ -=
+    \ /=
+    \ *=
+    \ %=
     \ >=
     \ <=
     \ <
