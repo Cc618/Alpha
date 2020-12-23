@@ -1,0 +1,20 @@
+# The Alpha Compiler
+Source for the Alpha language.
+
+## Features
+Written in Julia, Alpha is a compiled, statically typed procedural language.
+Furthermore, this language supports recursion and the compiler is multipass (functions can be called before being declared).
+
+<!-- TODO : DOC links -->
+In addition to the compiler, a lexer-parser generator which works like flex / bison is included.
+
+Alpha is inspired by Julia and Python for the syntax, though it supports only integers for variables.
+
+## Components
+- alphalib : The Alpha standard library
+- docs : Project's documentation
+- examples : Some Alpha programs
+- parser : The lexer and parser generator
+- src : The Alpha Compiler
+<!-- TODO : DOC link -->
+- vim : Plugin for syntax highlighting
