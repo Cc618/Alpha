@@ -48,10 +48,12 @@ syntax keyword alphaOperator
     \ or
     \ not
 
-highlight default link alphaComment Comment
+syntax region String start=+"+ end=+"+
+syntax region String start=+'+ end=+'+
 
+highlight default link alphaComment Comment
 highlight default link alphaNumber Number
 highlight default link alphaBoolean Boolean
-
 highlight default link alphaOperator Operator
 highlight default link alphaKeyword Keyword
+highlight default link alphaString String
