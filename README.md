@@ -1,5 +1,5 @@
 # The Alpha Compiler
-Source for the Alpha language.
+Source for the Alpha language compiler and all its components.
 
 ## Examples
 See all examples [here](examples).
