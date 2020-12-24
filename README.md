@@ -110,6 +110,8 @@ A lexer and parser generator has been created.
 The lexer supports custom regexes, the syntax is simple because Alpha's syntax is pretty easy.
 The parser is an SLR(1) parser, it handles location detection to display meaningful errors.
 
+![Errors with location and colors](res/error.png "Errors with location and colors")
+
 ### Links
 - [Calculator example](examples/parser/calculator.syntax).
 - [Parser documentation](docs/parser.md).
