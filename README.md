@@ -139,7 +139,6 @@ The parser is an SLR(1) parser, it handles location detection to display meaning
 - [Lexer documentation](docs/lexer.md).
 
 ## Vim
-<!-- TODO : Check Vplug install with github subdir -->
 The vim folder contains a plugin for Vim syntax highlighting, the script install.sh can be used to install it
 or any Vim plugin manager can be used.
 
