@@ -14,23 +14,6 @@ let x be 2 + 2
 
 Since all local variables containing data are ints, no type is required.
 
-## Operators
-Operators are Python-like except is which delineates the equality operator
-(== in most of languages) and := refering to the assignment operator.
-
-| Precedence | Operators |
-| ---------- | --------- |
-| 1  | call() |
-| 2  | _unary_- |
-| 3  | \* / |
-| 4  | + - |
-| 5  | <= >= < > |
-| 6  | is != |
-| 7  | and |
-| 8  | or |
-| 9  | not |
-| 10 | := += -= \*= /= |
-
 ## Loops
 We can declare two types of loops using the loop keyword.
 Note that loops accepts block and non block statements for a lighter syntax.
@@ -70,3 +53,23 @@ begin
     return a + b + c
 end
 ```
+
+## Operators
+Operators are Python-like except is which delineates the equality operator
+(== in most of languages) and := refering to the assignment operator.
+
+| Precedence | Operators |
+| ---------- | --------- |
+| 1  | call() |
+| 2  | _unary_- |
+| 3  | \* / |
+| 4  | + - |
+| 5  | <= >= < > |
+| 6  | is != |
+| 7  | and |
+| 8  | or |
+| 9  | not |
+| 10 | := += -= \*= /= |
+
+### Main
+Not that, like C programs, the function main is the entry of any Alpha program.
