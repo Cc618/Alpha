@@ -13,6 +13,7 @@ function semanticanalysis!(ctx)
 
     # 2nd pass : Verify types and push symbols to scopes
     for decl in ctx.decls
+        ctx.current_func = decl
         decl_resolve!(ctx, decl, false)
     end
 end
@@ -28,7 +29,6 @@ function decl_resolve!(ctx, decl, pushsym=true)
         stmt_resolve!(ctx, decl.body)
 
         # TODO : Type check return if decl.type.kind is k_fn_t
-        # TODO : Check no return if decl.type.kind is k_proc_t
         ctx_popscope!(ctx)
     elseif decl.type.kind == k_int_t
         exp_resolve!(ctx, decl.value)
@@ -63,7 +63,10 @@ function stmt_resolve!(ctx, stmt)
         exp_resolve!(ctx, stmt.exp)
 
         # Returns have only ints (empty return not allowed)
-        @alphaassert stmt.exp.type.kind == k_int_t stmt.location "Functions must return ints"
+        @alphaassert stmt.exp.type.kind == k_int_t stmt.exp.location "Functions must return ints"
+
+        # Check this is not a procedure
+        @alphaassert ctx.current_func.type.kind == k_fn_t stmt.location "Cannot return within procedures"
     elseif stmt.kind == k_stmt_ifelse
         exp_resolve!(ctx, stmt.exp)
         stmt_resolve!(ctx, stmt.ifbody)
