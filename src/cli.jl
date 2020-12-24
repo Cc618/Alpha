@@ -6,6 +6,8 @@ tored = "\x1b[1;31m"
 toblue = "\x1b[1;34m"
 tonormal = "\x1b[1;0m"
 
+clictx = nothing
+
 function climain(args)
     local out = undef
     local outdir = undef
@@ -79,13 +81,13 @@ function cligenerate(src, out)
 
     code = preprocess(code)
 
-    ctx = parse(code)
-    ctx.sourcecode = code
+    global clictx = parse(code)
+    clictx.sourcecode = code
 
-    semanticanalysis!(ctx)
+    semanticanalysis!(clictx)
 
     open(out, "w") do io
-        println(io, codegen!(ctx))
+        println(io, codegen!(clictx))
     end
 end
 

@@ -68,8 +68,7 @@ function ctx_newsymglobal!(ctx::Ctx, type::DeclType, id::String, location)
     scope = first(ctx.scopes)
 
     @alphaassert !haskey(scope.syms, id) location "Declaration named '$id' already declared"
-
-    id ∈ alphalib_funcs && alphaerror("Declaration named '$id' reserved for alpha interns, use another name", ctx, location)
+    @alphaassert id ∉ alphalib_funcs location "Declaration named '$id' reserved for alpha interns, use another name"
 
     scope.syms[id] = sym
 end
