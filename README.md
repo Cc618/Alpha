@@ -1,6 +1,43 @@
 # The Alpha Compiler
 Source for the Alpha language.
 
+## Examples
+See all examples [here](examples).
+
+### Primes
+<!-- TODO : Image -->
+```
+* 1
+* 2
+* 3
+* 5
+* 7
+* 11
+* 13
+* 17
+* 19
+* 23
+* 29
+* 31
+* 37
+* 41
+```
+
+### Fibonacci
+<!-- TODO : Image -->
+```
+fib( 1 ) = 1
+fib( 2 ) = 2
+fib( 3 ) = 3
+fib( 4 ) = 5
+fib( 5 ) = 8
+fib( 6 ) = 13
+fib( 7 ) = 21
+fib( 8 ) = 34
+fib( 9 ) = 55
+fib( 10 ) = 89
+```
+
 ## Features
 Written in Julia, Alpha is a compiled, statically typed procedural language.
 Furthermore, this language supports recursion and the compiler is multipass

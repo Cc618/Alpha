@@ -10,9 +10,10 @@ end
 
 fun main
 begin
-    # Be carefull, the recursive method is O(2 ^ N) in time
-    loop with i from 1 to 13
+    # Be careful, the recursive method is O(2 ^ N) in time
+    loop with i from 1 to 10
         print 'fib(' i ') =' fib(i)
 
     return 0
 end
+
