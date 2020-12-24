@@ -35,13 +35,14 @@ You might want to create an alias and add it to your bashrc :
 alias alpha='julia -e "import Alpha; Alpha.alphamain()"'
 ```
 
-### Commands
+Here is the list of all commands :
+
 | Command | Result |
 | ------- | ------ |
-| alpha <file>.alpha          | Compile <file>.alpha to <file>      |
-| alpha run <file>.alpha      | Run <file>.alpha                    |
-| alpha build <file>.alpha    | Build <file>.o object file          |
-| alpha generate <file>.alpha | Generate <file>.asm assembly code   |
+| alpha `<file>.alpha`          | Compile `<file>.alpha` to `<file>`      |
+| alpha run `<file>.alpha`      | Run `<file>.alpha`                    |
+| alpha build `<file>.alpha`    | Build `<file>.o` object file          |
+| alpha generate `<file>.alpha` | Generate `<file>.asm` assembly code   |
 | alpha [help|-h|--help]      | Show help                           |
 
 ### Dependencies
