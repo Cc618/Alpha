@@ -217,7 +217,7 @@ function _first!(token, prods, first)
         set = Set()
         for p in prods
             if p.left == token
-                # TODO : Epsilon
+                # No epsilon supported
                 tok = p.right[1]
                 if tok != token
                     union!(set, _first!(tok, prods, first))
@@ -242,7 +242,7 @@ function first_sets(tokens, prods)
     return first
 end
 
-# TODO : Epsilon
+# No epsilon supported
 function follow_sets(tokens, prods, first)
     follow = Dict()
     end_tok = tok_new("\$", terminal=true)

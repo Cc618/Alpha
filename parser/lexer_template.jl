@@ -73,7 +73,6 @@ function lparse(src, regs)
                 println(repeat(' ', pos.column - 1) * "^")
             end
 
-            # TODO : File
             error("Invalid syntax at position $pos, no token matched")
         end
 
