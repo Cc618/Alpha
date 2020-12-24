@@ -12,7 +12,7 @@ Alpha is inspired by Julia and Python for the syntax, though it supports only in
 
 ## Installation & Usage
 ### Installation
-To install Alpha, first install depedencies and follow these instructions :
+To install Alpha, first install dependencies and follow these instructions :
 ```
 julia
 ]
@@ -24,10 +24,36 @@ After this, you can test whether the package is installed with this command :
 julia -e "import Alpha; Alpha.alphamain()" help
 ```
 
-### Running
+### Usage
+To use Alpha, import it and run alphamain that interpretes program arguments.
 ```sh
 julia -e "import Alpha; Alpha.alphamain()" <ARGS>
 ```
+
+You might want to create an alias and add it to your bashrc :
+```sh
+alias alpha='julia -e "import Alpha; Alpha.alphamain()"'
+```
+
+### Commands
+| Command | Result |
+| ------- | ------ |
+| alpha <file>.alpha          | Compile <file>.alpha to <file>      |
+| alpha run <file>.alpha      | Run <file>.alpha                    |
+| alpha build <file>.alpha    | Build <file>.o object file          |
+| alpha generate <file>.alpha | Generate <file>.asm assembly code   |
+| alpha [help|-h|--help]      | Show help                           |
+
+### Dependencies
+Alpha targets Linux machines.
+Moreover, it relies on some binaries :
+
+- make
+- gcc
+- nasm
+- julia
+
+Alpha has been tested on Manjaro and Arch Linux (december 2020) with Julia 1.5.3.
 
 ## Components
 - alphalib : The Alpha standard library
