@@ -84,6 +84,6 @@ The vim folder contains a plugin for Vim syntax highlighting, the script install
 or any Vim plugin manager can be used.
 
 ## Documentation
-You can see all documentation pages [here](doc/README.md).
+You can see all documentation pages [here](docs/README.md).
 
 <!-- TODO : Examples -->
