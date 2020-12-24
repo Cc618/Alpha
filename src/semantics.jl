@@ -1,8 +1,5 @@
 # Semantics Analysis
 
-# undef = No return or partial return
-@enum ReturnKind k_ret_undef k_ret_void k_ret_t
-
 function semanticanalysis!(ctx)
     # 1st pass : Register global scope functions
     for decl in ctx.decls
@@ -28,7 +25,17 @@ function decl_resolve!(ctx, decl, pushsym=true)
         args_resolve!(ctx, decl.type.args, decl.location)
         stmt_resolve!(ctx, decl.body)
 
-        # TODO : Type check return if decl.type.kind is k_fn_t
+        if decl.id == "main"
+            @alphaassert decl.type.kind == k_fn_t decl.location "main must be a function returning an int (the exit status), not a procedure"
+        end
+
+        if decl.type.kind == k_fn_t
+            @alphaassert(isreturning(ctx, decl.body),
+                        decl.location,
+                        "The function $(decl.id) must return a value, use proc instead of fun" *
+                        " if this function must return nothing")
+        end
+
         ctx_popscope!(ctx)
     elseif decl.type.kind == k_int_t
         exp_resolve!(ctx, decl.value)
@@ -157,4 +164,21 @@ function exp_resolve!(ctx, exp)
     elseif exp.kind == k_exp_test
         @alphaassert haskey(test_operators, exp.operator) exp.location "Invalid conditional operator $(exp.operator)"
     end
+end
+
+# Returns whether the function returns in all cases an int
+function isreturning(ctx, stmt)
+    if stmt == nothing
+        return false
+    elseif stmt.kind == k_stmt_return
+        return true
+    elseif stmt.kind ∈ (k_stmt_block, k_stmt_chain)
+        for s in stmt.stmts
+            isreturning(ctx, s) && (return true)
+        end
+    elseif stmt.kind == k_stmt_ifelse
+        return isreturning(ctx, stmt.ifbody) && isreturning(ctx, stmt.elsebody)
+    end
+
+    return false
 end
