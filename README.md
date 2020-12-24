@@ -10,6 +10,22 @@ In addition to the compiler, a lexer-parser generator which works like flex / bi
 
 Alpha is inspired by Julia and Python for the syntax, though it supports only integers for variables.
 
+## Usage
+### Building
+Interpreting all files within src can be slow, it is preferable to precompile this package.
+To do so, follow these instructions :
+
+<!-- TODO -->
+<!-- ``` -->
+<!-- julia -->
+
+<!-- ``` -->
+
+### Running
+```sh
+julia -e "import Alpha; Alpha.alphamain()" <ARGS>
+```
+
 ## Components
 - alphalib : The Alpha standard library
 - docs : Project's documentation

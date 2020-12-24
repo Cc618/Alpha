@@ -2,3 +2,6 @@ name = "Alpha"
 uuid = "9bffecda-c422-47e6-a7f6-d997ef84e86a"
 authors = ["Celian RAIMBAULT <celian.raimbault@epita.fr>"]
 version = "1.0.0"
+
+[deps]
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
