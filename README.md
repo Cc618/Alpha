@@ -39,11 +39,11 @@ Here is the list of all commands :
 
 | Command | Result |
 | ------- | ------ |
-| alpha `<file>.alpha`          | Compile `<file>.alpha` to `<file>`      |
+| alpha `<file>.alpha`          | Compile `<file>.alpha` to `<file>`    |
 | alpha run `<file>.alpha`      | Run `<file>.alpha`                    |
 | alpha build `<file>.alpha`    | Build `<file>.o` object file          |
 | alpha generate `<file>.alpha` | Generate `<file>.asm` assembly code   |
-| alpha [help|-h|--help]      | Show help                           |
+| alpha `[help|-h|--help]`      | Show help                             |
 
 ### Dependencies
 Alpha targets Linux machines.

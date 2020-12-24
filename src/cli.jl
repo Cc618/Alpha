@@ -7,8 +7,8 @@ toblue = "\x1b[1;34m"
 tonormal = "\x1b[1;0m"
 
 function climain(args)
-    local out
-    local outdir
+    local out = undef
+    local outdir = undef
 
     if length(args) == 0
         clihelp()
@@ -46,7 +46,6 @@ end
 
 function clihelp()
     # TODO : Print alphalib path
-    # TODO : -o option
     text = [
             "usage:",
             "   alpha <file>.alpha              Compile <file>.alpha to <file>",
