@@ -3,12 +3,14 @@ Source for the Alpha language.
 
 ## Features
 Written in Julia, Alpha is a compiled, statically typed procedural language.
-Furthermore, this language supports recursion and the compiler is multipass (functions can be called before being declared).
+Furthermore, this language supports recursion and the compiler is multipass
+(functions can be called before being declared).
 
-<!-- TODO : DOC links -->
 In addition to the compiler, a lexer-parser generator which works like flex / bison is included.
 
 Alpha is inspired by Julia and Python for the syntax, though it supports only integers for variables.
+
+See a [brief syntax overview](docs/syntax.md).
 
 ## Installation & Usage
 ### Installation
@@ -23,6 +25,8 @@ After this, you can test whether the package is installed with this command :
 ```
 julia -e "import Alpha; Alpha.alphamain()" help
 ```
+
+Note that this step can take few seconds the first time the module is imported due to precompilation.
 
 ### Usage
 To use Alpha, import it and run alphamain that interpretes program arguments.
@@ -43,7 +47,7 @@ Here is the list of all commands :
 | alpha run `<file>.alpha`      | Run `<file>.alpha`                    |
 | alpha build `<file>.alpha`    | Build `<file>.o` object file          |
 | alpha generate `<file>.alpha` | Generate `<file>.asm` assembly code   |
-| alpha `[help|-h|--help]`      | Show help                             |
+| alpha [help\|-h\|--help]      | Show help                             |
 
 ### Dependencies
 Alpha targets Linux machines.
@@ -62,16 +66,19 @@ Alpha has been tested on Manjaro and Arch Linux (december 2020) with Julia 1.5.3
 - examples : Some Alpha programs
 - parser : The lexer and parser generator
 - src : The Alpha Compiler
-<!-- TODO : DOC link -->
 - vim : Plugin for syntax highlighting
 
 ## Lexer-Parser
-<!-- TODO : DOC link -->
 A lexer and parser generator has been created.
 The lexer supports custom regexes, the syntax is simple because Alpha's syntax is pretty easy.
 The parser is an SLR(1) parser, it handles location detection to display meaningful errors.
 
+Check out the [calculator example](examples/parser/calculator.syntax).
+[Parser documentation](docs/parser.md).
+[Lexer documentation](docs/lexer.md).
+
 ## Vim
+<!-- TODO : Check Vplug install with github subdir -->
 The vim folder contains a plugin for Vim syntax highlighting, the script install.sh can be used to install it
 or any Vim plugin manager can be used.
 
