@@ -97,6 +97,22 @@ Moreover, it relies on some binaries :
 
 Alpha has been tested on Manjaro and Arch Linux (december 2020) with Julia 1.5.3.
 
+### Notes for developers
+To test Alpha, you can use the Makefile instead of recompiling the package for each test :
+```
+make
+julia src/Alpha.jl <ARGS>
+```
+
+To build the package in local :
+```
+julia
+]
+add /abspath/to/Alpha
+```
+
+Note that dev can be used instead of add.
+
 ## Components
 - alphalib : The Alpha standard library
 - docs : Project's documentation
@@ -121,6 +137,17 @@ The parser is an SLR(1) parser, it handles location detection to display meaning
 <!-- TODO : Check Vplug install with github subdir -->
 The vim folder contains a plugin for Vim syntax highlighting, the script install.sh can be used to install it
 or any Vim plugin manager can be used.
+
+Vundle installation :
+```vim
+" In the plugin section of your .vimrc
+Plugin 'Cc618/Alpha', {'rtp': 'vim/'}
+```
+
+Source your .vimrc or restart Vim and then type :
+```vim
+:PluginInstall
+```
 
 ## Documentation
 You can see all documentation pages [here](docs/README.md).
