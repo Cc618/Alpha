@@ -13,19 +13,9 @@ include("parser.yy.jl")
 
 #=
 # TODO Zone
-# # Syntax
-#
-# # Codegen
-#
 # # alphalib
 # - Check main defined
 # - Can't define alphalib functions in alpha
-#
-# # CLI
-# - Compile multiple files
-#
-# # Bugs
-# - alphamain wihtout args (in repl) -> out not defined
 =#
 
 alphamain() = climain(ARGS)
