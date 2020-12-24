@@ -5,7 +5,7 @@ Source for the Alpha language.
 See all examples [here](examples).
 
 ### Primes
-[![res/primes.png]()](examples/primes.alpha)
+[![](res/primes.png)](examples/primes.alpha)
 ```
 * 1
 * 2
@@ -24,7 +24,7 @@ See all examples [here](examples).
 ```
 
 ### Fibonacci
-[![res/fib.png]()](examples/fib.alpha)
+[![](res/fib.png)](examples/fib.alpha)
 ```
 fib( 1 ) = 1
 fib( 2 ) = 2
