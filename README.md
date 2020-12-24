@@ -73,9 +73,10 @@ A lexer and parser generator has been created.
 The lexer supports custom regexes, the syntax is simple because Alpha's syntax is pretty easy.
 The parser is an SLR(1) parser, it handles location detection to display meaningful errors.
 
-Check out the [calculator example](examples/parser/calculator.syntax).
-[Parser documentation](docs/parser.md).
-[Lexer documentation](docs/lexer.md).
+### Links
+- [Calculator example](examples/parser/calculator.syntax).
+- [Parser documentation](docs/parser.md).
+- [Lexer documentation](docs/lexer.md).
 
 ## Vim
 <!-- TODO : Check Vplug install with github subdir -->
