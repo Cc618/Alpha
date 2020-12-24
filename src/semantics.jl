@@ -1,5 +1,8 @@
 # Semantics Analysis
 
+# undef = No return or partial return
+@enum ReturnKind k_ret_undef k_ret_void k_ret_t
+
 function semanticanalysis!(ctx)
     # 1st pass : Register global scope functions
     for decl in ctx.decls
@@ -30,7 +33,7 @@ function decl_resolve!(ctx, decl, pushsym=true)
     elseif decl.type.kind == k_int_t
         exp_resolve!(ctx, decl.value)
 
-        @alphaassert decl.type == decl.value.type decl.location "Invalid type of expression"
+        @alphaassert decl.type == decl.value.type decl.location "Invalid type of expression, must be int"
     else
         alphaerror("Unsupported type '$(decl.type)' for declaration", ctx, decl.location)
     end
@@ -143,11 +146,10 @@ function exp_resolve!(ctx, exp)
             @alphaassert arg.type.kind == k_int_t exp.location "Invalid arg #$(i + 1) type, must be int"
         end
 
-        exp.type = t_int
         fun = ctx_fetchglobal(ctx, exp.id)
+        exp.type = fun.type.kind == k_fn_t ? t_int : t_void
 
         @alphaassert fun != nothing exp.location "Function $(exp.id) not declared"
-        @alphaassert fun.type.kind == k_fn_t exp.location "Invalid type for symbol $(exp.id), must be int function"
         @alphaassert length(fun.type.args) == length(exp.args) exp.location "Invalid number of arguments to call $(fun.id), $(length(fun.type.args)) args required"
     elseif exp.kind == k_exp_test
         @alphaassert haskey(test_operators, exp.operator) exp.location "Invalid conditional operator $(exp.operator)"
