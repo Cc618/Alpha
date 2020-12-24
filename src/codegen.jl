@@ -265,6 +265,7 @@ function exp_codegen!(ctx, exp)
 
         # l /= r
         ctx_push!(ctx, "mov rax, $(regstr(l.reg))")
+        ctx_push!(ctx, "mov rdx, 0")
         ctx_push!(ctx, "idiv $(regstr(r.reg))")
         ctx_push!(ctx, "mov $(regstr(l.reg)), rax")
 
@@ -282,6 +283,7 @@ function exp_codegen!(ctx, exp)
 
         # l /= r
         ctx_push!(ctx, "mov rax, $(regstr(l.reg))")
+        ctx_push!(ctx, "mov rdx, 0")
         ctx_push!(ctx, "idiv $(regstr(r.reg))")
         ctx_push!(ctx, "mov $(regstr(l.reg)), rdx")
 
