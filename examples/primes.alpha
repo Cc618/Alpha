@@ -1,0 +1,21 @@
+# Whether n is a prime
+fun isprime
+take n
+begin
+    loop with divisor from 2 to n - 1
+        # Same as n % divisor == 0
+        if not n % divisor
+            return false
+
+    return true
+end
+
+fun main
+begin
+    let max be 42
+    loop with n from 1 to max
+        if isprime(n)
+            print '*' n
+
+    return 0
+end
