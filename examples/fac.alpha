@@ -1,0 +1,33 @@
+# Factorial function
+fun fac
+take n
+begin
+    if n < 0
+        return -1
+    else
+    begin
+        let result be 1
+
+        # We can use a while loop too
+        # let i be 1
+        # loop when i <= n
+        # begin
+        #     result := result * i
+        #     i := i + 1
+        # end
+
+        loop with i from 1 to n
+            result := result * i
+
+        return result
+    end
+end
+
+fun main
+begin
+    print 'fac(2) =' fac(2)
+    print 'fac(5) =' fac(5)
+    print 'fac(8) =' fac(8)
+
+    return 0
+end
