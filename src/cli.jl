@@ -47,7 +47,6 @@ function climain(args)
 end
 
 function clihelp()
-    # TODO : Print alphalib path
     text = [
             "usage:",
             "   alpha <file>.alpha              Compile <file>.alpha to <file>",

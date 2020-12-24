@@ -89,7 +89,6 @@ end
 # Can be thought as a scope
 mutable struct SymTable
     syms::Dict{String, Sym}
-    # TODO : nargs withing SymTable or Decl ?
     nargs
     decl
 end

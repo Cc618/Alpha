@@ -38,8 +38,6 @@
     PRINT   -> "print[\b]" : (s) -> nothing
     SCAN    -> "scan[\b]" : (s) -> nothing
 
-    # TODO : If necessary, remove blanks at the end (and test whether naming a variable true... is possible)
-    # Try otherwise in the parser : ID -> true ID
     TRUE    -> "true" : (s) -> nothing
     FALSE   -> "false" : (s) -> nothing
 

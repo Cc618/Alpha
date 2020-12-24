@@ -60,8 +60,6 @@ function stmt_resolve!(ctx, stmt)
         exp_resolve!(ctx, stmt.exp)
 
         # TODO : Empty return
-
-        # TODO : Check function not proc
         @alphaassert stmt.exp.type.kind == k_int_t stmt.location "Functions must return ints"
     elseif stmt.kind == k_stmt_ifelse
         exp_resolve!(ctx, stmt.exp)

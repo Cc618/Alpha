@@ -43,12 +43,10 @@ function decl_codegen!(ctx::Ctx, decl::Decl)
         pushinstr!(prologue, "push rbp")
         pushinstr!(prologue, "mov rbp, rsp")
         pushinstr!(prologue, "sub rsp, $(frame_size)")
-        # TODO preserved : Push preserved
 
         # Epilogue generation
         epilogue = []
         pushinstr!(epilogue, ".$fun_name.epilogue:", indent=false)
-        # TODO preserved : Pop preserved
         pushinstr!(epilogue, "leave")
         pushinstr!(epilogue, "ret")
 
@@ -73,12 +71,12 @@ function stmt_codegen!(ctx, stmt)
         return
     end
 
-    # TODO : Loop
     if stmt.kind == k_stmt_exp
         exp_codegen!(ctx, stmt.exp)
 
-        # TODO : Can be nothing ?
-        ctx_freescratch!(ctx, stmt.exp.reg)
+        if stmt.exp.reg != nothing
+            ctx_freescratch!(ctx, stmt.exp.reg)
+        end
     elseif stmt.kind == k_stmt_decl
         decl_codegen!(ctx, stmt.decl)
     elseif stmt.kind == k_stmt_return
