@@ -10,16 +10,19 @@ In addition to the compiler, a lexer-parser generator which works like flex / bi
 
 Alpha is inspired by Julia and Python for the syntax, though it supports only integers for variables.
 
-## Usage
-### Building
-Interpreting all files within src can be slow, it is preferable to precompile this package.
-To do so, follow these instructions :
+## Installation & Usage
+### Installation
+To install Alpha, first install depedencies and follow these instructions :
+```
+julia
+]
+add https://github.com/Cc618/Alpha
+```
 
-<!-- TODO -->
-<!-- ``` -->
-<!-- julia -->
-
-<!-- ``` -->
+After this, you can test whether the package is installed with this command :
+```
+julia -e "import Alpha; Alpha.alphamain()" help
+```
 
 ### Running
 ```sh
