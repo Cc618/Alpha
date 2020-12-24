@@ -1,5 +1,3 @@
-<div class="readme">
-
 # The Alpha Compiler
 Source for the Alpha language compiler and all its components.
 
@@ -7,7 +5,7 @@ Source for the Alpha language compiler and all its components.
 See all examples [here](examples).
 
 ### Primes
-[![Go to source](res/primes.png "Go to source")](examples/primes.alpha)
+[<img class="readme-img" src="res/primes.png" alt="Go to source" title="Go to source" />](examples/primes.alpha)
 ```
 * 1
 * 2
@@ -26,7 +24,7 @@ See all examples [here](examples).
 ```
 
 ### Fibonacci
-[![Go to source](res/fib.png "Go to source")](examples/fib.alpha)
+[<img class="readme-img" src="res/fib.png" alt="Go to source" title="Go to source" />](examples/fib.alpha)
 ```
 fib( 1 ) = 1
 fib( 2 ) = 2
@@ -128,7 +126,7 @@ A lexer and parser generator has been created.
 The lexer supports custom regexes, the syntax is simple because Alpha's syntax is pretty easy.
 The parser is an SLR(1) parser, it handles location detection to display meaningful errors.
 
-![Errors with location and colors](res/error.png "Errors with location and colors")
+<img class="readme-img" src="res/error.png" alt="Errors with location and colors" title="Errors with location and colors" />
 
 ### Links
 - [Calculator example](examples/parser/calculator.syntax).
@@ -159,10 +157,8 @@ This project was made with the help of this
 [amazing book](https://www3.nd.edu/~dthain/compilerbook/).
 Thanks Douglas Thain for posting freely these resources online.
 
-</div>
-
 <style>
-.readme img {
+.readme-img {
     border-radius: 4px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, .22);
 }
