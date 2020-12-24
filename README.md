@@ -82,4 +82,7 @@ Check out the [calculator example](examples/parser/calculator.syntax).
 The vim folder contains a plugin for Vim syntax highlighting, the script install.sh can be used to install it
 or any Vim plugin manager can be used.
 
+## Documentation
+You can see all documentation pages [here](doc/README.md).
+
 <!-- TODO : Examples -->
