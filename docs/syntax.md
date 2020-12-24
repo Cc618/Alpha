@@ -54,6 +54,37 @@ begin
 end
 ```
 
+## Input / Output
+Two keywords are dedicated for user interaction : **print** and **scan**.
+
+### Printing
+Print can display strings and numbers.
+The behaviour is similar to Python's print function (1 print = 1 line = 1 space between variables).
+
+```alpha
+let a be 42
+print "a = " a
+```
+```sh
+a = 42
+```
+
+### Scanning
+Scan can be used in two ways, the first one assigns the variable :
+
+```alpha
+let a be 0
+scan a
+```
+
+Note that *a* has to be declared, on the other hand, you can use let scan to declare a new variable :
+
+```alpha
+let scan a
+```
+
+This instruction is equivalent to the previous code block.
+
 ## Operators
 Operators are Python-like except is which delineates the equality operator
 (== in most of languages) and := refering to the assignment operator.
