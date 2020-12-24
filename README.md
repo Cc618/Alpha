@@ -76,6 +76,11 @@ You might want to create an alias and add it to your bashrc :
 alias alpha='julia -e "import Alpha; Alpha.alphamain()"'
 ```
 
+Otherwise, you can install the program within /usr/bin with this script (requires root privileges):
+```sh
+sudo ./install.sh
+```
+
 Here is the list of all commands :
 
 | Command | Result |
