@@ -1,3 +1,5 @@
+<div id="readme">
+
 # The Alpha Compiler
 Source for the Alpha language compiler and all its components.
 
@@ -157,8 +159,10 @@ This project was made with the help of this
 [amazing book](https://www3.nd.edu/~dthain/compilerbook/).
 Thanks Douglas Thain for posting freely these resources online.
 
+</div>
+
 <style>
-img {
+.readme img {
     border-radius: 4px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, .22);
 }
