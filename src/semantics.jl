@@ -5,7 +5,7 @@ function semanticanalysis!(ctx)
     for decl in ctx.decls
         @alphaassert decl.type.kind == k_proc_t || decl.type.kind == k_fn_t decl.location "Unsupported global declaration type $(decl.type)"
 
-        ctx_newsymglobal!(ctx, decl.type, decl.id)
+        ctx_newsymglobal!(ctx, decl.type, decl.id, decl.location)
     end
 
     # 2nd pass : Verify types and push symbols to scopes
@@ -21,7 +21,7 @@ function decl_resolve!(ctx, decl, pushsym=true)
 
         ctx_pushscope!(ctx, decl)
 
-        args_resolve!(ctx, decl.type.args)
+        args_resolve!(ctx, decl.type.args, decl.location)
         stmt_resolve!(ctx, decl.body)
 
         # TODO : Type check return if decl.type.kind is k_fn_t
@@ -37,13 +37,13 @@ function decl_resolve!(ctx, decl, pushsym=true)
 
     # Declare this symbol to the inner scope
     if pushsym
-        decl.sym = ctx_newsymlocal!(ctx, decl)
+        decl.sym = ctx_newsymlocal!(ctx, decl, decl.location)
     end
 end
 
-function args_resolve!(ctx, args)
+function args_resolve!(ctx, args, location)
     for (i, arg) in enumerate(args)
-        ctx_newsymarg!(ctx, t_int, arg.id, i)
+        ctx_newsymarg!(ctx, t_int, arg.id, i, location)
     end
 end
 

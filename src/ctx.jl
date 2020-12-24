@@ -30,7 +30,7 @@ function ctx_fetchglobal(ctx, id)
 end
 
 # --- Symbols ---
-function ctx_newsymlocal!(ctx::Ctx, decl::Decl)
+function ctx_newsymlocal!(ctx::Ctx, decl::Decl, location)
     type = decl.type
     id = decl.id
 
@@ -50,26 +50,26 @@ function ctx_newsymlocal!(ctx::Ctx, decl::Decl)
     return sym
 end
 
-function ctx_newsymarg!(ctx::Ctx, type::DeclType, id::String, position::Int)
+function ctx_newsymarg!(ctx::Ctx, type::DeclType, id::String, position::Int, location)
     scope = last(ctx.scopes)
     scope.nargs += 1
     position = scope.nargs
     sym = sym_new(k_sym_arg, type, id, position)
 
-    # TODO : Error
-    # TODO : Location (check semantics:46)
-    @assert !haskey(scope.syms, id) "Argument named '$id' already declared"
+    @alphaassert !haskey(scope.syms, id) location "Argument named '$id' already declared"
 
     scope.syms[id] = sym
 end
 
-function ctx_newsymglobal!(ctx::Ctx, type::DeclType, id::String)
+function ctx_newsymglobal!(ctx::Ctx, type::DeclType, id::String, location)
+    global alphalib_funcs
+
     sym = sym_new(k_sym_global, type, id)
     scope = first(ctx.scopes)
 
-    # TODO : Error
-    # TODO : Location
-    @assert !haskey(scope.syms, id) "Declaration named '$id' already declared"
+    @alphaassert !haskey(scope.syms, id) location "Declaration named '$id' already declared"
+
+    id ∈ alphalib_funcs && alphaerror("Declaration named '$id' reserved for alpha interns, use another name", ctx, location)
 
     scope.syms[id] = sym
 end

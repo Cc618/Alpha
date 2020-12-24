@@ -1,14 +1,14 @@
 # Returns the header containing all instructions
 # to use alphalib
-function alphalib_head()
-    funcs = [
-             "alphaprintint",
-             "alphaprintstr",
-             "alphascan",
-        ]
+alphalib_funcs = [
+        "alphaprintint",
+        "alphaprintstr",
+        "alphascan",
+    ]
 
+function alphalib_head()
     s = ""
-    for f in funcs
+    for f in alphalib_funcs
         s *= "extern $f\n"
     end
 
