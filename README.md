@@ -1,4 +1,4 @@
-<div id="readme">
+<div class="readme">
 
 # The Alpha Compiler
 Source for the Alpha language compiler and all its components.
