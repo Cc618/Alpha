@@ -1,0 +1,4 @@
+name = "Alpha"
+uuid = "9bffecda-c422-47e6-a7f6-d997ef84e86a"
+authors = ["Celian RAIMBAULT <celian.raimbault@epita.fr>"]
+version = "1.0.0"

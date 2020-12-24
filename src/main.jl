@@ -23,6 +23,9 @@ include("parser.yy.jl")
 #
 # # CLI
 # - Compile multiple files
+#
+# # Bugs
+# - alphamain wihtout args (in repl) -> out not defined
 =#
 
 alphamain() = climain(ARGS)
