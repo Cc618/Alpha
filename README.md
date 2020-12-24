@@ -123,4 +123,7 @@ or any Vim plugin manager can be used.
 ## Documentation
 You can see all documentation pages [here](docs/README.md).
 
-<!-- TODO : Examples -->
+## References & Thanks
+This project was made with the help of this
+[amazing book](https://www3.nd.edu/~dthain/compilerbook/).
+Thanks Douglas Thain for posting freely these resources online.
