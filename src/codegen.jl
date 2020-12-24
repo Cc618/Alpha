@@ -92,13 +92,18 @@ function stmt_codegen!(ctx, stmt)
         exp = stmt.exp
         exp_codegen!(ctx, exp)
 
-        # TODO : Push arg regs (same for printstr, scan and exp_call)
-        ctx_push!(ctx, "push rdi")
-        ctx_push!(ctx, "push rsi")
+        # Push preserved arg regs
+        nargs = length(ctx.current_func.type.args)
+        for i = 1:nargs
+            ctx_push!(ctx, "push $(arg_regs[i])")
+        end
+
         ctx_push!(ctx, "mov rdi, $(regstr(exp.reg))")
         ctx_push!(ctx, "call alphaprintint")
-        ctx_push!(ctx, "pop rsi")
-        ctx_push!(ctx, "pop rdi")
+
+        for i = nargs:-1:1
+            ctx_push!(ctx, "pop $(arg_regs[i])")
+        end
 
         ctx_freescratch!(ctx, exp.reg)
     elseif stmt.kind == k_stmt_printstr
@@ -106,22 +111,34 @@ function stmt_codegen!(ctx, stmt)
         str = str_escape(stmt.exp)
         data = ctx_newdata!(ctx, "db $str")
 
-        ctx_push!(ctx, "push rdi")
-        ctx_push!(ctx, "push rsi")
+        # Push preserved arg regs
+        nargs = length(ctx.current_func.type.args)
+        for i = 1:nargs
+            ctx_push!(ctx, "push $(arg_regs[i])")
+        end
+
         ctx_push!(ctx, "mov rdi, $data")
         ctx_push!(ctx, "call alphaprintstr")
-        ctx_push!(ctx, "pop rsi")
-        ctx_push!(ctx, "pop rdi")
+
+        for i = nargs:-1:1
+            ctx_push!(ctx, "pop $(arg_regs[i])")
+        end
     elseif stmt.kind == k_stmt_scan
+        # Generate data
         lsym = sym_codegen(stmt.exp.sym)
 
-        # Generate data
-        ctx_push!(ctx, "push rdi")
-        ctx_push!(ctx, "push rsi")
+        # Push preserved arg regs
+        nargs = length(ctx.current_func.type.args)
+        for i = 1:nargs
+            ctx_push!(ctx, "push $(arg_regs[i])")
+        end
+
         ctx_push!(ctx, "call alphascan")
         ctx_push!(ctx, "mov $lsym, rax")
-        ctx_push!(ctx, "pop rsi")
-        ctx_push!(ctx, "pop rdi")
+
+        for i = nargs:-1:1
+            ctx_push!(ctx, "pop $(arg_regs[i])")
+        end
     elseif stmt.kind == k_stmt_block
         for st in stmt.stmts
             stmt_codegen!(ctx, st)
@@ -322,12 +339,17 @@ function exp_codegen!(ctx, exp)
             ctx_push!(ctx, "push $(regstr(r))")
         end
 
+        # Push preserved arg regs
+        nargs = max(length(exp.args), length(ctx.current_func.type.args))
+        for i = 1:nargs
+            ctx_push!(ctx, "push $(arg_regs[i])")
+        end
+
         for (i, arg) in enumerate(exp.args)
             exp_codegen!(ctx, arg)
 
-            # Push the arg reg and mov the result in it
+            # Move the result in the arg
             argreg = arg_regs[i]
-            ctx_push!(ctx, "push $(regstr(argreg))")
             ctx_push!(ctx, "mov $(regstr(argreg)), $(regstr(arg.reg))")
 
             ctx_freescratch!(ctx, arg.reg)
@@ -336,9 +358,8 @@ function exp_codegen!(ctx, exp)
         # Call
         ctx_push!(ctx, "call $(exp.id)")
 
-        # Pop arg regs
-        for i in length(exp.args):-1:1
-            ctx_push!(ctx, "pop $(regstr(arg_regs[i]))")
+        for i = nargs:-1:1
+            ctx_push!(ctx, "pop $(arg_regs[i])")
         end
 
         # Pop scratch regs
