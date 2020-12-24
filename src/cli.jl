@@ -17,7 +17,7 @@ function climain(args)
             clihelp()
         else
             out = clicompileall(args[begin])
-            outdir = dirname(args[begin])
+            outdir = dirname(abspath(args[begin]))
         end
     elseif length(args) == 2
         args[begin] ∉ ("run", "build", "generate") && clihelp()
@@ -25,7 +25,7 @@ function climain(args)
         method = args[begin]
         src = args[end]
         out = clicompileall(src, method)
-        outdir = dirname(src)
+        outdir = dirname(abspath(src))
 
         # Run tmp program
         if method == "run"
@@ -135,12 +135,13 @@ end
 # Returns the path of the output
 function clicompileall(src, stop="compile")
     src = abspath(src)
+    source = splitext(basename(src))[begin]
 
     # Auto deleted
     tmp = mktempdir()
-    asmout = "$tmp/source.asm"
-    objout = "$tmp/source.o"
-    exeout = "$tmp/source"
+    asmout = "$tmp/$source.asm"
+    objout = "$tmp/$source.o"
+    exeout = "$tmp/$source"
 
     # Generate
     climake(cligenerate, src, out=asmout)
