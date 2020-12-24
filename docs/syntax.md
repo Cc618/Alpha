@@ -111,4 +111,4 @@ Operators are Python-like except **is**, which delineates the equality operator
 | 10 | := += -= \*= /= |
 
 ### Main
-Not that, like C programs, the function **main** is the entry of any Alpha program.
+Note that like C programs, the function **main** is the entry of any Alpha program.
