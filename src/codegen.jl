@@ -95,14 +95,14 @@ function stmt_codegen!(ctx, stmt)
         # Push preserved arg regs
         nargs = length(ctx.current_func.type.args)
         for i = 1:nargs
-            ctx_push!(ctx, "push $(arg_regs[i])")
+            ctx_push!(ctx, "push $(regstr(arg_regs[i]))")
         end
 
         ctx_push!(ctx, "mov rdi, $(regstr(exp.reg))")
         ctx_push!(ctx, "call alphaprintint")
 
         for i = nargs:-1:1
-            ctx_push!(ctx, "pop $(arg_regs[i])")
+            ctx_push!(ctx, "pop $(regstr(arg_regs[i]))")
         end
 
         ctx_freescratch!(ctx, exp.reg)
@@ -114,14 +114,14 @@ function stmt_codegen!(ctx, stmt)
         # Push preserved arg regs
         nargs = length(ctx.current_func.type.args)
         for i = 1:nargs
-            ctx_push!(ctx, "push $(arg_regs[i])")
+            ctx_push!(ctx, "push $(regstr(arg_regs[i]))")
         end
 
         ctx_push!(ctx, "mov rdi, $data")
         ctx_push!(ctx, "call alphaprintstr")
 
         for i = nargs:-1:1
-            ctx_push!(ctx, "pop $(arg_regs[i])")
+            ctx_push!(ctx, "pop $(regstr(arg_regs[i]))")
         end
     elseif stmt.kind == k_stmt_scan
         # Generate data
@@ -130,14 +130,14 @@ function stmt_codegen!(ctx, stmt)
         # Push preserved arg regs
         nargs = length(ctx.current_func.type.args)
         for i = 1:nargs
-            ctx_push!(ctx, "push $(arg_regs[i])")
+            ctx_push!(ctx, "push $(regstr(arg_regs[i]))")
         end
 
         ctx_push!(ctx, "call alphascan")
         ctx_push!(ctx, "mov $lsym, rax")
 
         for i = nargs:-1:1
-            ctx_push!(ctx, "pop $(arg_regs[i])")
+            ctx_push!(ctx, "pop $(regstr(arg_regs[i]))")
         end
     elseif stmt.kind == k_stmt_block
         for st in stmt.stmts
@@ -344,7 +344,7 @@ function exp_codegen!(ctx, exp)
         # Push preserved arg regs
         nargs = max(length(exp.args), length(ctx.current_func.type.args))
         for i = 1:nargs
-            ctx_push!(ctx, "push $(arg_regs[i])")
+            ctx_push!(ctx, "push $(regstr(arg_regs[i]))")
         end
 
         for (i, arg) in enumerate(exp.args)
@@ -361,7 +361,7 @@ function exp_codegen!(ctx, exp)
         ctx_push!(ctx, "call $(exp.id)")
 
         for i = nargs:-1:1
-            ctx_push!(ctx, "pop $(arg_regs[i])")
+            ctx_push!(ctx, "pop $(regstr(arg_regs[i]))")
         end
 
         # Pop scratch regs
