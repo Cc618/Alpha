@@ -100,6 +100,8 @@ function ctx_newscratch!(ctx::Ctx)
 end
 
 function ctx_freescratch!(ctx::Ctx, reg)
+    @assert reg ∉ ctx.scratch_regs "Cannot push reg $(regstr(reg)) to $(ctx.scratch_regs)"
+
     push!(ctx.scratch_regs, reg)
 end
 

@@ -294,15 +294,16 @@ function exp_codegen!(ctx, exp)
     elseif exp.kind == k_exp_set
         l, r = exp.left, exp.right
 
-        @assert l.sym != nothing "Can't assign an rvalue"
-
         exp_codegen!(ctx, l)
         exp_codegen!(ctx, r)
+
+        @assert l.sym != nothing "Can't assign an rvalue"
 
         lsym = sym_codegen(l.sym)
 
         # l = r
-        ctx_push!(ctx, "mov $lsym, $(regstr(r.reg))")
+        ctx_push!(ctx, "mov $(regstr(l.reg)), $(regstr(r.reg))")
+        ctx_push!(ctx, "mov $lsym, $(regstr(l.reg))")
 
         ctx_freescratch!(ctx, r.reg)
         exp.reg = l.reg

@@ -137,11 +137,11 @@
     int10 -> int9 : (data) -> data
     int10 -> unary SET int9 : (lhs, _, data) -> exp_newset(lhs, data, location=parser_pos())
     # x OP= a <=> x = x OP a
-    int10 -> unary RADD int9 : (lhs, _, data) -> exp_newset(lhs, exp_newadd(lhs, data), location=parser_pos())
-    int10 -> unary RSUB int9 : (lhs, _, data) -> exp_newset(lhs, exp_newadd(lhs, exp_newneg(data)), location=parser_pos())
-    int10 -> unary RMUL int9 : (lhs, _, data) -> exp_newset(lhs, exp_newmul(lhs, data), location=parser_pos())
-    int10 -> unary RDIV int9 : (lhs, _, data) -> exp_newset(lhs, exp_newdiv(lhs, data), location=parser_pos())
-    int10 -> unary RMOD int9 : (lhs, _, data) -> exp_newset(lhs, exp_newmod(lhs, data), location=parser_pos())
+    int10 -> unary RADD int9 : (lhs, _, data) -> exp_newset(lhs, exp_newadd(deepcopy(lhs), data), location=parser_pos())
+    int10 -> unary RSUB int9 : (lhs, _, data) -> exp_newset(lhs, exp_newadd(deepcopy(lhs), exp_newneg(data)), location=parser_pos())
+    int10 -> unary RMUL int9 : (lhs, _, data) -> exp_newset(lhs, exp_newmul(deepcopy(lhs), data), location=parser_pos())
+    int10 -> unary RDIV int9 : (lhs, _, data) -> exp_newset(lhs, exp_newdiv(deepcopy(lhs), data), location=parser_pos())
+    int10 -> unary RMOD int9 : (lhs, _, data) -> exp_newset(lhs, exp_newmod(deepcopy(lhs), data), location=parser_pos())
 
     int9 -> int8 : (data) -> data
     # not x <=> x == false
