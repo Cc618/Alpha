@@ -1,0 +1,56 @@
+# Displays the Alpha banner :
+
+# | #..##..#....###..# |
+# | #.#..#.#....#..#.# |
+# | #.####.#....###..# |
+# | #.#..#.####.#....# |
+
+# | #.#..#..##..# |
+# | #.####.#..#.# |
+# | #.####.####.# |
+# | #.#..#.#..#.# |
+
+# To display . and # instead of 0 and 1 :
+# alpha run alpha.alpha | sed "s/0/./g" | sed "s/1/#/g"
+
+fun main
+begin
+    let l1 be 159897
+    let l2 be 168101
+    let l3 be 159933
+    let l4 be 137125
+    let l5 be   4901
+    let l6 be   5309
+    let l7 be   6077
+    let l8 be   5285
+
+    printline(l1, 18)
+    printline(l2, 18)
+    printline(l3, 18)
+    printline(l4, 18)
+    print ''
+    printline(l5, 13)
+    printline(l6, 13)
+    printline(l7, 13)
+    printline(l8, 13)
+
+    return 0
+end
+
+proc printline
+take n, width
+begin
+    let line be 0
+    loop with i from 1 to width
+    begin
+        line *= 10
+
+        # The first bit is 1
+        if n % 2
+            line += 1
+
+        n /= 2
+    end
+
+    print '|' line '|'
+end
