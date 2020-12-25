@@ -39,7 +39,7 @@ fib( 10 ) = 89
 ```
 
 ### Alpha (Ascii Art banner)
-Note that code in the image is minimized (click on the image to view the full code).
+Note that code in the preview is minimized (click on the image to view the full code).
 
 [![Go to source](res/alpha_banner.png "Go to source")](examples/alpha.alpha)
 
@@ -95,7 +95,7 @@ You might want to create an alias and add it to your bashrc :
 alias alpha='julia -e "import Alpha; Alpha.alphamain()"'
 ```
 
-Otherwise, you can install the program within /usr/bin with this script (requires root privileges):
+Otherwise, you can install the program within /usr/bin with this script (requires root privileges) :
 ```sh
 sudo ./install.sh
 ```
@@ -138,12 +138,12 @@ add /abspath/to/Alpha
 Note that dev can be used instead of add.
 
 ## Components
-- alphalib : The Alpha standard library
-- docs : Project's documentation
-- examples : Some Alpha programs
-- parser : The lexer and parser generator
-- src : The Alpha Compiler
-- vim : Plugin for syntax highlighting
+- alphalib : The Alpha standard library.
+- docs : Project's documentation.
+- examples : Some Alpha programs.
+- parser : The lexer and parser generator.
+- src : The Alpha Compiler.
+- vim : Plugin for syntax highlighting.
 
 ## Lexer-Parser
 A lexer and parser generator has been created.
