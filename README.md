@@ -38,6 +38,25 @@ fib( 9 ) = 55
 fib( 10 ) = 89
 ```
 
+### Alpha (Ascii Art banner)
+Note that code in the image is minimized (click on the image to view the full code).
+
+[![Go to source](res/alpha_banner.png "Go to source")](examples/alpha.alpha)
+
+Using sed to replace 0s and 1s this snippet outputs this :
+
+```
+| #..##..#....###..# |
+| #.#..#.#....#..#.# |
+| #.####.#....###..# |
+| #.#..#.####.#....# |
+
+| #.#..#..##..# |
+| #.####.#..#.# |
+| #.####.####.# |
+| #.#..#.#..#.# |
+```
+
 ## Features
 Written in Julia, Alpha is a compiled, statically typed procedural language.
 Furthermore, this language supports recursion and the compiler is multipass
