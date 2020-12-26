@@ -1,6 +1,17 @@
 # The Alpha Compiler
 Source for the Alpha language compiler and all its components.
 
+## Summary
+
+- [Examples](#Examples)
+- [Features](#Features)
+- [Installation & Usage](#installation)
+- [Components](#Components)
+- [Lexer-Parser](#Lexer-Parser)
+- [Vim](#Vim)
+- [Documentation](#Documentation)
+- [References & Thanks](#references)
+
 ## Examples
 See all examples [here](examples).
 
@@ -68,7 +79,7 @@ Alpha is inspired by Julia and Python for the syntax, though it supports only in
 
 See a [brief syntax overview](docs/syntax.md).
 
-## Installation & Usage
+## <span id="installation">Installation & Usage</span>
 ### Installation
 To install Alpha, first install dependencies and follow these instructions :
 ```
@@ -176,7 +187,8 @@ Source your .vimrc or restart Vim and then type :
 ## Documentation
 You can see all documentation pages [here](docs/README.md).
 
-## References & Thanks
+
+## <span id="references">References & Thanks</span>
 This project was made with the help of this
 [amazing book](https://www3.nd.edu/~dthain/compilerbook/).
 Thanks Douglas Thain for posting freely these resources online.
