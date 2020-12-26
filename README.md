@@ -158,8 +158,14 @@ Note that dev can be used instead of add.
 - vim : Plugin for syntax highlighting.
 
 ## Lexer-Parser
-A lexer and parser generator has been created.
+A lexer and parser generator have been created.
+
+![Lexer](res/lexer.png "The lexer")
+
 The lexer supports custom regexes, the syntax is simple because Alpha's syntax is pretty easy.
+
+![Parser](res/parser.png "The parser")
+
 The parser is an SLR(1) parser, it handles location detection to display meaningful errors.
 
 ![Errors with location and colors](res/error.png "Errors with location and colors")
