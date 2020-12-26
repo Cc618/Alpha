@@ -3,14 +3,14 @@ Source for the Alpha language compiler and all its components.
 
 ## Summary
 
-- [Examples](#Examples)
-- [Features](#Features)
-- [Installation & Usage](#installation)
-- [Components](#Components)
-- [Lexer-Parser](#Lexer-Parser)
-- [Vim](#Vim)
-- [Documentation](#Documentation)
-- [References & Thanks](#references)
+- [⭐ Examples](#Examples)
+- [☘️ Features](#Features)
+- [🔌 Installation & Usage](#installation)
+- [📑 Components](#Components)
+- [🖥 Lexer-Parser](#Lexer-Parser)
+- [🎨 Vim](#Vim)
+- [📚 Documentation](#Documentation)
+- [👋 References & Thanks](#references)
 
 ## Examples
 See all examples [here](examples).
