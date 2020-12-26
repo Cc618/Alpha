@@ -90,14 +90,15 @@ To use Alpha, import it and run alphamain that interpretes program arguments.
 julia -e "import Alpha; Alpha.alphamain()" <ARGS>
 ```
 
-You might want to create an alias and add it to your bashrc :
-```sh
-alias alpha='julia -e "import Alpha; Alpha.alphamain()"'
-```
-
-Otherwise, you can install the program within /usr/bin with this script (requires root privileges) :
+You might want to type only `alpha <ARGS>` instead of this long command.
+To do so, you can install Alpha within /usr/bin with this script (requires root privileges) :
 ```sh
 sudo ./install.sh
+```
+
+Otherwise, without root privileges you can create an alias and add it to your bashrc :
+```sh
+alias alpha='julia -e "import Alpha; Alpha.alphamain()"'
 ```
 
 Here is the list of all commands :
