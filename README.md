@@ -1,8 +1,9 @@
+<center><img src="res/alpha_logo.png" style="width: 256px; height: 256px; padding: 24px;" /></center>
+
 # The Alpha Compiler
 Source for the Alpha language compiler and all its components.
 
 ## Summary
-
 - [⭐ Examples](#Examples)
 - [☘️ Features](#Features)
 - [🔌 Installation & Usage](#installation)
