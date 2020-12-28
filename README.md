@@ -1,4 +1,4 @@
-<center><img src="res/alpha_logo.png" width="192" height="192" /></center>
+<img src="res/alpha_logo.png" width="192" height="192" align="center" />
 
 # The Alpha Compiler
 Source for the Alpha language compiler and all its components.
